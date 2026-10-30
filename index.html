@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estud Resource Exchange</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Estud Resource Exchange</h1>
+      <p class="subtitle">
+        A simple app where older-batch students share study resources with fresh
+        students.
+      </p>
+
+      <section>
+        <h2>Share a resource</h2>
+        <form id="resource-form">
+          <label>
+            Resource title
+            <input id="title" name="title" required maxlength="100" />
+          </label>
+          <label>
+            Subject
+            <input id="subject" name="subject" required maxlength="80" />
+          </label>
+          <label>
+            Description
+            <textarea id="description" name="description" required maxlength="500"></textarea>
+          </label>
+          <label>
+            Resource link (optional)
+            <input id="link" name="link" type="url" placeholder="https://..." />
+          </label>
+          <label>
+            Shared by (older batch)
+            <input id="sharedBy" name="sharedBy" required maxlength="60" />
+          </label>
+          <button type="submit">Add resource</button>
+        </form>
+      </section>
+
+      <section>
+        <h2>Available resources</h2>
+        <ul id="resource-list" aria-live="polite"></ul>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
