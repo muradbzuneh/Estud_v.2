@@ -14,6 +14,7 @@
     "@trpc/server": "^10.45.2",
     "bcryptjs": "^2.4.3",
     "better-auth": "^1.7.14",
+    "cloudinary": "^2.11.0",
     "jose": "^5.9.6",
     "resend": "^6.37.0",
     "superjson": "^2.2.2",

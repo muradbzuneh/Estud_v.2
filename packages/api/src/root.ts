@@ -7,6 +7,7 @@ import { exchangesRouter } from "./modules/exchanges/exchanges.router";
 import { logisticsRouter } from "./modules/logistics/logistics.router";
 import { disputesRouter } from "./modules/disputes/disputes.router";
 import { lostFoundRouter } from "./modules/lost-found/lost-found.router";
+import { uploadRouter } from "./modules/upload/upload.router";
 
 export const appRouter = router({
   auth: authRouter,
@@ -17,6 +18,7 @@ export const appRouter = router({
   logistics: logisticsRouter,
   disputes: disputesRouter,
   lostFound: lostFoundRouter,
+  upload: uploadRouter,
 });
 
 export type AppRouter = typeof appRouter;
