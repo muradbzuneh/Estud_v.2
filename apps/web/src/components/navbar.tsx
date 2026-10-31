@@ -138,15 +138,15 @@ export function Navbar({ onSearch }: NavbarProps) {
           </button>
 
           {/* User Profile Avatar */}
-          <div className="flex items-center gap-2 pl-1">
-            <div className="h-9 w-9 overflow-hidden rounded-full border-2 border-emerald-500 ring-2 ring-emerald-500/20">
+          <Link href="/auth" className="flex items-center gap-2 pl-1 cursor-pointer">
+            <div className="h-9 w-9 overflow-hidden rounded-full border-2 border-emerald-500 ring-2 ring-emerald-500/20 hover:scale-105 transition">
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
                 alt="Student Profile"
                 className="h-full w-full object-cover"
               />
             </div>
-          </div>
+          </Link>
 
           {/* Mobile hamburger button */}
           <button
