@@ -25,23 +25,38 @@ import { ProductGallery } from "@/components/product-gallery";
 import { EscrowCheckoutModal } from "@/components/escrow-checkout-modal";
 import { ExchangeProposalModal } from "@/components/exchange-proposal-modal";
 
-export default function ProductDetailPage() {
-  const params = useParams();
-  const productId = params?.id as string;
-
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [isExchangeOpen, setIsExchangeOpen] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-  const [activeTab, setActiveTab] = useState<"specs" | "inspection" | "seller">("specs");
-
-  // Mock product data (matches design in mockups)
-  const product = {
-    id: productId || "prod-1",
+const PRODUCT_CATALOG: Record<
+  string,
+  {
+    id: string;
+    title: string;
+    category: string;
+    price: number;
+    originalPrice?: number;
+    condition: string;
+    campus: string;
+    createdAt: string;
+    seller: {
+      name: string;
+      avatar: string;
+      university: string;
+      department: string;
+      rating: number;
+      completedOrders: number;
+    };
+    images: { id: string; imageUrl: string; isPrimary?: boolean }[];
+    specs: { label: string; value: string }[];
+    inspectionNotes: string;
+    exchangePreferences: string;
+  }
+> = {
+  "prod-1": {
+    id: "prod-1",
     title: "Laptop Dell Inspiron 15 (11th Gen Core i5, 16GB RAM, 512GB NVMe)",
-    category: "Electronics & Computing",
-    price: 24500,
-    originalPrice: 27000,
-    condition: "Used - Like New",
+    category: "Laptops & Computers",
+    price: 18000,
+    originalPrice: 22000,
+    condition: "Used • Like New",
     campus: "Addis Ababa University (4 Kilo Campus)",
     createdAt: "2 hours ago",
     seller: {
@@ -51,26 +66,123 @@ export default function ProductDetailPage() {
       department: "Software Engineering, Year 4",
       rating: 4.8,
       completedOrders: 14,
-      joined: "Oct 2024",
-      verifiedStudent: true,
-      phoneVerified: true,
     },
     images: [
       { id: "1", imageUrl: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=900&auto=format&fit=crop&q=80", isPrimary: true },
       { id: "2", imageUrl: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=900&auto=format&fit=crop&q=80" },
       { id: "3", imageUrl: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=900&auto=format&fit=crop&q=80" },
-      { id: "4", imageUrl: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=900&auto=format&fit=crop&q=80" },
     ],
     specs: [
       { label: "Processor", value: "Intel Core i5-1135G7 (up to 4.2 GHz)" },
-      { label: "Memory (RAM)", value: "16GB DDR4 3200MHz Dual-Channel" },
+      { label: "RAM", value: "16GB DDR4 Dual-Channel" },
       { label: "Storage", value: "512GB M.2 PCIe NVMe SSD" },
-      { label: "Display", value: '15.6" FHD (1920 x 1080) Anti-glare LED' },
       { label: "Battery Health", value: "92% original capacity (~5.5 hours)" },
-      { label: "Includes", value: "Original 65W Dell Charger + Laptop Sleeve" },
     ],
-    inspectionNotes:
-      "Screen is 100% scratch-free. Tiny cosmetic wear on bottom rubber feet. Clean keyboard with all keys responsive. Windows 11 Pro installed & activated. Ready for engineering/coding tools (VS Code, Docker, MATLAB).",
+    inspectionNotes: "Clean screen, 100% responsive keyboard, verified original charger included.",
+    exchangePreferences: "Open to trade for iPad 9th/10th Gen or MacBook Air M1 with cash adjustment.",
+  },
+  "prod-2": {
+    id: "prod-2",
+    title: "Sony Noise-Canceling Wireless Earbuds (Extra Bass)",
+    category: "Phones & Audio",
+    price: 2500,
+    originalPrice: 3500,
+    condition: "New • Sealed",
+    campus: "Addis Ababa University (AAiT 5 Kilo)",
+    createdAt: "3 hours ago",
+    seller: {
+      name: "Alazar T.",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      university: "Addis Ababa University",
+      department: "Electrical Engineering, Year 3",
+      rating: 4.7,
+      completedOrders: 9,
+    },
+    images: [
+      { id: "1", imageUrl: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=900&auto=format&fit=crop&q=80", isPrimary: true },
+      { id: "2", imageUrl: "https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?w=900&auto=format&fit=crop&q=80" },
+    ],
+    specs: [
+      { label: "Battery Life", value: "24 Hours (with Charging Case)" },
+      { label: "Connectivity", value: "Bluetooth 5.2 (Fast Pair)" },
+      { label: "Features", value: "Active Noise Cancellation + IPX4 Water Resistance" },
+    ],
+    inspectionNotes: "Brand new factory sealed box, unopened with warranty slip.",
+    exchangePreferences: "Willing to trade for Apple Pencil (1st Gen) or Scientific Calculator.",
+  },
+  "prod-3": {
+    id: "prod-3",
+    title: "Thomas' Calculus (14th Edition Hardcover Original)",
+    category: "Books & Study",
+    price: 600,
+    originalPrice: 900,
+    condition: "Used • Good",
+    campus: "Hawassa University (Main Campus)",
+    createdAt: "5 hours ago",
+    seller: {
+      name: "Bethlehem K.",
+      avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80",
+      university: "Hawassa University",
+      department: "Civil Engineering, Year 2",
+      rating: 4.9,
+      completedOrders: 21,
+    },
+    images: [
+      { id: "1", imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=900&auto=format&fit=crop&q=80", isPrimary: true },
+      { id: "2", imageUrl: "https://images.unsplash.com/photo-1532012164546-f432f2e3777f?w=900&auto=format&fit=crop&q=80" },
+    ],
+    specs: [
+      { label: "Edition", value: "14th International Hardcover Edition" },
+      { label: "Pages", value: "1,200 Pages (All intact)" },
+      { label: "Subject", value: "Calculus I, II & Multivariable Mathematics" },
+    ],
+    inspectionNotes: "Clean pages with minimal pencil notes in Chapter 3. Binding is solid.",
+    exchangePreferences: "Open to trade for Engineering Mechanics: Statics or Linear Algebra textbook.",
+  },
+  "prod-4": {
+    id: "prod-4",
+    title: "Waterproof Student Campus Backpack with USB Port",
+    category: "Campus Fashion & Dorm",
+    price: 1200,
+    originalPrice: 1500,
+    condition: "New • Waterproof",
+    campus: "Mekelle University (Arid Campus)",
+    createdAt: "1 day ago",
+    seller: {
+      name: "Dawit G.",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+      university: "Mekelle University",
+      department: "Economics, Year 3",
+      rating: 4.6,
+      completedOrders: 8,
+    },
+    images: [
+      { id: "1", imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=900&auto=format&fit=crop&q=80", isPrimary: true },
+    ],
+    specs: [
+      { label: "Capacity", value: "30L (Holds up to 15.6-inch laptop)" },
+      { label: "Material", value: "900D Oxford Waterproof Fabric" },
+      { label: "Features", value: "External USB charging port + Anti-theft back pocket" },
+    ],
+    inspectionNotes: "Brand new, never used with original tags.",
+    exchangePreferences: "Open to trade for study lamp or wireless mouse.",
+  },
+};
+
+export default function ProductDetailPage() {
+  const params = useParams();
+  const productId = (params?.id as string) || "prod-1";
+
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isExchangeOpen, setIsExchangeOpen] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [activeTab, setActiveTab] = useState<"specs" | "inspection" | "seller">("specs");
+
+  // Lookup product from catalog or fall back gracefully
+  const product = PRODUCT_CATALOG[productId] || {
+    ...PRODUCT_CATALOG["prod-1"],
+    id: productId,
+    title: `Campus Listing (${productId.toUpperCase()})`,
   };
 
   const escrowFee = Math.round(product.price * 0.05);
@@ -82,9 +194,9 @@ export default function ProductDetailPage() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center gap-2 text-xs text-slate-500 mb-6 overflow-x-auto">
-          <Link href="/" className="hover:text-emerald-700 transition">Home</Link>
+          <Link href="/" className="hover:text-indigo-600 transition">Home</Link>
           <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
-          <Link href="/" className="hover:text-emerald-700 transition">{product.category}</Link>
+          <Link href="/" className="hover:text-indigo-600 transition">{product.category}</Link>
           <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
           <span className="text-slate-900 font-medium truncate max-w-xs">{product.title}</span>
         </nav>
@@ -95,9 +207,9 @@ export default function ProductDetailPage() {
             <ProductGallery images={product.images} title={product.title} />
 
             {/* Verification Guarantee Card */}
-            <div className="mt-8 rounded-3xl border border-emerald-100 bg-gradient-to-br from-emerald-50/70 to-teal-50/30 p-6">
+            <div className="mt-8 rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50/70 to-slate-50/50 p-6">
               <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-md shadow-indigo-600/20">
                   <ShieldCheck className="h-6 w-6" />
                 </div>
                 <div>
@@ -105,7 +217,7 @@ export default function ProductDetailPage() {
                   <p className="mt-1 text-xs text-slate-600 leading-relaxed">
                     When you purchase through Estud, your payment is held securely in escrow. You meet the student seller at the <span className="font-semibold text-slate-900">{product.campus}</span> partner desk or hub, inspect the item thoroughly, and only release payment using your secret 4-digit PIN.
                   </p>
-                  <div className="mt-3 flex flex-wrap gap-4 text-xs font-semibold text-emerald-800">
+                  <div className="mt-3 flex flex-wrap gap-4 text-xs font-semibold text-indigo-900">
                     <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-emerald-600" /> 100% Refund Guarantee</span>
                     <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-emerald-600" /> No Cash Risk</span>
                     <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-emerald-600" /> Campus Desk Handover</span>
@@ -121,7 +233,7 @@ export default function ProductDetailPage() {
                   onClick={() => setActiveTab("specs")}
                   className={`relative pb-2 transition ${
                     activeTab === "specs"
-                      ? "text-emerald-700 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-emerald-600"
+                      ? "text-indigo-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-indigo-600"
                       : "text-slate-500 hover:text-slate-900"
                   }`}
                 >
@@ -131,7 +243,7 @@ export default function ProductDetailPage() {
                   onClick={() => setActiveTab("inspection")}
                   className={`relative pb-2 transition ${
                     activeTab === "inspection"
-                      ? "text-emerald-700 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-emerald-600"
+                      ? "text-indigo-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-indigo-600"
                       : "text-slate-500 hover:text-slate-900"
                   }`}
                 >
@@ -141,7 +253,7 @@ export default function ProductDetailPage() {
                   onClick={() => setActiveTab("seller")}
                   className={`relative pb-2 transition ${
                     activeTab === "seller"
-                      ? "text-emerald-700 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-emerald-600"
+                      ? "text-indigo-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-indigo-600"
                       : "text-slate-500 hover:text-slate-900"
                   }`}
                 >
@@ -167,7 +279,7 @@ export default function ProductDetailPage() {
                       {product.inspectionNotes}
                     </p>
                     <div className="flex items-center gap-2 text-xs text-slate-500">
-                      <Info className="h-4 w-4 text-emerald-600" />
+                      <Info className="h-4 w-4 text-indigo-600" />
                       Inspected & pre-screened by Estud Campus Hub agents.
                     </div>
                   </div>
@@ -176,7 +288,7 @@ export default function ProductDetailPage() {
                 {activeTab === "seller" && (
                   <div className="space-y-3 text-xs text-slate-600">
                     <p>
-                      <strong>Open for Item Exchange:</strong> Yes, seller is willing to trade for an <span className="font-semibold text-slate-900">iPad (9th/10th Gen)</span> or <span className="font-semibold text-slate-900">MacBook Air M1</span> with appropriate cash balance adjustment.
+                      <strong>Open for Item Exchange:</strong> {product.exchangePreferences}
                     </p>
                     <button
                       onClick={() => setIsExchangeOpen(true)}
@@ -225,7 +337,7 @@ export default function ProductDetailPage() {
                 </h1>
                 <div className="mt-2.5 flex items-center gap-4 text-xs text-slate-500">
                   <span className="flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5 text-emerald-600" />
+                    <MapPin className="h-3.5 w-3.5 text-indigo-600" />
                     {product.campus}
                   </span>
                   <span className="flex items-center gap-1">
@@ -261,9 +373,9 @@ export default function ProductDetailPage() {
 
                 <div className="border-t border-slate-200/80 pt-2 flex items-center justify-between text-xs text-slate-600">
                   <span className="flex items-center gap-1">
-                    <Lock className="h-3 w-3 text-emerald-600" /> Total Escrow Guarantee:
+                    <Lock className="h-3 w-3 text-indigo-600" /> Total Escrow Guarantee:
                   </span>
-                  <strong className="text-emerald-700 font-bold text-sm">
+                  <strong className="text-indigo-700 font-bold text-sm">
                     ETB {(product.price + escrowFee).toLocaleString()}
                   </strong>
                 </div>
@@ -273,7 +385,7 @@ export default function ProductDetailPage() {
               <div className="space-y-3">
                 <button
                   onClick={() => setIsCheckoutOpen(true)}
-                  className="w-full flex items-center justify-center gap-2 rounded-full bg-emerald-600 py-4 text-sm font-bold text-white shadow-lg shadow-emerald-600/25 hover:bg-emerald-700 transition"
+                  className="w-full flex items-center justify-center gap-2 rounded-full bg-indigo-600 py-4 text-sm font-bold text-white shadow-lg shadow-indigo-600/25 hover:bg-indigo-700 transition"
                 >
                   <ShieldCheck className="h-5 w-5" />
                   Buy with Estud Escrow
@@ -294,12 +406,12 @@ export default function ProductDetailPage() {
                   <img
                     src={product.seller.avatar}
                     alt={product.seller.name}
-                    className="h-12 w-12 rounded-full object-cover ring-2 ring-emerald-500/20"
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-indigo-500/20"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-1.5">
                       <h4 className="text-sm font-bold text-slate-900">{product.seller.name}</h4>
-                      <BadgeCheck className="h-4 w-4 text-emerald-600" />
+                      <BadgeCheck className="h-4 w-4 text-indigo-600" />
                     </div>
                     <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
                       <GraduationCap className="h-3.5 w-3.5 text-slate-400" />

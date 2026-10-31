@@ -11,6 +11,7 @@ import { Star, MapPin, Heart, ShoppingBag } from "lucide-react-native";
 export interface MobileProductItem {
   id: string;
   title: string;
+  category?: string;
   condition: string;
   price: number;
   originalPrice?: number;

@@ -110,6 +110,19 @@ export const SAMPLE_FEATURED_PRODUCTS: DisplayProduct[] = [
     location: "Addis Ababa (6 Kilo)",
     imageUrl: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&auto=format&fit=crop&q=80",
   },
+  {
+    id: "prod-7",
+    title: "Adjustable Dumbbells Set (20KG with Connector Bar)",
+    category: "sports",
+    condition: "Used • Like New",
+    price: 2400,
+    originalPrice: 3200,
+    rating: 4.8,
+    reviewCount: 39,
+    badge: "20% OFF",
+    location: "ASTU (Adama)",
+    imageUrl: "https://images.unsplash.com/photo-1586401100295-7a8096fd231a?w=600&auto=format&fit=crop&q=80",
+  },
 ];
 
 interface FeaturedProductsProps {
@@ -125,6 +138,7 @@ export function FeaturedProducts({
 }: FeaturedProductsProps) {
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
   const [showAll, setShowAll] = useState(false);
+  const [pageIndex, setPageIndex] = useState(0);
   const [checkoutProduct, setCheckoutProduct] = useState<DisplayProduct | null>(null);
 
   const toggleFavorite = (id: string) => {
@@ -155,7 +169,9 @@ export function FeaturedProducts({
     const matchesCategory =
       selectedCategory === "all" ||
       selectedCategory === "more" ||
-      item.category === selectedCategory;
+      (selectedCategory === "deals"
+        ? Boolean(item.originalPrice && item.originalPrice > item.price)
+        : item.category === selectedCategory);
 
     const matchesSearch =
       !searchQuery.trim() ||
@@ -165,7 +181,11 @@ export function FeaturedProducts({
     return matchesCategory && matchesSearch;
   });
 
-  const displayedList = showAll ? filteredProducts : filteredProducts.slice(0, 4);
+  const pageSize = 4;
+  const maxPage = Math.max(0, Math.ceil(filteredProducts.length / pageSize) - 1);
+  const displayedList = showAll
+    ? filteredProducts
+    : filteredProducts.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize);
 
   return (
     <section id="products" className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
@@ -191,6 +211,29 @@ export function FeaturedProducts({
             <span>{showAll ? "Show Less" : "View All Products"}</span>
             <ArrowRight className="h-3.5 w-3.5" />
           </button>
+
+          {!showAll && filteredProducts.length > pageSize && (
+            <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200">
+              <button
+                type="button"
+                onClick={() => setPageIndex((prev) => Math.max(0, prev - 1))}
+                disabled={pageIndex === 0}
+                aria-label="Previous products"
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setPageIndex((prev) => Math.min(maxPage, prev + 1))}
+                disabled={pageIndex >= maxPage}
+                aria-label="Next products"
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

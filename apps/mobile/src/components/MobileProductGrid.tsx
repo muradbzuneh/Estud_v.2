@@ -12,6 +12,7 @@ export const SAMPLE_MOBILE_PRODUCTS: MobileProductItem[] = [
   {
     id: "prod-1",
     title: "Laptop i5 11th Gen",
+    category: "laptops",
     condition: "Used • Like New",
     price: 18000,
     originalPrice: 22000,
@@ -24,6 +25,7 @@ export const SAMPLE_MOBILE_PRODUCTS: MobileProductItem[] = [
   {
     id: "prod-2",
     title: "Wireless Earbuds",
+    category: "phones",
     condition: "New • Sealed",
     price: 2500,
     originalPrice: 3500,
@@ -36,6 +38,7 @@ export const SAMPLE_MOBILE_PRODUCTS: MobileProductItem[] = [
   {
     id: "prod-3",
     title: "Calculus Textbook",
+    category: "books",
     condition: "Used • Good",
     price: 600,
     originalPrice: 900,
@@ -48,6 +51,7 @@ export const SAMPLE_MOBILE_PRODUCTS: MobileProductItem[] = [
   {
     id: "prod-4",
     title: "School Backpack",
+    category: "fashion",
     condition: "New • Waterproof",
     price: 1200,
     originalPrice: 1500,
@@ -56,6 +60,32 @@ export const SAMPLE_MOBILE_PRODUCTS: MobileProductItem[] = [
     badge: "20% OFF",
     location: "Mekelle University",
     imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&auto=format&fit=crop&q=80",
+  },
+  {
+    id: "prod-5",
+    title: "Gym Dumbbells Set (20KG)",
+    category: "sports",
+    condition: "Used • Like New",
+    price: 2100,
+    originalPrice: 2800,
+    rating: 4.8,
+    reviewCount: 35,
+    badge: "Popular",
+    location: "ASTU (Adama)",
+    imageUrl: "https://images.unsplash.com/photo-1586401100295-7a8096fd231a?w=500&auto=format&fit=crop&q=80",
+  },
+  {
+    id: "prod-6",
+    title: "Casio fx-991EX Calculator",
+    category: "laptops",
+    condition: "Used • Like New",
+    price: 2800,
+    originalPrice: 3200,
+    rating: 4.9,
+    reviewCount: 142,
+    badge: "Best Seller",
+    location: "AAU (4 Kilo)",
+    imageUrl: "https://images.unsplash.com/photo-1587145820266-a5951ee6f620?w=500&auto=format&fit=crop&q=80",
   },
 ];
 

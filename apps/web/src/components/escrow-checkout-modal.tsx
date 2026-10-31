@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ShieldCheck,
   CheckCircle2,
@@ -29,6 +30,7 @@ interface EscrowCheckoutModalProps {
 }
 
 export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckoutModalProps) {
+  const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [deliveryMethod, setDeliveryMethod] = useState<"hub" | "runner">("hub");
   const [paymentProvider, setPaymentProvider] = useState<"telebirr" | "cbe" | "awash">("telebirr");
@@ -98,7 +100,11 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
 
             <div className="flex justify-center gap-3">
               <button
-                onClick={onClose}
+                type="button"
+                onClick={() => {
+                  onClose();
+                  router.push("/activity" as any);
+                }}
                 className="rounded-full bg-emerald-600 px-8 py-3 text-sm font-semibold text-white hover:bg-emerald-700 transition-all shadow-md shadow-emerald-500/20"
               >
                 View in My Activity

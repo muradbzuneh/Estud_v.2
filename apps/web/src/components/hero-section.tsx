@@ -15,9 +15,16 @@ import {
   Sparkles,
 } from "lucide-react";
 
-export function HeroSection() {
-  const scrollToProducts = (e: React.MouseEvent) => {
-    e.preventDefault();
+interface HeroSectionProps {
+  onSelectCategory?: (category: string) => void;
+}
+
+export function HeroSection({ onSelectCategory }: HeroSectionProps = {}) {
+  const scrollToProducts = (e?: React.MouseEvent, category?: string) => {
+    if (e) e.preventDefault();
+    if (category && onSelectCategory) {
+      onSelectCategory(category);
+    }
     const el = document.getElementById("products");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
@@ -112,37 +119,49 @@ export function HeroSection() {
             </div>
 
             {/* Floating Badge 1: Top Left - "Great Deals for Students" */}
-            <div className="absolute top-6 -left-2 sm:left-4 z-20 flex items-center gap-2.5 rounded-2xl bg-white/95 backdrop-blur-md px-3.5 py-2.5 shadow-xl border border-slate-100 animate-in fade-in duration-500">
+            <button
+              type="button"
+              onClick={() => scrollToProducts(undefined, "deals")}
+              className="absolute top-6 -left-2 sm:left-4 z-20 flex items-center gap-2.5 rounded-2xl bg-white/95 backdrop-blur-md px-3.5 py-2.5 shadow-xl border border-slate-100 hover:scale-105 hover:border-indigo-300 transition-all cursor-pointer text-left animate-in fade-in duration-500"
+            >
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
                 <ShoppingCart className="h-4 w-4" />
               </div>
-              <div className="text-left">
+              <div>
                 <div className="text-xs font-bold text-slate-900">Great Deals</div>
                 <div className="text-[10px] text-slate-500 font-medium">for Students</div>
               </div>
-            </div>
+            </button>
 
             {/* Floating Badge 2: Top Right - "Buy • Sell Exchange" */}
-            <div className="absolute top-8 -right-2 sm:right-2 z-20 flex items-center gap-2.5 rounded-2xl bg-white/95 backdrop-blur-md px-3.5 py-2.5 shadow-xl border border-slate-100 animate-in fade-in duration-700">
+            <button
+              type="button"
+              onClick={() => scrollToProducts(undefined, "all")}
+              className="absolute top-8 -right-2 sm:right-2 z-20 flex items-center gap-2.5 rounded-2xl bg-white/95 backdrop-blur-md px-3.5 py-2.5 shadow-xl border border-slate-100 hover:scale-105 hover:border-emerald-300 transition-all cursor-pointer text-left animate-in fade-in duration-700"
+            >
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
                 <ArrowLeftRight className="h-4 w-4" />
               </div>
-              <div className="text-left">
+              <div>
                 <div className="text-xs font-bold text-slate-900">Buy &bull; Sell</div>
                 <div className="text-[10px] text-slate-500 font-medium">Safe Exchange</div>
               </div>
-            </div>
+            </button>
 
             {/* Floating Badge 3: Bottom Right - "Books, Electronics and More" */}
-            <div className="absolute bottom-8 -right-2 sm:right-4 z-20 flex items-center gap-2.5 rounded-2xl bg-white/95 backdrop-blur-md px-4 py-3 shadow-xl border border-slate-100 animate-in fade-in duration-900">
+            <button
+              type="button"
+              onClick={() => scrollToProducts(undefined, "books")}
+              className="absolute bottom-8 -right-2 sm:right-4 z-20 flex items-center gap-2.5 rounded-2xl bg-white/95 backdrop-blur-md px-4 py-3 shadow-xl border border-slate-100 hover:scale-105 hover:border-amber-300 transition-all cursor-pointer text-left animate-in fade-in duration-900"
+            >
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
                 <BookOpen className="h-4 w-4" />
               </div>
-              <div className="text-left">
+              <div>
                 <div className="text-xs font-bold text-slate-900">Books & Gadgets</div>
                 <div className="text-[10px] text-slate-500 font-medium">Campus Verified</div>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </div>

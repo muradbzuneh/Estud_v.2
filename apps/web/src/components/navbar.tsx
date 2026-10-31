@@ -21,10 +21,11 @@ import { EstudLogo } from "./estud-logo";
 
 interface NavbarProps {
   onSearch?: (query: string) => void;
+  onSelectCategory?: (category: string) => void;
   wishlistCount?: number;
 }
 
-export function Navbar({ onSearch, wishlistCount = 0 }: NavbarProps) {
+export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: NavbarProps) {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -36,7 +37,18 @@ export function Navbar({ onSearch, wishlistCount = 0 }: NavbarProps) {
     if (onSearch) {
       onSearch(searchQuery);
     }
-    // Also scroll down to products section smoothly
+    const productsSection = document.getElementById("products");
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleCategoryClick = (categoryKey: string) => {
+    setCategoriesOpen(false);
+    setMobileMenuOpen(false);
+    if (onSelectCategory) {
+      onSelectCategory(categoryKey);
+    }
     const productsSection = document.getElementById("products");
     if (productsSection) {
       productsSection.scrollIntoView({ behavior: "smooth" });
@@ -81,48 +93,49 @@ export function Navbar({ onSearch, wishlistCount = 0 }: NavbarProps) {
                 onMouseLeave={() => setCategoriesOpen(false)}
                 className="absolute left-0 top-full mt-3 w-56 rounded-2xl bg-white p-2 shadow-xl border border-slate-100 animate-in fade-in slide-in-from-top-2"
               >
-                <a
-                  href="#products"
-                  onClick={() => setCategoriesOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600"
+                <button
+                  type="button"
+                  onClick={() => handleCategoryClick("laptops")}
+                  className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600 text-left"
                 >
                   <Tag className="h-4 w-4 text-slate-400" />
                   Electronics & Computing
-                </a>
-                <a
-                  href="#products"
-                  onClick={() => setCategoriesOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600"
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCategoryClick("books")}
+                  className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600 text-left"
                 >
                   <Tag className="h-4 w-4 text-slate-400" />
                   Books & Study Materials
-                </a>
-                <a
-                  href="#products"
-                  onClick={() => setCategoriesOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600"
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCategoryClick("phones")}
+                  className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600 text-left"
                 >
                   <Tag className="h-4 w-4 text-slate-400" />
                   Phones & Accessories
-                </a>
-                <a
-                  href="#products"
-                  onClick={() => setCategoriesOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600"
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCategoryClick("fashion")}
+                  className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600 text-left"
                 >
                   <Tag className="h-4 w-4 text-slate-400" />
                   Campus Fashion & Dorm
-                </a>
+                </button>
               </div>
             )}
           </div>
 
-          <a
-            href="#products"
-            className="hover:text-indigo-600 transition"
+          <button
+            type="button"
+            onClick={() => handleCategoryClick("deals")}
+            className="hover:text-indigo-600 transition font-semibold"
           >
             Deals
-          </a>
+          </button>
           <a
             href="#how-it-works"
             className="hover:text-indigo-600 transition"

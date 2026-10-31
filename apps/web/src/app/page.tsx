@@ -26,13 +26,14 @@ export default function HomePage() {
       {/* Modern Responsive Navbar with exact Estud Logo */}
       <Navbar
         onSearch={(q) => setSearchQuery(q)}
+        onSelectCategory={(cat) => setSelectedCategory(cat)}
         wishlistCount={wishlistCount}
       />
 
       {/* Main Content */}
       <main className="flex-1">
         {/* Full Image Background Hero Section matching Mockup */}
-        <HeroSection />
+        <HeroSection onSelectCategory={(cat) => setSelectedCategory(cat)} />
 
         {/* Floating Category Dock with Active Filter State */}
         <CategoryDock
