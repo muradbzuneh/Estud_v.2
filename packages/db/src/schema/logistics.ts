@@ -25,7 +25,7 @@ export const deliveries = pgTable(
     trackingNumber: text("tracking_number").notNull().unique(), // e.g. EST-DEL-2026-0001
     status: deliveryStatusEnum("status").default("SCHEDULED").notNull(),
 
-    assignedRepId: uuid("assigned_rep_id").references(() => users.id, {
+    assignedRepId: text("assigned_rep_id").references(() => users.id, {
       onDelete: "set null",
     }),
 
@@ -72,10 +72,10 @@ export const deliveryAssignments = pgTable(
     deliveryId: uuid("delivery_id")
       .references(() => deliveries.id, { onDelete: "cascade" })
       .notNull(),
-    assignedAgentId: uuid("assigned_agent_id")
+    assignedAgentId: text("assigned_agent_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
-    assignedByAdminId: uuid("assigned_by_admin_id")
+    assignedByAdminId: text("assigned_by_admin_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     status: text("status").default("ASSIGNED").notNull(), // ASSIGNED, ACCEPTED, DECLINED, COMPLETED

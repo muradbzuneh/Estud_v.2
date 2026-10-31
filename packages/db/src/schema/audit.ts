@@ -16,7 +16,7 @@ export const auditLogs = pgTable(
   "audit_logs",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    actorId: uuid("actor_id").references(() => users.id, {
+    actorId: text("actor_id").references(() => users.id, {
       onDelete: "set null",
     }),
     action: text("action").notNull(), // e.g. "VALUATION_APPROVED", "PAYMENT_CONFIRMED", "SELLER_PAYOUT_INITIATED"
@@ -39,7 +39,7 @@ export const notifications = pgTable(
   "notifications",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    userId: uuid("user_id")
+    userId: text("user_id")
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
     title: text("title").notNull(),

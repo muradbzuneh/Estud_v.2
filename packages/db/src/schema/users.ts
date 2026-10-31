@@ -9,7 +9,7 @@ import {
 import { userRoleEnum } from "./enums";
 
 /**
- * 1. Educational Institutions (Universities & Colleges in Ethiopia)
+ * Educational Institutions (Universities & Colleges in Ethiopia)
  */
 export const institutions = pgTable(
   "institutions",
@@ -29,7 +29,7 @@ export const institutions = pgTable(
 );
 
 /**
- * 2. Specific Campuses within an Institution
+ * Specific Campuses within an Institution
  */
 export const campuses = pgTable(
   "campuses",
@@ -49,7 +49,7 @@ export const campuses = pgTable(
 );
 
 /**
- * 3. Physical Locations & Delivery Hubs
+ * Physical Delivery Locations & Hubs
  */
 export const locations = pgTable(
   "locations",
@@ -68,37 +68,107 @@ export const locations = pgTable(
 );
 
 /**
- * 4. User Accounts
+ * Better Auth: User table
  */
 export const users = pgTable(
   "users",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
-    phoneNumber: text("phone_number").notNull().unique(), // +251 9... / +251 7...
-    email: text("email").unique(),
-    passwordHash: text("password_hash").notNull(),
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    name: text("name").notNull(),
+    email: text("email").notNull().unique(),
+    emailVerified: boolean("email_verified").default(false).notNull(),
+    image: text("image"),
+    phoneNumber: text("phone_number").unique(), // Ethiopian phone number
     role: userRoleEnum("role").default("student").notNull(),
     isActive: boolean("is_active").default(true).notNull(),
     isPhoneVerified: boolean("is_phone_verified").default(false).notNull(),
-    isEmailVerified: boolean("is_email_verified").default(false).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
+    index("idx_users_email").on(table.email),
     index("idx_users_phone").on(table.phoneNumber),
     index("idx_users_role").on(table.role),
-    index("idx_users_created_at").on(table.createdAt),
   ]
 );
 
 /**
- * 5. User Profiles
+ * Better Auth: Session table
+ */
+export const sessions = pgTable(
+  "sessions",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    token: text("token").notNull().unique(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("idx_sessions_user_id").on(table.userId),
+    index("idx_sessions_token").on(table.token),
+  ]
+);
+
+/**
+ * Better Auth: Account table (Google OAuth & Credential Provider)
+ */
+export const accounts = pgTable(
+  "accounts",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    accountId: text("account_id").notNull(),
+    providerId: text("provider_id").notNull(), // 'google' or 'credential'
+    accessToken: text("access_token"),
+    refreshToken: text("refresh_token"),
+    idToken: text("id_token"),
+    accessTokenExpiresAt: timestamp("access_token_expires_at", { withTimezone: true }),
+    refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { withTimezone: true }),
+    scope: text("scope"),
+    password: text("password"), // Hashed password for email/password credentials
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("idx_accounts_user_id").on(table.userId),
+    index("idx_accounts_provider").on(table.providerId, table.accountId),
+  ]
+);
+
+/**
+ * Better Auth: Verification table (Email verification & password reset tokens)
+ */
+export const verifications = pgTable(
+  "verifications",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    identifier: text("identifier").notNull(),
+    value: text("value").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("idx_verifications_identifier").on(table.identifier),
+  ]
+);
+
+/**
+ * Student / User Extended Profile
  */
 export const profiles = pgTable(
   "profiles",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    userId: uuid("user_id")
+    userId: text("user_id")
       .references(() => users.id, { onDelete: "cascade" })
       .notNull()
       .unique(),
@@ -125,13 +195,10 @@ export const profiles = pgTable(
   ]
 );
 
-/**
- * 6. Roles & Permissions (Explicit RBAC Table)
- */
 export const permissions = pgTable("permissions", {
   id: uuid("id").defaultRandom().primaryKey(),
   role: userRoleEnum("role").notNull(),
-  permission: text("permission").notNull(), // e.g. "products:approve", "payments:verify", "payouts:issue"
+  permission: text("permission").notNull(),
   description: text("description"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });

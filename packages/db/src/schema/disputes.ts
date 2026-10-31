@@ -23,7 +23,7 @@ export const transactionDisputes = pgTable(
       onDelete: "restrict",
     }),
     disputeNumber: text("dispute_number").notNull().unique(), // e.g. EST-DSP-2026-0001
-    raisedById: uuid("raised_by_id")
+    raisedById: text("raised_by_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     reason: disputeReasonEnum("reason").notNull(),
@@ -31,7 +31,7 @@ export const transactionDisputes = pgTable(
     status: disputeStatusEnum("status").default("OPEN").notNull(),
 
     adminResolutionSummary: text("admin_resolution_summary"),
-    resolvedByAdminId: uuid("resolved_by_admin_id").references(
+    resolvedByAdminId: text("resolved_by_admin_id").references(
       () => users.id,
       { onDelete: "set null" }
     ),
@@ -58,7 +58,7 @@ export const disputeEvidence = pgTable(
     disputeId: uuid("dispute_id")
       .references(() => transactionDisputes.id, { onDelete: "cascade" })
       .notNull(),
-    uploadedById: uuid("uploaded_by_id")
+    uploadedById: text("uploaded_by_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     fileUrl: text("file_url").notNull(),

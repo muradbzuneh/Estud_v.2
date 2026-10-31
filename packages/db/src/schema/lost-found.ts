@@ -21,7 +21,7 @@ export const lostFoundReports = pgTable(
   {
     id: uuid("id").defaultRandom().primaryKey(),
     reportNumber: text("report_number").notNull().unique(), // e.g. EST-LF-2026-0001
-    reporterId: uuid("reporter_id")
+    reporterId: text("reporter_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     type: lostFoundTypeEnum("type").notNull(), // LOST or FOUND
@@ -81,7 +81,7 @@ export const recoveryClaims = pgTable(
     reportId: uuid("report_id")
       .references(() => lostFoundReports.id, { onDelete: "cascade" })
       .notNull(),
-    claimantId: uuid("claimant_id")
+    claimantId: text("claimant_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
 
@@ -90,7 +90,7 @@ export const recoveryClaims = pgTable(
     proofAttachmentUrl: text("proof_attachment_url"),
 
     status: recoveryClaimStatusEnum("status").default("PENDING").notNull(),
-    reviewedByAdminId: uuid("reviewed_by_admin_id").references(
+    reviewedByAdminId: text("reviewed_by_admin_id").references(
       () => users.id,
       { onDelete: "set null" }
     ),

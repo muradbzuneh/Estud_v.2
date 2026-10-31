@@ -1,17 +1,11 @@
 import { z } from "zod";
-import { router, publicProcedure, protectedProcedure } from "../trpc";
-import {
-  users,
-  profiles,
-  institutions,
-  campuses,
-  eq,
-} from "@estud/db";
+import { router, publicProcedure, protectedProcedure } from "../../core/trpc";
+import { users, profiles, institutions, campuses, eq } from "@estud/db";
 import { TRPCError } from "@trpc/server";
 
-export const usersRouter = router({
+export const authRouter = router({
   /**
-   * Get logged-in user profile
+   * Get logged-in user with their profile and university info
    */
   getMe: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.db.query.users.findFirst({
@@ -35,7 +29,7 @@ export const usersRouter = router({
   }),
 
   /**
-   * Update personal profile
+   * Update student profile
    */
   updateProfile: protectedProcedure
     .input(
@@ -81,17 +75,42 @@ export const usersRouter = router({
     }),
 
   /**
+   * Link or update verified Ethiopian phone number (+251)
+   */
+  updatePhoneNumber: protectedProcedure
+    .input(
+      z.object({
+        phoneNumber: z
+          .string()
+          .regex(/^(\+251|0)?[97]\d{8}$/, "Enter a valid Ethiopian phone number"),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      let phone = input.phoneNumber.replace(/\D/g, "");
+      if (phone.startsWith("0")) phone = `+251${phone.substring(1)}`;
+      else if (phone.startsWith("251")) phone = `+${phone}`;
+      else phone = `+251${phone}`;
+
+      await ctx.db
+        .update(users)
+        .set({ phoneNumber: phone })
+        .where(eq(users.id, ctx.user.id));
+
+      return { phoneNumber: phone };
+    }),
+
+  /**
    * Public reference data: Ethiopian Universities
    */
   listInstitutions: publicProcedure.query(async ({ ctx }) => {
     return ctx.db.query.institutions.findMany({
-      orderBy: (institutions, { asc }) => [asc(institutions.name)],
+      orderBy: (inst, { asc }) => [asc(inst.name)],
       with: { campuses: true },
     });
   }),
 
   /**
-   * Public reference data: Campuses by institution
+   * Public campuses by university
    */
   listCampuses: publicProcedure
     .input(z.object({ institutionId: z.string().uuid() }))

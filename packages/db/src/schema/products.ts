@@ -45,7 +45,7 @@ export const products = pgTable(
   "products",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    sellerId: uuid("seller_id")
+    sellerId: text("seller_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     categoryId: uuid("category_id")
@@ -148,7 +148,7 @@ export const listingSubmissions = pgTable(
     productId: uuid("product_id")
       .references(() => products.id, { onDelete: "cascade" })
       .notNull(),
-    submittedByUserId: uuid("submitted_by_user_id")
+    submittedByUserId: text("submitted_by_user_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     submissionNotes: text("submission_notes"),
@@ -171,7 +171,7 @@ export const valuations = pgTable(
     productId: uuid("product_id")
       .references(() => products.id, { onDelete: "cascade" })
       .notNull(),
-    adminId: uuid("admin_id")
+    adminId: text("admin_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     proposedPrice: numeric("proposed_price", { precision: 12, scale: 2 }).notNull(),
@@ -205,7 +205,7 @@ export const listingApprovals = pgTable(
     productId: uuid("product_id")
       .references(() => products.id, { onDelete: "cascade" })
       .notNull(),
-    adminId: uuid("admin_id")
+    adminId: text("admin_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     status: listingApprovalStatusEnum("status").notNull(),
@@ -254,7 +254,7 @@ export const productReports = pgTable(
     productId: uuid("product_id")
       .references(() => products.id, { onDelete: "cascade" })
       .notNull(),
-    reporterId: uuid("reporter_id")
+    reporterId: text("reporter_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     reason: text("reason").notNull(),

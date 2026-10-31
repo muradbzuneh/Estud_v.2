@@ -20,10 +20,10 @@ export const orders = pgTable(
   {
     id: uuid("id").defaultRandom().primaryKey(),
     orderNumber: text("order_number").notNull().unique(), // e.g. EST-ORD-2026-0001
-    buyerId: uuid("buyer_id")
+    buyerId: text("buyer_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
-    sellerId: uuid("seller_id")
+    sellerId: text("seller_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     productId: uuid("product_id")
@@ -104,7 +104,7 @@ export const orderTimeline = pgTable(
       .references(() => orders.id, { onDelete: "cascade" })
       .notNull(),
     status: orderStatusEnum("status").notNull(),
-    actorId: uuid("actor_id").references(() => users.id, {
+    actorId: text("actor_id").references(() => users.id, {
       onDelete: "set null",
     }),
     notes: text("notes"),
@@ -123,10 +123,10 @@ export const exchanges = pgTable(
   {
     id: uuid("id").defaultRandom().primaryKey(),
     exchangeNumber: text("exchange_number").notNull().unique(), // e.g. EST-EX-2026-0001
-    requesterId: uuid("requester_id")
+    requesterId: text("requester_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
-    receiverId: uuid("receiver_id")
+    receiverId: text("receiver_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     offeredProductId: uuid("offered_product_id")
@@ -149,7 +149,7 @@ export const exchanges = pgTable(
     cashDifference: numeric("cash_difference", { precision: 12, scale: 2 })
       .default("0.00")
       .notNull(),
-    cashPayerId: uuid("cash_payer_id").references(() => users.id, {
+    cashPayerId: text("cash_payer_id").references(() => users.id, {
       onDelete: "set null",
     }),
     estudFee: numeric("estud_fee", { precision: 12, scale: 2 })

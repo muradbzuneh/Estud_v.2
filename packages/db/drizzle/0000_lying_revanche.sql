@@ -16,6 +16,22 @@ CREATE TYPE "public"."product_status" AS ENUM('DRAFT', 'PENDING_VALUATION', 'VAL
 CREATE TYPE "public"."recovery_claim_status" AS ENUM('PENDING', 'ACCEPTED', 'REJECTED');--> statement-breakpoint
 CREATE TYPE "public"."refund_status" AS ENUM('INITIATED', 'COMPLETED', 'REJECTED');--> statement-breakpoint
 CREATE TYPE "public"."user_role" AS ENUM('guest', 'student', 'admin', 'campus_rep');--> statement-breakpoint
+CREATE TABLE "accounts" (
+	"id" text PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"account_id" text NOT NULL,
+	"provider_id" text NOT NULL,
+	"access_token" text,
+	"refresh_token" text,
+	"id_token" text,
+	"access_token_expires_at" timestamp with time zone,
+	"refresh_token_expires_at" timestamp with time zone,
+	"scope" text,
+	"password" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "campuses" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"institution_id" uuid NOT NULL,
@@ -56,7 +72,7 @@ CREATE TABLE "permissions" (
 --> statement-breakpoint
 CREATE TABLE "profiles" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid NOT NULL,
+	"user_id" text NOT NULL,
 	"full_name" text NOT NULL,
 	"avatar_url" text,
 	"bio" text,
@@ -69,19 +85,41 @@ CREATE TABLE "profiles" (
 	CONSTRAINT "profiles_user_id_unique" UNIQUE("user_id")
 );
 --> statement-breakpoint
+CREATE TABLE "sessions" (
+	"id" text PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"token" text NOT NULL,
+	"expires_at" timestamp with time zone NOT NULL,
+	"ip_address" text,
+	"user_agent" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "sessions_token_unique" UNIQUE("token")
+);
+--> statement-breakpoint
 CREATE TABLE "users" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"phone_number" text NOT NULL,
-	"email" text,
-	"password_hash" text NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	"email" text NOT NULL,
+	"email_verified" boolean DEFAULT false NOT NULL,
+	"image" text,
+	"phone_number" text,
 	"role" "user_role" DEFAULT 'student' NOT NULL,
 	"is_active" boolean DEFAULT true NOT NULL,
 	"is_phone_verified" boolean DEFAULT false NOT NULL,
-	"is_email_verified" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "users_phone_number_unique" UNIQUE("phone_number"),
-	CONSTRAINT "users_email_unique" UNIQUE("email")
+	CONSTRAINT "users_email_unique" UNIQUE("email"),
+	CONSTRAINT "users_phone_number_unique" UNIQUE("phone_number")
+);
+--> statement-breakpoint
+CREATE TABLE "verifications" (
+	"id" text PRIMARY KEY NOT NULL,
+	"identifier" text NOT NULL,
+	"value" text NOT NULL,
+	"expires_at" timestamp with time zone NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "categories" (
@@ -115,7 +153,7 @@ CREATE TABLE "educational_materials" (
 CREATE TABLE "listing_approvals" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"product_id" uuid NOT NULL,
-	"admin_id" uuid NOT NULL,
+	"admin_id" text NOT NULL,
 	"status" "listing_approval_status" NOT NULL,
 	"feedback_message" text,
 	"approved_at" timestamp with time zone DEFAULT now() NOT NULL
@@ -124,7 +162,7 @@ CREATE TABLE "listing_approvals" (
 CREATE TABLE "listing_submissions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"product_id" uuid NOT NULL,
-	"submitted_by_user_id" uuid NOT NULL,
+	"submitted_by_user_id" text NOT NULL,
 	"submission_notes" text,
 	"status" "listing_approval_status" DEFAULT 'PENDING' NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
@@ -150,7 +188,7 @@ CREATE TABLE "product_images" (
 CREATE TABLE "product_reports" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"product_id" uuid NOT NULL,
-	"reporter_id" uuid NOT NULL,
+	"reporter_id" text NOT NULL,
 	"reason" text NOT NULL,
 	"details" text,
 	"is_resolved" boolean DEFAULT false NOT NULL,
@@ -159,7 +197,7 @@ CREATE TABLE "product_reports" (
 --> statement-breakpoint
 CREATE TABLE "products" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"seller_id" uuid NOT NULL,
+	"seller_id" text NOT NULL,
 	"category_id" uuid NOT NULL,
 	"title" text NOT NULL,
 	"description" text NOT NULL,
@@ -183,7 +221,7 @@ CREATE TABLE "products" (
 CREATE TABLE "valuations" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"product_id" uuid NOT NULL,
-	"admin_id" uuid NOT NULL,
+	"admin_id" text NOT NULL,
 	"proposed_price" numeric(12, 2) NOT NULL,
 	"approved_value" numeric(12, 2) NOT NULL,
 	"commission_rate" numeric(5, 4) DEFAULT '0.0500' NOT NULL,
@@ -207,15 +245,15 @@ CREATE TABLE "exchange_items" (
 CREATE TABLE "exchanges" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"exchange_number" text NOT NULL,
-	"requester_id" uuid NOT NULL,
-	"receiver_id" uuid NOT NULL,
+	"requester_id" text NOT NULL,
+	"receiver_id" text NOT NULL,
 	"offered_product_id" uuid NOT NULL,
 	"requested_product_id" uuid NOT NULL,
 	"status" "exchange_status" DEFAULT 'PROPOSED' NOT NULL,
 	"offered_item_approved_value" numeric(12, 2),
 	"requested_item_approved_value" numeric(12, 2),
 	"cash_difference" numeric(12, 2) DEFAULT '0.00' NOT NULL,
-	"cash_payer_id" uuid,
+	"cash_payer_id" text,
 	"estud_fee" numeric(12, 2) DEFAULT '0.00' NOT NULL,
 	"requester_handover_confirmed" boolean DEFAULT false NOT NULL,
 	"receiver_handover_confirmed" boolean DEFAULT false NOT NULL,
@@ -240,7 +278,7 @@ CREATE TABLE "order_timeline" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"order_id" uuid NOT NULL,
 	"status" "order_status" NOT NULL,
-	"actor_id" uuid,
+	"actor_id" text,
 	"notes" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -248,8 +286,8 @@ CREATE TABLE "order_timeline" (
 CREATE TABLE "orders" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"order_number" text NOT NULL,
-	"buyer_id" uuid NOT NULL,
-	"seller_id" uuid NOT NULL,
+	"buyer_id" text NOT NULL,
+	"seller_id" text NOT NULL,
 	"product_id" uuid NOT NULL,
 	"status" "order_status" DEFAULT 'REQUESTED' NOT NULL,
 	"item_value" numeric(12, 2) NOT NULL,
@@ -282,13 +320,13 @@ CREATE TABLE "commission_records" (
 CREATE TABLE "payment_evidence" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"payment_id" uuid NOT NULL,
-	"uploader_id" uuid NOT NULL,
+	"uploader_id" text NOT NULL,
 	"bank_transaction_reference" text NOT NULL,
 	"sender_account_or_phone" text,
 	"screenshot_url" text NOT NULL,
 	"notes" text,
 	"verification_status" "evidence_verification_status" DEFAULT 'PENDING' NOT NULL,
-	"verified_by_admin_id" uuid,
+	"verified_by_admin_id" text,
 	"verified_at" timestamp with time zone,
 	"rejection_reason" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
@@ -303,7 +341,7 @@ CREATE TABLE "payments" (
 	"channel" "payment_channel" NOT NULL,
 	"status" "payment_status" DEFAULT 'PENDING' NOT NULL,
 	"receiving_account_number" text NOT NULL,
-	"confirmed_by_admin_id" uuid,
+	"confirmed_by_admin_id" text,
 	"confirmed_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -315,14 +353,14 @@ CREATE TABLE "refunds" (
 	"order_id" uuid,
 	"exchange_id" uuid,
 	"payment_id" uuid NOT NULL,
-	"buyer_id" uuid NOT NULL,
+	"buyer_id" text NOT NULL,
 	"amount" numeric(12, 2) NOT NULL,
 	"reason" text NOT NULL,
 	"refund_channel" "payment_channel" NOT NULL,
 	"refund_reference" text,
 	"proof_url" text,
 	"status" "refund_status" DEFAULT 'INITIATED' NOT NULL,
-	"approved_by_admin_id" uuid,
+	"approved_by_admin_id" text,
 	"completed_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -330,14 +368,14 @@ CREATE TABLE "refunds" (
 CREATE TABLE "seller_payouts" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"order_id" uuid NOT NULL,
-	"seller_id" uuid NOT NULL,
+	"seller_id" text NOT NULL,
 	"payout_reference" text NOT NULL,
 	"payable_amount" numeric(12, 2) NOT NULL,
 	"payout_channel" "payment_channel" NOT NULL,
 	"seller_account_number" text NOT NULL,
 	"seller_account_name" text NOT NULL,
 	"status" "payout_status" DEFAULT 'PENDING' NOT NULL,
-	"processed_by_admin_id" uuid,
+	"processed_by_admin_id" text,
 	"payout_proof_url" text,
 	"notes" text,
 	"processed_at" timestamp with time zone,
@@ -352,7 +390,7 @@ CREATE TABLE "deliveries" (
 	"exchange_id" uuid,
 	"tracking_number" text NOT NULL,
 	"status" "delivery_status" DEFAULT 'SCHEDULED' NOT NULL,
-	"assigned_rep_id" uuid,
+	"assigned_rep_id" text,
 	"pickup_location_id" uuid,
 	"pickup_campus_id" uuid,
 	"dropoff_location_id" uuid,
@@ -371,8 +409,8 @@ CREATE TABLE "deliveries" (
 CREATE TABLE "delivery_assignments" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"delivery_id" uuid NOT NULL,
-	"assigned_agent_id" uuid NOT NULL,
-	"assigned_by_admin_id" uuid NOT NULL,
+	"assigned_agent_id" text NOT NULL,
+	"assigned_by_admin_id" text NOT NULL,
 	"status" text DEFAULT 'ASSIGNED' NOT NULL,
 	"instructions" text,
 	"assigned_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -382,7 +420,7 @@ CREATE TABLE "delivery_assignments" (
 CREATE TABLE "dispute_evidence" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"dispute_id" uuid NOT NULL,
-	"uploaded_by_id" uuid NOT NULL,
+	"uploaded_by_id" text NOT NULL,
 	"file_url" text NOT NULL,
 	"notes" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
@@ -393,12 +431,12 @@ CREATE TABLE "transaction_disputes" (
 	"order_id" uuid,
 	"exchange_id" uuid,
 	"dispute_number" text NOT NULL,
-	"raised_by_id" uuid NOT NULL,
+	"raised_by_id" text NOT NULL,
 	"reason" "dispute_reason" NOT NULL,
 	"description" text NOT NULL,
 	"status" "dispute_status" DEFAULT 'OPEN' NOT NULL,
 	"admin_resolution_summary" text,
-	"resolved_by_admin_id" uuid,
+	"resolved_by_admin_id" text,
 	"resolved_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -415,7 +453,7 @@ CREATE TABLE "lost_found_images" (
 CREATE TABLE "lost_found_reports" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"report_number" text NOT NULL,
-	"reporter_id" uuid NOT NULL,
+	"reporter_id" text NOT NULL,
 	"type" "lost_found_type" NOT NULL,
 	"title" text NOT NULL,
 	"description" text NOT NULL,
@@ -433,11 +471,11 @@ CREATE TABLE "lost_found_reports" (
 CREATE TABLE "recovery_claims" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"report_id" uuid NOT NULL,
-	"claimant_id" uuid NOT NULL,
+	"claimant_id" text NOT NULL,
 	"private_proof_description" text NOT NULL,
 	"proof_attachment_url" text,
 	"status" "recovery_claim_status" DEFAULT 'PENDING' NOT NULL,
-	"reviewed_by_admin_id" uuid,
+	"reviewed_by_admin_id" text,
 	"review_notes" text,
 	"reviewed_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
@@ -445,7 +483,7 @@ CREATE TABLE "recovery_claims" (
 --> statement-breakpoint
 CREATE TABLE "audit_logs" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"actor_id" uuid,
+	"actor_id" text,
 	"action" text NOT NULL,
 	"target_type" text NOT NULL,
 	"target_id" text NOT NULL,
@@ -455,7 +493,7 @@ CREATE TABLE "audit_logs" (
 --> statement-breakpoint
 CREATE TABLE "notifications" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid NOT NULL,
+	"user_id" text NOT NULL,
 	"title" text NOT NULL,
 	"body" text NOT NULL,
 	"type" text NOT NULL,
@@ -464,11 +502,13 @@ CREATE TABLE "notifications" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "campuses" ADD CONSTRAINT "campuses_institution_id_institutions_id_fk" FOREIGN KEY ("institution_id") REFERENCES "public"."institutions"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "profiles" ADD CONSTRAINT "profiles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "profiles" ADD CONSTRAINT "profiles_institution_id_institutions_id_fk" FOREIGN KEY ("institution_id") REFERENCES "public"."institutions"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "profiles" ADD CONSTRAINT "profiles_campus_id_campuses_id_fk" FOREIGN KEY ("campus_id") REFERENCES "public"."campuses"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "profiles" ADD CONSTRAINT "profiles_default_location_id_locations_id_fk" FOREIGN KEY ("default_location_id") REFERENCES "public"."locations"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "educational_materials" ADD CONSTRAINT "educational_materials_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "listing_approvals" ADD CONSTRAINT "listing_approvals_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "listing_approvals" ADD CONSTRAINT "listing_approvals_admin_id_users_id_fk" FOREIGN KEY ("admin_id") REFERENCES "public"."users"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
@@ -541,15 +581,20 @@ ALTER TABLE "recovery_claims" ADD CONSTRAINT "recovery_claims_claimant_id_users_
 ALTER TABLE "recovery_claims" ADD CONSTRAINT "recovery_claims_reviewed_by_admin_id_users_id_fk" FOREIGN KEY ("reviewed_by_admin_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_actor_id_users_id_fk" FOREIGN KEY ("actor_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "notifications" ADD CONSTRAINT "notifications_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "idx_accounts_user_id" ON "accounts" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "idx_accounts_provider" ON "accounts" USING btree ("provider_id","account_id");--> statement-breakpoint
 CREATE INDEX "idx_campuses_institution_id" ON "campuses" USING btree ("institution_id");--> statement-breakpoint
 CREATE INDEX "idx_institutions_city" ON "institutions" USING btree ("city");--> statement-breakpoint
 CREATE INDEX "idx_institutions_short_code" ON "institutions" USING btree ("short_code");--> statement-breakpoint
 CREATE INDEX "idx_locations_city_subcity" ON "locations" USING btree ("city","subcity");--> statement-breakpoint
 CREATE INDEX "idx_profiles_user_id" ON "profiles" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "idx_profiles_institution_campus" ON "profiles" USING btree ("institution_id","campus_id");--> statement-breakpoint
+CREATE INDEX "idx_sessions_user_id" ON "sessions" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "idx_sessions_token" ON "sessions" USING btree ("token");--> statement-breakpoint
+CREATE INDEX "idx_users_email" ON "users" USING btree ("email");--> statement-breakpoint
 CREATE INDEX "idx_users_phone" ON "users" USING btree ("phone_number");--> statement-breakpoint
 CREATE INDEX "idx_users_role" ON "users" USING btree ("role");--> statement-breakpoint
-CREATE INDEX "idx_users_created_at" ON "users" USING btree ("created_at");--> statement-breakpoint
+CREATE INDEX "idx_verifications_identifier" ON "verifications" USING btree ("identifier");--> statement-breakpoint
 CREATE INDEX "idx_categories_slug" ON "categories" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "idx_categories_parent_id" ON "categories" USING btree ("parent_id");--> statement-breakpoint
 CREATE INDEX "idx_edu_materials_field" ON "educational_materials" USING btree ("field_of_study");--> statement-breakpoint

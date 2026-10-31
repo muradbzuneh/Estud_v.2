@@ -36,7 +36,7 @@ export const payments = pgTable(
     status: paymentStatusEnum("status").default("PENDING").notNull(),
     receivingAccountNumber: text("receiving_account_number").notNull(), // Official Estud Bank/Telebirr Account
 
-    confirmedByAdminId: uuid("confirmed_by_admin_id").references(
+    confirmedByAdminId: text("confirmed_by_admin_id").references(
       () => users.id,
       { onDelete: "set null" }
     ),
@@ -63,7 +63,7 @@ export const paymentEvidence = pgTable(
     paymentId: uuid("payment_id")
       .references(() => payments.id, { onDelete: "cascade" })
       .notNull(),
-    uploaderId: uuid("uploader_id")
+    uploaderId: text("uploader_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     bankTransactionReference: text("bank_transaction_reference").notNull(), // SMS txn ID or CBE reference
@@ -74,7 +74,7 @@ export const paymentEvidence = pgTable(
     verificationStatus: evidenceVerificationStatusEnum("verification_status")
       .default("PENDING")
       .notNull(),
-    verifiedByAdminId: uuid("verified_by_admin_id").references(
+    verifiedByAdminId: text("verified_by_admin_id").references(
       () => users.id,
       { onDelete: "set null" }
     ),
@@ -134,7 +134,7 @@ export const sellerPayouts = pgTable(
       .references(() => orders.id, { onDelete: "restrict" })
       .notNull()
       .unique(),
-    sellerId: uuid("seller_id")
+    sellerId: text("seller_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     payoutReference: text("payout_reference").notNull().unique(), // EST-PO-2026-0001
@@ -147,7 +147,7 @@ export const sellerPayouts = pgTable(
     sellerAccountName: text("seller_account_name").notNull(),
     status: payoutStatusEnum("status").default("PENDING").notNull(),
 
-    processedByAdminId: uuid("processed_by_admin_id").references(
+    processedByAdminId: text("processed_by_admin_id").references(
       () => users.id,
       { onDelete: "set null" }
     ),
@@ -179,7 +179,7 @@ export const refunds = pgTable(
     paymentId: uuid("payment_id")
       .references(() => payments.id, { onDelete: "restrict" })
       .notNull(),
-    buyerId: uuid("buyer_id")
+    buyerId: text("buyer_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
@@ -188,7 +188,7 @@ export const refunds = pgTable(
     refundReference: text("refund_reference"),
     proofUrl: text("proof_url"),
     status: refundStatusEnum("status").default("INITIATED").notNull(),
-    approvedByAdminId: uuid("approved_by_admin_id").references(
+    approvedByAdminId: text("approved_by_admin_id").references(
       () => users.id,
       { onDelete: "set null" }
     ),

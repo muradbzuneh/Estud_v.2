@@ -1,6 +1,9 @@
 import { relations } from "drizzle-orm";
 import {
   users,
+  sessions,
+  accounts,
+  verifications,
   profiles,
   institutions,
   campuses,
@@ -47,6 +50,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     fields: [users.id],
     references: [profiles.userId],
   }),
+  sessions: many(sessions),
+  accounts: many(accounts),
   products: many(products),
   buyerOrders: many(orders, { relationName: "buyer_orders" }),
   sellerOrders: many(orders, { relationName: "seller_orders" }),
@@ -75,6 +80,20 @@ export const profilesRelations = relations(profiles, ({ one }) => ({
   defaultLocation: one(locations, {
     fields: [profiles.defaultLocationId],
     references: [locations.id],
+  }),
+}));
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
   }),
 }));
 

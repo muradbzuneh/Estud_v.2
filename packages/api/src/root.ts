@@ -1,14 +1,15 @@
-import { router } from "./trpc";
-import { productsRouter } from "./routers/products";
-import { ordersRouter } from "./routers/orders";
-import { financeRouter } from "./routers/finance";
-import { exchangesRouter } from "./routers/exchanges";
-import { logisticsRouter } from "./routers/logistics";
-import { disputesRouter } from "./routers/disputes";
-import { lostFoundRouter } from "./routers/lost-found";
-import { usersRouter } from "./routers/users";
+import { router } from "./core/trpc";
+import { authRouter } from "./modules/auth/auth.router";
+import { productsRouter } from "./modules/products/products.router";
+import { ordersRouter } from "./modules/orders/orders.router";
+import { financeRouter } from "./modules/finance/finance.router";
+import { exchangesRouter } from "./modules/exchanges/exchanges.router";
+import { logisticsRouter } from "./modules/logistics/logistics.router";
+import { disputesRouter } from "./modules/disputes/disputes.router";
+import { lostFoundRouter } from "./modules/lost-found/lost-found.router";
 
 export const appRouter = router({
+  auth: authRouter,
   products: productsRouter,
   orders: ordersRouter,
   finance: financeRouter,
@@ -16,7 +17,6 @@ export const appRouter = router({
   logistics: logisticsRouter,
   disputes: disputesRouter,
   lostFound: lostFoundRouter,
-  users: usersRouter,
 });
 
 export type AppRouter = typeof appRouter;
