@@ -1,6 +1,7 @@
 {
   "name": "estud-monorepo",
   "private": true,
+  "packageManager": "bun@1.4.4",
   "workspaces": [
     "apps/*",
     "packages/*"
