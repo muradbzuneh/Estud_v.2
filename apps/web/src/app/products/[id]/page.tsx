@@ -23,12 +23,14 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ProductGallery } from "@/components/product-gallery";
 import { EscrowCheckoutModal } from "@/components/escrow-checkout-modal";
+import { ExchangeProposalModal } from "@/components/exchange-proposal-modal";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const productId = params?.id as string;
 
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isExchangeOpen, setIsExchangeOpen] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [activeTab, setActiveTab] = useState<"specs" | "inspection" | "seller">("specs");
 
@@ -176,7 +178,10 @@ export default function ProductDetailPage() {
                     <p>
                       <strong>Open for Item Exchange:</strong> Yes, seller is willing to trade for an <span className="font-semibold text-slate-900">iPad (9th/10th Gen)</span> or <span className="font-semibold text-slate-900">MacBook Air M1</span> with appropriate cash balance adjustment.
                     </p>
-                    <button className="flex items-center gap-2 rounded-full border border-emerald-600 text-emerald-700 px-4 py-2 font-semibold hover:bg-emerald-50 transition">
+                    <button
+                      onClick={() => setIsExchangeOpen(true)}
+                      className="flex items-center gap-2 rounded-full border border-indigo-600 text-indigo-700 px-4 py-2 font-semibold hover:bg-indigo-50 transition"
+                    >
                       <ArrowLeftRight className="h-3.5 w-3.5" /> Submit Exchange Proposal
                     </button>
                   </div>
@@ -274,7 +279,10 @@ export default function ProductDetailPage() {
                   Buy with Estud Escrow
                 </button>
 
-                <button className="w-full flex items-center justify-center gap-2 rounded-full border-2 border-slate-200 bg-white py-3 text-sm font-semibold text-slate-800 hover:border-emerald-600 hover:text-emerald-700 transition">
+                <button
+                  onClick={() => setIsExchangeOpen(true)}
+                  className="w-full flex items-center justify-center gap-2 rounded-full border-2 border-slate-200 bg-white py-3 text-sm font-semibold text-slate-800 hover:border-indigo-600 hover:text-indigo-700 transition"
+                >
                   <ArrowLeftRight className="h-4 w-4" />
                   Propose Exchange Offer
                 </button>
@@ -319,6 +327,19 @@ export default function ProductDetailPage() {
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
         product={{
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          campus: product.campus,
+          sellerName: product.seller.name,
+        }}
+      />
+
+      {/* Exchange Proposal Modal */}
+      <ExchangeProposalModal
+        isOpen={isExchangeOpen}
+        onClose={() => setIsExchangeOpen(false)}
+        targetProduct={{
           id: product.id,
           title: product.title,
           price: product.price,

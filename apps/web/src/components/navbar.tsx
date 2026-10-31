@@ -130,6 +130,12 @@ export function Navbar({ onSearch, wishlistCount = 0 }: NavbarProps) {
             How it Works
           </a>
           <Link
+            href={"/activity" as any}
+            className="hover:text-indigo-600 transition"
+          >
+            Activity
+          </Link>
+          <Link
             href="/sell"
             className="flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-800 px-3 py-1 font-bold hover:bg-emerald-100 transition"
           >
@@ -266,6 +272,13 @@ export function Navbar({ onSearch, wishlistCount = 0 }: NavbarProps) {
             >
               Explore Products
             </a>
+            <Link
+              href={"/activity" as any}
+              onClick={() => setMobileMenuOpen(false)}
+              className="rounded-xl px-3 py-2 hover:bg-slate-50 text-indigo-600"
+            >
+              My Escrow Activity
+            </Link>
             <Link
               href="/sell"
               onClick={() => setMobileMenuOpen(false)}
