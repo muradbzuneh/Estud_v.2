@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Menu, Bell } from "lucide-react-native";
+import { EstudLogo } from "./EstudLogo";
 
 interface MobileHeaderProps {
   campusName?: string;
@@ -21,7 +22,7 @@ export function MobileHeader({
 }: MobileHeaderProps) {
   return (
     <View style={styles.container}>
-      {/* Left: Hamburger Menu & Estud Logo */}
+      {/* Left: Hamburger Menu & Official Estud Ribbon Logo */}
       <View style={styles.leftSection}>
         <TouchableOpacity
           onPress={onMenuPress}
@@ -31,13 +32,7 @@ export function MobileHeader({
           <Menu size={22} color="#1E293B" />
         </TouchableOpacity>
 
-        <View style={styles.logoRow}>
-          {/* Estud Dual-tone Cap Emblem */}
-          <View style={styles.logoBadge}>
-            <View style={styles.logoDiamond} />
-          </View>
-          <Text style={styles.brandTitle}>Estud</Text>
-        </View>
+        <EstudLogo size={28} showText={true} />
       </View>
 
       {/* Right: Notification Bell & Profile Avatar */}
