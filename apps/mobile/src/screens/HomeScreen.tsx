@@ -4,9 +4,9 @@ import {
   ScrollView,
   StyleSheet,
   SafeAreaView,
-  StatusBar,
   Alert,
 } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { MobileHeader } from "../components/MobileHeader";
 import { MobileHeroCard } from "../components/MobileHeroCard";
 import { MobileSearchBar } from "../components/MobileSearchBar";
@@ -48,7 +48,7 @@ export function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      <StatusBar style="dark" />
 
       {/* Top Mobile Header */}
       <MobileHeader
