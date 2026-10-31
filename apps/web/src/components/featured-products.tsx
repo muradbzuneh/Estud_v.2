@@ -153,7 +153,7 @@ export function FeaturedProducts() {
             className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-white transition duration-200 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-950/5"
           >
             {/* Image & Badges */}
-            <div className="relative aspect-square w-full overflow-hidden bg-slate-100">
+            <Link href={`/products/${item.id}`} className="relative aspect-square w-full overflow-hidden bg-slate-100 block">
               <img
                 src={item.imageUrl}
                 alt={item.title}
@@ -170,21 +170,21 @@ export function FeaturedProducts() {
                   {item.badge}
                 </div>
               )}
+            </Link>
 
-              {/* Favorite Heart Button */}
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  toggleFavorite(item.id);
-                }}
-                aria-label="Save to favorites"
-                className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur shadow-sm transition ${
-                  favorites[item.id] ? "text-rose-500" : "text-slate-400 hover:text-slate-700"
-                }`}
-              >
-                <Heart className={`h-4 w-4 ${favorites[item.id] ? "fill-rose-500" : ""}`} />
-              </button>
-            </div>
+            {/* Favorite Heart Button */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                toggleFavorite(item.id);
+              }}
+              aria-label="Save to favorites"
+              className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur shadow-sm transition z-10 ${
+                favorites[item.id] ? "text-rose-500" : "text-slate-400 hover:text-slate-700"
+              }`}
+            >
+              <Heart className={`h-4 w-4 ${favorites[item.id] ? "fill-rose-500" : ""}`} />
+            </button>
 
             {/* Content */}
             <div className="flex flex-1 flex-col p-4">
@@ -194,9 +194,9 @@ export function FeaturedProducts() {
               </div>
 
               {/* Title */}
-              <h3 className="mt-1 line-clamp-2 text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition">
+              <Link href={`/products/${item.id}`} className="mt-1 line-clamp-2 text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition">
                 {item.title}
-              </h3>
+              </Link>
 
               {/* Rating */}
               <div className="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
