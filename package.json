@@ -9,6 +9,9 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "web": "bun --cwd apps/web dev",
+    "mobile": "bun --cwd apps/mobile expo start",
+    "mobile:tunnel": "bun --cwd apps/mobile expo start --tunnel",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "db:generate": "bun --filter @estud/db db:generate",
