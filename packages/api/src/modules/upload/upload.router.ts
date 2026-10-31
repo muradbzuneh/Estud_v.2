@@ -12,7 +12,7 @@ export const uploadRouter = router({
         folder: z.enum(["products", "evidence", "avatars", "lost-found"]).default("products"),
       })
     )
-    .query(({ input }) => {
+    .mutation(({ input }) => {
       return generateUploadSignature(input.folder);
     }),
 });
