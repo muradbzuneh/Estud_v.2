@@ -1,10 +1,10 @@
-import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-
-/**
- * Initial connection verification table
- */
-export const systemHealthChecks = pgTable("system_health_checks", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  status: text("status").notNull(),
-  checkedAt: timestamp("checked_at", { withTimezone: true }).defaultNow().notNull(),
-});
+export * from "./enums";
+export * from "./users";
+export * from "./products";
+export * from "./orders";
+export * from "./finance";
+export * from "./logistics";
+export * from "./disputes";
+export * from "./lost-found";
+export * from "./audit";
+export * from "./relations";

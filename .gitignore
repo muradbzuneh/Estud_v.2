@@ -24,3 +24,7 @@ yarn-debug.log*
 # System
 .DS_Store
 Thumbs.db
+
+# Documentation / Guide markdown files generated for prompts
+docs/
+

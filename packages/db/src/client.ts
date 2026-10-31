@@ -1,7 +1,7 @@
 import { neon, Pool } from "@neondatabase/serverless";
 import { drizzle as drizzleHttp } from "drizzle-orm/neon-http";
 import { drizzle as drizzleServerless } from "drizzle-orm/neon-serverless";
-import * as schema from "./schema/index.js";
+import * as schema from "./schema/index";
 
 /**
  * HTTP Client: Best for serverless / edge API routes and fast queries
