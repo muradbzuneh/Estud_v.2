@@ -1,0 +1,22 @@
+{
+  "name": "estud-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "db:generate": "bun --filter @estud/db db:generate",
+    "db:migrate": "bun --filter @estud/db db:migrate",
+    "db:push": "bun --filter @estud/db db:push",
+    "db:studio": "bun --filter @estud/db db:studio"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.4",
+    "typescript": "^5.8.2"
+  }
+}
