@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TopAnnouncementBanner } from "@/components/top-announcement-banner";
 import { Navbar } from "@/components/navbar";
 import { HeroSection } from "@/components/hero-section";
@@ -14,12 +14,25 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [wishlistCount, setWishlistCount] = useState(0);
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("estud_favorites");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const count = Object.values(parsed).filter(Boolean).length;
+        setWishlistCount(count);
+      }
+    } catch {
+      // Ignore localStorage read error
+    }
+  }, []);
+
   const handleWishlistToggle = (_id: string, isSaved: boolean) => {
     setWishlistCount((prev) => (isSaved ? prev + 1 : Math.max(0, prev - 1)));
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC]">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#0B0F19] transition-colors duration-200">
       {/* Top Banner (Auto-dismisses smoothly after 5 seconds) */}
       <TopAnnouncementBanner autoHideDuration={5000} />
 

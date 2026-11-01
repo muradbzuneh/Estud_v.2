@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { ShieldCheck, X, Sparkles, CheckCircle2 } from "lucide-react";
+import { useLanguage } from "./language-context";
 
 interface TopAnnouncementBannerProps {
   autoHideDuration?: number; // duration in ms, default 5000 (5 seconds)
@@ -10,6 +11,7 @@ interface TopAnnouncementBannerProps {
 export function TopAnnouncementBanner({
   autoHideDuration = 5000,
 }: TopAnnouncementBannerProps) {
+  const { t } = useLanguage();
   const [isVisible, setIsVisible] = useState(true);
   const [isDismissed, setIsDismissed] = useState(false);
 
@@ -27,7 +29,7 @@ export function TopAnnouncementBanner({
 
   return (
     <div
-      className={`relative z-50 w-full bg-slate-900 text-white transition-all duration-400 ease-in-out ${
+      className={`relative z-50 w-full bg-slate-900 dark:bg-black text-white transition-all duration-400 ease-in-out ${
         isVisible ? "max-h-12 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-full overflow-hidden"
       }`}
     >
@@ -38,11 +40,7 @@ export function TopAnnouncementBanner({
           </span>
           <span className="hidden sm:inline text-slate-500">•</span>
           <span className="text-slate-200">
-            Ethiopia's Verified Student Marketplace
-          </span>
-          <span className="hidden md:inline text-slate-500">•</span>
-          <span className="hidden md:inline text-amber-300 font-medium">
-            0% Seller Commission &bull; Only 5% Buyer Escrow Fee
+            {t("banner.text")}
           </span>
         </div>
 

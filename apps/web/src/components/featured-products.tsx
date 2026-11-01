@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Heart,
@@ -16,6 +16,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { EscrowCheckoutModal } from "./escrow-checkout-modal";
+import { useLanguage } from "./language-context";
 
 export interface DisplayProduct {
   id: string;
@@ -136,16 +137,34 @@ export function FeaturedProducts({
   searchQuery = "",
   onWishlistToggle,
 }: FeaturedProductsProps) {
+  const { t } = useLanguage();
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
   const [showAll, setShowAll] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const [checkoutProduct, setCheckoutProduct] = useState<DisplayProduct | null>(null);
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("estud_favorites");
+      if (saved) {
+        setFavorites(JSON.parse(saved));
+      }
+    } catch {
+      // Ignore JSON error
+    }
+  }, []);
+
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
       const next = !prev[id];
+      const updated = { ...prev, [id]: next };
+      try {
+        localStorage.setItem("estud_favorites", JSON.stringify(updated));
+      } catch {
+        // Ignore storage error
+      }
       if (onWishlistToggle) onWishlistToggle(id, next);
-      return { ...prev, [id]: next };
+      return updated;
     });
   };
 
@@ -194,32 +213,32 @@ export function FeaturedProducts({
         <div>
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-amber-500" />
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-500">
-              Verified Student Listings
+            <span className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+              {t("products.sectionTag")}
             </span>
           </div>
-          <h2 className="mt-1 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
-            Featured for Students
+          <h2 className="mt-1 text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
+            {t("products.title")}
           </h2>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowAll(!showAll)}
-            className="flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-indigo-600 transition"
+            className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
           >
-            <span>{showAll ? "Show Less" : "View All Products"}</span>
+            <span>{showAll ? t("products.showLess") : t("products.viewAll")}</span>
             <ArrowRight className="h-3.5 w-3.5" />
           </button>
 
           {!showAll && filteredProducts.length > pageSize && (
-            <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200">
+            <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => setPageIndex((prev) => Math.max(0, prev - 1))}
                 disabled={pageIndex === 0}
                 aria-label="Previous products"
-                className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
               </button>
@@ -228,7 +247,7 @@ export function FeaturedProducts({
                 onClick={() => setPageIndex((prev) => Math.min(maxPage, prev + 1))}
                 disabled={pageIndex >= maxPage}
                 aria-label="Next products"
-                className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="h-3.5 w-3.5" />
               </button>
@@ -238,15 +257,15 @@ export function FeaturedProducts({
       </div>
 
       {displayedList.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-300 p-12 text-center">
-          <p className="text-sm font-semibold text-slate-600">No student listings matched your criteria.</p>
+        <div className="rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 p-12 text-center">
+          <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">{t("products.noResults")}</p>
           <button
             onClick={() => {
               setShowAll(true);
             }}
-            className="mt-3 text-xs font-bold text-indigo-600 hover:underline"
+            className="mt-3 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
           >
-            Clear filters & view all products
+            {t("products.clearFilters")}
           </button>
         </div>
       ) : (
@@ -255,10 +274,10 @@ export function FeaturedProducts({
           {displayedList.map((item) => (
             <div
               key={item.id}
-              className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-200/90 bg-white transition duration-200 hover:-translate-y-1 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-950/5"
+              className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 transition duration-200 hover:-translate-y-1 hover:border-indigo-300 dark:hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-950/5 dark:hover:shadow-black/40"
             >
               {/* Image & Badges */}
-              <Link href={`/products/${item.id}`} className="relative aspect-square w-full overflow-hidden bg-slate-100 block">
+              <Link href={`/products/${item.id}`} className="relative aspect-square w-full overflow-hidden bg-slate-100 dark:bg-slate-800 block">
                 <img
                   src={item.imageUrl}
                   alt={item.title}
@@ -284,8 +303,8 @@ export function FeaturedProducts({
                   toggleFavorite(item.id);
                 }}
                 aria-label="Save to favorites"
-                className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 backdrop-blur shadow-sm transition z-10 ${
-                  favorites[item.id] ? "text-rose-500" : "text-slate-400 hover:text-slate-700"
+                className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur shadow-sm transition z-10 ${
+                  favorites[item.id] ? "text-rose-500" : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                 }`}
               >
                 <Heart className={`h-4 w-4 ${favorites[item.id] ? "fill-rose-500" : ""}`} />
@@ -294,40 +313,40 @@ export function FeaturedProducts({
               {/* Content */}
               <div className="flex flex-1 flex-col p-4">
                 {/* Condition */}
-                <div className="text-[11px] font-bold text-emerald-700">
+                <div className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
                   {item.condition}
                 </div>
 
                 {/* Title */}
                 <Link
                   href={`/products/${item.id}`}
-                  className="mt-1 line-clamp-2 text-xs sm:text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition"
+                  className="mt-1 line-clamp-2 text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition"
                 >
                   {item.title}
                 </Link>
 
                 {/* Rating */}
-                <div className="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
+                <div className="mt-2 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
                   <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" />
-                  <span className="font-extrabold text-slate-800">{item.rating}</span>
+                  <span className="font-extrabold text-slate-800 dark:text-slate-200">{item.rating}</span>
                   <span className="text-[11px]">({item.reviewCount})</span>
                 </div>
 
                 {/* Location Badge */}
-                <div className="mt-2 flex items-center gap-1 text-[11px] font-medium text-slate-500">
+                <div className="mt-2 flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
                   <MapPin className="h-3 w-3 text-slate-400" />
                   <span className="truncate">{item.location}</span>
                 </div>
 
                 {/* Price & Action */}
-                <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+                <div className="mt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3">
                   <div className="flex flex-col">
-                    <span className="text-sm sm:text-base font-black text-slate-900">
-                      ETB {item.price.toLocaleString()}
+                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                      {t("products.currency")} {item.price.toLocaleString()}
                     </span>
                     {item.originalPrice && (
                       <span className="text-[10px] text-slate-400 line-through">
-                        ETB {item.originalPrice.toLocaleString()}
+                        {t("products.currency")} {item.originalPrice.toLocaleString()}
                       </span>
                     )}
                   </div>
@@ -335,7 +354,7 @@ export function FeaturedProducts({
                   <button
                     onClick={() => setCheckoutProduct(item)}
                     aria-label="Order with SafeTrade Escrow"
-                    className="flex h-9 w-9 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-700 transition hover:bg-indigo-600 hover:text-white"
+                    className="flex h-9 w-9 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 transition hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600"
                   >
                     <ShoppingBag className="h-4 w-4" />
                   </button>
@@ -352,10 +371,10 @@ export function FeaturedProducts({
               </div>
               <div>
                 <h3 className="text-lg font-black leading-snug">
-                  Sell Your Items
+                  {t("products.promoTitle")}
                 </h3>
                 <p className="mt-1 text-xs text-slate-300 leading-relaxed">
-                  Turn your unused books, tech, and dorm essentials into cash. 0% seller fee promo.
+                  {t("products.promoDesc")}
                 </p>
               </div>
             </div>
@@ -365,7 +384,7 @@ export function FeaturedProducts({
                 href="/sell"
                 className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-white py-3 text-xs font-bold text-slate-900 hover:bg-slate-100 transition shadow-md"
               >
-                Start Selling <ArrowRight className="h-3.5 w-3.5" />
+                {t("products.promoBtn")} <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           </div>

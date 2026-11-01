@@ -31,6 +31,8 @@ import {
 } from "lucide-react";
 import { EstudLogo } from "@/components/estud-logo";
 import { EscrowCheckoutModal } from "@/components/escrow-checkout-modal";
+import { useLanguage } from "@/components/language-context";
+import { LanguageToggle } from "@/components/language-toggle";
 
 const MOBILE_CATEGORIES = [
   { id: "all", name: "All", icon: LayoutGrid },
@@ -124,6 +126,7 @@ const MOBILE_PRODUCTS = [
 ];
 
 export default function MobileAppSimulatorPage() {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<"home" | "explore" | "sell" | "activity" | "profile">("home");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -195,7 +198,8 @@ export default function MobileAppSimulatorPage() {
             <EstudLogo size={28} showText={true} />
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
             <button
               type="button"
               onClick={() => setShowNotifications(!showNotifications)}
