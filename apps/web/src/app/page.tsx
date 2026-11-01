@@ -36,8 +36,9 @@ export default function HomePage() {
       {/* Top Banner (Auto-dismisses smoothly after 5 seconds) */}
       <TopAnnouncementBanner autoHideDuration={5000} />
 
-      {/* Modern Responsive Navbar with exact Estud Logo */}
+      {/* Modern Responsive Navbar with transparent background over the hero */}
       <Navbar
+        transparent={true}
         onSearch={(q) => setSearchQuery(q)}
         onSelectCategory={(cat) => setSelectedCategory(cat)}
         wishlistCount={wishlistCount}

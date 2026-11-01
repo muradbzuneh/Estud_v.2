@@ -26,15 +26,36 @@ interface NavbarProps {
   onSearch?: (query: string) => void;
   onSelectCategory?: (category: string) => void;
   wishlistCount?: number;
+  transparent?: boolean;
 }
 
-export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: NavbarProps) {
+export function Navbar({
+  onSearch,
+  onSelectCategory,
+  wishlistCount = 0,
+  transparent = false,
+}: NavbarProps) {
   const router = useRouter();
   const { t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  React.useEffect(() => {
+    if (!transparent) return;
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [transparent]);
+
+  const isGlass = transparent && !isScrolled;
+  const isDarkScrolled = transparent && isScrolled;
+  const isTransparentMode = transparent;
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,24 +81,34 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md transition-colors duration-200">
+    <header className={
+      isGlass
+        ? "sticky top-0 z-40 w-full border-b border-white/15 bg-transparent backdrop-blur-xs text-white transition-all duration-300"
+        : isDarkScrolled
+        ? "sticky top-0 z-40 w-full border-b border-slate-800 bg-slate-950/85 backdrop-blur-md text-white shadow-xl transition-all duration-300"
+        : "sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md transition-colors duration-200"
+    }>
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
         {/* Brand Logo with exact Estud 3-tone ribbon */}
         <Link href="/" className="flex items-center gap-2 group shrink-0">
-          <EstudLogo size={36} showText={true} />
+          <EstudLogo size={36} showText={true} textColor={isTransparentMode ? "text-white" : "text-slate-900 dark:text-white"} />
         </Link>
 
         {/* Center Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-700 dark:text-slate-300">
+        <nav className={`hidden lg:flex items-center gap-6 text-xs font-semibold ${isTransparentMode ? "text-white/85" : "text-slate-700 dark:text-slate-300"}`}>
           <Link
             href="/"
-            className="text-indigo-600 dark:text-indigo-400 font-bold relative after:absolute after:bottom-[-6px] after:left-0 after:right-0 after:h-0.5 after:bg-indigo-600 after:rounded-full"
+            className={
+              isTransparentMode
+                ? "text-white font-bold relative after:absolute after:bottom-[-6px] after:left-0 after:right-0 after:h-0.5 after:bg-white after:rounded-full"
+                : "text-indigo-600 dark:text-indigo-400 font-bold relative after:absolute after:bottom-[-6px] after:left-0 after:right-0 after:h-0.5 after:bg-indigo-600 after:rounded-full"
+            }
           >
             {t("nav.home")}
           </Link>
           <a
             href="#products"
-            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+            className={isTransparentMode ? "hover:text-white transition" : "hover:text-indigo-600 dark:hover:text-indigo-400 transition"}
           >
             {t("nav.explore")}
           </a>
@@ -86,7 +117,7 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
           <div className="relative">
             <button
               onClick={() => setCategoriesOpen(!categoriesOpen)}
-              className="flex items-center gap-1 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+              className={`flex items-center gap-1 transition ${isTransparentMode ? "hover:text-white" : "hover:text-indigo-600 dark:hover:text-indigo-400"}`}
             >
               {t("nav.categories")}
               <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${categoriesOpen ? "rotate-180" : ""}`} />
@@ -95,12 +126,12 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
             {categoriesOpen && (
               <div
                 onMouseLeave={() => setCategoriesOpen(false)}
-                className="absolute left-0 top-full mt-3 w-60 rounded-2xl bg-white dark:bg-slate-900 p-2 shadow-xl border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 z-50"
+                className="absolute left-0 top-full mt-3 w-60 rounded-2xl bg-slate-900/95 backdrop-blur-xl p-2 shadow-2xl border border-white/10 animate-in fade-in slide-in-from-top-2 z-50 text-white"
               >
                 <button
                   type="button"
                   onClick={() => handleCategoryClick("laptops")}
-                  className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 text-left"
+                  className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-200 hover:bg-white/10 hover:text-white text-left transition"
                 >
                   <Tag className="h-4 w-4 text-slate-400" />
                   {t("nav.catElectronics")}
@@ -108,7 +139,7 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
                 <button
                   type="button"
                   onClick={() => handleCategoryClick("books")}
-                  className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 text-left"
+                  className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-200 hover:bg-white/10 hover:text-white text-left transition"
                 >
                   <Tag className="h-4 w-4 text-slate-400" />
                   {t("nav.catBooks")}
@@ -116,7 +147,7 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
                 <button
                   type="button"
                   onClick={() => handleCategoryClick("phones")}
-                  className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 text-left"
+                  className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-200 hover:bg-white/10 hover:text-white text-left transition"
                 >
                   <Tag className="h-4 w-4 text-slate-400" />
                   {t("nav.catPhones")}
@@ -124,7 +155,7 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
                 <button
                   type="button"
                   onClick={() => handleCategoryClick("fashion")}
-                  className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 text-left"
+                  className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-slate-200 hover:bg-white/10 hover:text-white text-left transition"
                 >
                   <Tag className="h-4 w-4 text-slate-400" />
                   {t("nav.catFashion")}
@@ -136,33 +167,41 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
           <button
             type="button"
             onClick={() => handleCategoryClick("deals")}
-            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition font-semibold"
+            className={isTransparentMode ? "text-amber-300 hover:text-amber-200 transition font-bold" : "hover:text-indigo-600 dark:hover:text-indigo-400 transition font-semibold"}
           >
             {t("nav.deals")}
           </button>
           <a
             href="#how-it-works"
-            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+            className={isTransparentMode ? "hover:text-white transition" : "hover:text-indigo-600 dark:hover:text-indigo-400 transition"}
           >
             {t("nav.howItWorks")}
           </a>
           <Link
             href={"/activity" as any}
-            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+            className={isTransparentMode ? "hover:text-white transition" : "hover:text-indigo-600 dark:hover:text-indigo-400 transition"}
           >
             {t("nav.activity")}
           </Link>
           <Link
             href="/sell"
-            className="flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 px-3 py-1 font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition"
+            className={
+              isTransparentMode
+                ? "flex items-center gap-1.5 rounded-full bg-emerald-500/25 border border-emerald-400/40 text-emerald-200 px-3 py-1 font-bold hover:bg-emerald-500/35 transition backdrop-blur-md"
+                : "flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 px-3 py-1 font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition"
+            }
           >
-            <Sparkles className="h-3 w-3 text-emerald-600 dark:text-emerald-400" /> {t("nav.sell")}
+            <Sparkles className="h-3 w-3 text-emerald-400" /> {t("nav.sell")}
           </Link>
           <Link
             href="/mobile"
-            className="flex items-center gap-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 px-3 py-1 font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition"
+            className={
+              isTransparentMode
+                ? "flex items-center gap-1.5 rounded-full bg-white/15 border border-white/25 text-white px-3 py-1 font-bold hover:bg-white/25 transition backdrop-blur-md"
+                : "flex items-center gap-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 px-3 py-1 font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition"
+            }
           >
-            <Smartphone className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" /> {t("nav.mobileApp")}
+            <Smartphone className="h-3.5 w-3.5 text-indigo-300" /> {t("nav.mobileApp")}
           </Link>
         </nav>
 
@@ -171,7 +210,7 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
           onSubmit={handleSearchSubmit}
           className="relative hidden md:flex flex-1 max-w-xs xl:max-w-sm items-center"
         >
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+          <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 ${isTransparentMode ? "text-white/70" : "text-slate-400 dark:text-slate-500"}`} />
           <input
             type="text"
             placeholder={t("nav.searchPlaceholder")}
@@ -180,7 +219,11 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
               setSearchQuery(e.target.value);
               if (onSearch) onSearch(e.target.value);
             }}
-            className="w-full rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 py-2.5 pl-10 pr-4 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition focus:border-indigo-600 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+            className={
+              isTransparentMode
+                ? "w-full rounded-full border border-white/25 bg-white/15 backdrop-blur-md py-2.5 pl-10 pr-4 text-xs font-medium text-white placeholder:text-white/65 transition focus:border-white focus:bg-white/25 focus:outline-none"
+                : "w-full rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 py-2.5 pl-10 pr-4 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition focus:border-indigo-600 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+            }
           />
         </form>
 
@@ -196,7 +239,11 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
           <Link
             href="#products"
             aria-label="Wishlist"
-            className="relative hidden sm:flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+            className={
+              isTransparentMode
+                ? "relative hidden sm:flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/15 backdrop-blur-md text-white hover:bg-white/25 transition"
+                : "relative hidden sm:flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+            }
           >
             <Heart className="h-4 w-4" />
             {wishlistCount > 0 && (
@@ -211,7 +258,11 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
             <button
               onClick={() => setNotificationsOpen(!notificationsOpen)}
               aria-label="Notifications"
-              className="relative flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+              className={
+                isTransparentMode
+                  ? "relative flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/15 backdrop-blur-md text-white hover:bg-white/25 transition"
+                  : "relative flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+              }
             >
               <Bell className="h-4 w-4" />
               <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-600 text-[9px] font-bold text-white">
@@ -222,20 +273,20 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
             {notificationsOpen && (
               <div
                 onMouseLeave={() => setNotificationsOpen(false)}
-                className="absolute right-0 top-full mt-3 w-72 rounded-2xl bg-white dark:bg-slate-900 p-4 shadow-xl border border-slate-100 dark:border-slate-800 animate-in fade-in z-50 text-xs text-slate-900 dark:text-slate-100"
+                className="absolute right-0 top-full mt-3 w-72 rounded-2xl bg-slate-900/95 backdrop-blur-xl p-4 shadow-2xl border border-white/10 animate-in fade-in z-50 text-xs text-white"
               >
-                <div className="flex items-center justify-between font-bold border-b border-slate-100 dark:border-slate-800 pb-2 mb-2">
+                <div className="flex items-center justify-between font-bold border-b border-white/10 pb-2 mb-2">
                   <span>Student Notifications</span>
-                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400">2 New</span>
+                  <span className="text-[10px] text-emerald-400 font-bold">2 New</span>
                 </div>
                 <div className="space-y-2.5">
-                  <div className="rounded-xl bg-slate-50 dark:bg-slate-800 p-2.5">
-                    <p className="font-semibold text-slate-800 dark:text-slate-200">Inspection PIN Ready</p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Your AAU 4-Kilo pickup order #1042 has been verified.</p>
+                  <div className="rounded-xl bg-white/10 backdrop-blur-sm p-2.5 border border-white/10">
+                    <p className="font-semibold text-white">Inspection PIN Ready</p>
+                    <p className="text-[11px] text-slate-300 mt-0.5">Your AAU 4-Kilo pickup order #1042 has been verified.</p>
                   </div>
-                  <div className="rounded-xl bg-slate-50 dark:bg-slate-800 p-2.5">
-                    <p className="font-semibold text-slate-800 dark:text-slate-200">New Exchange Offer</p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Student Yohannes proposed a MacBook exchange.</p>
+                  <div className="rounded-xl bg-white/10 backdrop-blur-sm p-2.5 border border-white/10">
+                    <p className="font-semibold text-white">New Exchange Offer</p>
+                    <p className="text-[11px] text-slate-300 mt-0.5">Student Yohannes proposed a MacBook exchange.</p>
                   </div>
                 </div>
               </div>
@@ -247,7 +298,7 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
             href="/auth"
             className="flex items-center gap-2 pl-1 group cursor-pointer"
           >
-            <div className="h-9 w-9 overflow-hidden rounded-full ring-2 ring-indigo-600/30 group-hover:ring-indigo-600 transition shadow-sm">
+            <div className={`h-9 w-9 overflow-hidden rounded-full transition shadow-sm ${isTransparentMode ? "ring-2 ring-white/40 group-hover:ring-white" : "ring-2 ring-indigo-600/30 group-hover:ring-indigo-600"}`}>
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
                 alt="Student Profile"
@@ -259,7 +310,7 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
           {/* Mobile Menu Hamburger Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex lg:hidden p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className={`flex lg:hidden p-2 rounded-xl transition ${isTransparentMode ? "text-white hover:bg-white/15 border border-white/20" : "text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -268,65 +319,69 @@ export function Navbar({ onSearch, onSelectCategory, wishlistCount = 0 }: Navbar
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 lg:hidden space-y-3 animate-in fade-in">
+        <div className={`p-4 lg:hidden space-y-3 animate-in fade-in ${isTransparentMode ? "border-t border-white/15 bg-slate-950/95 backdrop-blur-xl text-white" : "border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900"}`}>
           <form onSubmit={handleSearchSubmit} className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+            <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 ${isTransparentMode ? "text-white/70" : "text-slate-400 dark:text-slate-500"}`} />
             <input
               type="text"
               placeholder={t("nav.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 py-2.5 pl-10 pr-4 text-xs font-medium text-slate-900 dark:text-slate-100"
+              className={
+                isTransparentMode
+                  ? "w-full rounded-2xl border border-white/25 bg-white/15 py-2.5 pl-10 pr-4 text-xs font-medium text-white placeholder:text-white/60 focus:bg-white/25 focus:outline-none"
+                  : "w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 py-2.5 pl-10 pr-4 text-xs font-medium text-slate-900 dark:text-slate-100"
+              }
             />
           </form>
 
-          <nav className="flex flex-col gap-2 pt-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
+          <nav className="flex flex-col gap-2 pt-2 text-sm font-semibold">
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-xl px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400"
+              className={`rounded-xl px-3 py-2 transition ${isTransparentMode ? "hover:bg-white/10 text-white font-bold" : "hover:bg-slate-50 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400"}`}
             >
               {t("nav.home")}
             </Link>
             <a
               href="#products"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-xl px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800"
+              className={`rounded-xl px-3 py-2 transition ${isTransparentMode ? "hover:bg-white/10 text-white/90" : "hover:bg-slate-50 dark:hover:bg-slate-800"}`}
             >
               {t("nav.explore")}
             </a>
             <Link
               href={"/activity" as any}
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-xl px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400"
+              className={`rounded-xl px-3 py-2 transition ${isTransparentMode ? "hover:bg-white/10 text-white/90" : "hover:bg-slate-50 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400"}`}
             >
               {t("nav.activity")}
             </Link>
             <Link
               href="/sell"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-xl px-3 py-2 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold"
+              className={`rounded-xl px-3 py-2 font-bold transition ${isTransparentMode ? "bg-emerald-500/25 border border-emerald-400/40 text-emerald-200" : "hover:bg-emerald-50 dark:hover:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"}`}
             >
               {t("nav.sell")}
             </Link>
             <Link
               href="/mobile"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-xl px-3 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold flex items-center gap-2"
+              className={`rounded-xl px-3 py-2 font-bold flex items-center gap-2 transition ${isTransparentMode ? "bg-white/15 border border-white/20 text-white" : "hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300"}`}
             >
               <Smartphone className="h-4 w-4" /> {t("nav.mobileApp")}
             </Link>
             <a
               href="#how-it-works"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-xl px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800"
+              className={`rounded-xl px-3 py-2 transition ${isTransparentMode ? "hover:bg-white/10 text-white/90" : "hover:bg-slate-50 dark:hover:bg-slate-800"}`}
             >
               {t("nav.howItWorks")}
             </a>
             <Link
               href="/auth"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-xl px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400"
+              className={`rounded-xl px-3 py-2 transition ${isTransparentMode ? "hover:bg-white/10 text-white/80" : "hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400"}`}
             >
               {t("nav.signIn")}
             </Link>

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground } from "react-native";
 import { GraduationCap, ArrowRight } from "lucide-react-native";
 
 interface MobileHeroCardProps {
@@ -9,9 +9,14 @@ interface MobileHeroCardProps {
 
 export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardProps) {
   return (
-    <View style={styles.cardContainer}>
-      {/* Background Soft Blobs */}
-      <View style={styles.blobTopRight} />
+    <ImageBackground
+      source={require("../../assets/school-supplies-bg.jpg")}
+      style={styles.cardContainer}
+      imageStyle={{ borderRadius: 24 }}
+      resizeMode="cover"
+    >
+      {/* Dark Vignette Overlay */}
+      <View style={styles.overlay} />
 
       {/* Main Content Layout */}
       <View style={styles.innerContent}>
@@ -19,7 +24,7 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
         <View style={styles.textColumn}>
           {/* Badge */}
           <View style={styles.badgeRow}>
-            <GraduationCap size={13} color="#047857" />
+            <GraduationCap size={13} color="#FBBF24" />
             <Text style={styles.badgeText}>Student Marketplace</Text>
           </View>
 
@@ -42,7 +47,7 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
               style={styles.primaryButton}
             >
               <Text style={styles.primaryButtonText}>Explore Marketplace</Text>
-              <ArrowRight size={13} color="#FFFFFF" />
+              <ArrowRight size={13} color="#0F172A" />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -55,20 +60,18 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
           </View>
         </View>
 
-        {/* Right Student Image */}
+        {/* Right Student 3D Backpack Image */}
         <View style={styles.imageColumn}>
           <View style={styles.imageWrapper}>
             <Image
-              source={{
-                uri: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=500&auto=format&fit=crop&q=80",
-              }}
+              source={require("../../assets/student-backpack-3d.jpg")}
               style={styles.studentImage}
-              resizeMode="cover"
+              resizeMode="contain"
             />
           </View>
         </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
@@ -78,26 +81,21 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 16,
     borderRadius: 24,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: "#0D2B52",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: "rgba(255, 255, 255, 0.2)",
     overflow: "hidden",
     position: "relative",
     padding: 16,
   },
-  blobTopRight: {
-    position: "absolute",
-    top: -20,
-    right: -20,
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: "#DCFCE7",
-    opacity: 0.6,
+  overlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: "rgba(10, 25, 47, 0.4)",
   },
   innerContent: {
     flexDirection: "row",
     alignItems: "center",
+    zIndex: 1,
   },
   textColumn: {
     flex: 1.4,
@@ -106,7 +104,9 @@ const styles = StyleSheet.create({
   badgeRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#D1FAE5",
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.25)",
     alignSelf: "flex-start",
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -117,21 +117,21 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#065F46",
+    color: "#FFFFFF",
   },
   heading: {
     fontSize: 18,
     fontWeight: "900",
-    color: "#0F172A",
+    color: "#FFFFFF",
     lineHeight: 22,
     letterSpacing: -0.4,
   },
   headingHighlight: {
-    color: "#059669",
+    color: "#FBBF24",
   },
   subtitle: {
     fontSize: 11,
-    color: "#64748B",
+    color: "#E2E8F0",
     lineHeight: 15,
     marginTop: 6,
     marginBottom: 12,
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   primaryButton: {
-    backgroundColor: "#1E293B",
+    backgroundColor: "#F59E0B",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -151,14 +151,14 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   primaryButtonText: {
-    color: "#FFFFFF",
+    color: "#0F172A",
     fontSize: 11,
-    fontWeight: "700",
+    fontWeight: "800",
   },
   secondaryButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
     borderWidth: 1,
-    borderColor: "#CBD5E1",
+    borderColor: "rgba(255, 255, 255, 0.35)",
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 7,
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   secondaryButtonText: {
-    color: "#334155",
+    color: "#FFFFFF",
     fontSize: 11,
     fontWeight: "700",
   },
@@ -177,14 +177,16 @@ const styles = StyleSheet.create({
   },
   imageWrapper: {
     width: 120,
-    height: 150,
+    height: 140,
     borderRadius: 20,
     overflow: "hidden",
-    borderWidth: 3,
-    borderColor: "#FFFFFF",
-    shadowColor: "#0F172A",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.3)",
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    padding: 4,
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 3,
   },

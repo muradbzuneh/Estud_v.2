@@ -316,43 +316,47 @@ export default function MobileAppSimulatorPage() {
         <div className="flex-1 overflow-y-auto no-scrollbar pb-20">
           {activeTab === "home" && (
             <div className="p-4 space-y-4">
-              {/* Hero Card matching Image 3 */}
-              <div className="relative rounded-3xl bg-gradient-to-br from-indigo-50/70 via-slate-50 to-amber-50/50 p-4 border border-indigo-100/60 overflow-hidden">
+              {/* Hero Card with Blue Stationery Background & 3D Backpack */}
+              <div
+                className="relative rounded-3xl p-4 border border-blue-400/30 overflow-hidden text-white bg-[#0d2b52] bg-cover bg-center shadow-lg"
+                style={{ backgroundImage: "url('/images/school-supplies-bg.jpg')" }}
+              >
+                <div className="absolute inset-0 bg-blue-950/35 pointer-events-none" />
                 <div className="relative z-10 max-w-[62%]">
-                  <div className="inline-flex items-center gap-1 rounded-full bg-indigo-100/80 px-2.5 py-0.5 text-[10px] font-bold text-indigo-900 mb-2">
-                    <GraduationCap className="h-3 w-3 text-indigo-600" />
+                  <div className="inline-flex items-center gap-1 rounded-full bg-white/15 backdrop-blur-md border border-white/20 px-2.5 py-0.5 text-[10px] font-bold text-white mb-2">
+                    <GraduationCap className="h-3 w-3 text-amber-300" />
                     Student Marketplace
                   </div>
-                  <h2 className="text-base font-black text-slate-900 leading-tight">
+                  <h2 className="text-base font-black text-white leading-tight">
                     Buy, Sell and <br />
                     Exchange with <br />
-                    <span className="text-indigo-600">Confidence.</span>
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 font-black">Confidence.</span>
                   </h2>
-                  <p className="text-[10px] text-slate-500 mt-1 leading-snug">
+                  <p className="text-[10px] text-blue-100/90 mt-1 leading-snug">
                     A trusted marketplace for students to find great deals on educational items.
                   </p>
                   <div className="mt-3 flex flex-col gap-1.5">
                     <a
                       href="#mobile-grid"
-                      className="inline-flex items-center justify-center gap-1 rounded-full bg-[#1E293B] px-3.5 py-1.5 text-[11px] font-bold text-white shadow-sm"
+                      className="inline-flex items-center justify-center gap-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 px-3.5 py-1.5 text-[11px] font-extrabold shadow-sm"
                     >
                       Explore Marketplace <ArrowRight className="h-3 w-3" />
                     </a>
                     <Link
                       href="/sell"
-                      className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-3.5 py-1 text-[11px] font-bold text-slate-700"
+                      className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 backdrop-blur-md px-3.5 py-1 text-[11px] font-bold text-white hover:bg-white/20"
                     >
                       Start Selling
                     </Link>
                   </div>
                 </div>
 
-                {/* Right Hero Student Photo */}
-                <div className="absolute right-2 top-3 bottom-3 w-32 rounded-2xl overflow-hidden border-2 border-white shadow-md">
+                {/* Right Hero Student 3D Backpack Photo */}
+                <div className="absolute right-2 top-3 bottom-3 w-32 rounded-2xl overflow-hidden border border-white/30 bg-white/95 p-1 shadow-md flex items-center justify-center">
                   <img
-                    src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=500&auto=format&fit=crop&q=80"
-                    alt="Student"
-                    className="h-full w-full object-cover object-top"
+                    src="/images/student-backpack-3d.jpg"
+                    alt="Student 3D Backpack"
+                    className="h-full w-full object-contain"
                   />
                 </div>
               </div>
