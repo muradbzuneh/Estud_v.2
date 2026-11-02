@@ -55,7 +55,7 @@ export function HeroSection({ onSelectCategory }: HeroSectionProps = {}) {
           <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
             {/* Student Marketplace Pill Badge */}
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-1 text-xs text-white/90 font-medium">
-              <GraduationCap className="h-3.5 w-3.5 text-white/80" />
+              <GraduationCap className="h-3.5 w-3.5 text-amber-400" />
               <span>{t("hero.badge")}</span>
             </div>
 
@@ -63,7 +63,7 @@ export function HeroSection({ onSelectCategory }: HeroSectionProps = {}) {
             <h1 className="text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight text-white leading-[1.12]">
               {t("hero.title1")}{" "}
               <span className="block text-white/95">{t("hero.title2")}</span>
-              <span className="block text-white">
+              <span className="block bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-300 bg-clip-text text-transparent font-black">
                 {t("hero.title3")}
               </span>
             </h1>
@@ -78,7 +78,7 @@ export function HeroSection({ onSelectCategory }: HeroSectionProps = {}) {
               <a
                 href="#products"
                 onClick={scrollToProducts}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-medium px-7 py-3 text-sm transition-all cursor-pointer shadow-xs"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-500 text-white font-bold px-7 py-3 text-sm transition-all cursor-pointer shadow-lg shadow-brand-600/30 active:scale-95"
               >
                 {t("hero.btnExplore")}
                 <ArrowRight className="h-4 w-4" />
@@ -86,7 +86,7 @@ export function HeroSection({ onSelectCategory }: HeroSectionProps = {}) {
 
               <Link
                 href="/sell"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-white/25 hover:bg-white/10 text-white font-medium px-7 py-3 text-sm transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 hover:bg-white/20 text-white font-semibold px-7 py-3 text-sm transition-all backdrop-blur-md active:scale-95"
               >
                 {t("hero.btnSell")}
               </Link>

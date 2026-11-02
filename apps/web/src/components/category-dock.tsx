@@ -50,11 +50,11 @@ export function CategoryDock({ selectedCategory, onSelectCategory }: CategoryDoc
               onClick={() => onSelectCategory(cat.id)}
               className={`flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium transition-all duration-200 cursor-pointer ${
                 isSelected
-                  ? "border border-brand-600 dark:border-brand-500 bg-brand-50/70 dark:bg-twilight-750 text-brand-600 dark:text-brand-300"
+                  ? "border border-brand-500 bg-brand-600 text-white shadow-sm shadow-brand-500/25"
                   : "border border-transparent bg-slate-50 dark:bg-twilight-750/50 text-slate-600 dark:text-twilight-300 hover:border-slate-200 dark:hover:border-twilight-700 hover:bg-slate-100 dark:hover:bg-twilight-750"
               }`}
             >
-              <Icon className={`h-3.5 w-3.5 ${isSelected ? "text-brand-600 dark:text-brand-400" : "text-slate-400 dark:text-twilight-400"}`} />
+              <Icon className={`h-3.5 w-3.5 ${isSelected ? "text-white" : "text-slate-400 dark:text-twilight-400"}`} />
               <span className="whitespace-nowrap">{t(cat.nameKey)}</span>
             </button>
           );

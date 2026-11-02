@@ -10,34 +10,48 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // AMU-inspired twilight dark theme palette
+        // Logo-aligned Midnight Navy dark theme palette (matches dark squircle background)
         twilight: {
-          950: "#13121d",
-          900: "#181726", // Deep dark page background
-          850: "#1e1d2e", // Dark navbar & headers
-          800: "#222134", // Dark cards & container panels
-          750: "#29283d", // Dark inputs & nested cards
-          700: "#34324d", // Dark borders & dividers
-          600: "#444160", // Dark active borders
-          500: "#5c597e",
-          400: "#7c7a96", // Dark secondary & placeholder text
-          300: "#9d9bb5", // Dark body & subtitle text
-          200: "#c7c5dd",
-          100: "#e6e5f3",
-          50: "#f5f4fa",
+          950: "#040711",
+          900: "#070d1e", // Deepest midnight navy page background (exact logo match)
+          850: "#0b142c", // Dark navbar & headers
+          800: "#101d3f", // Dark cards & container panels
+          750: "#15254f", // Dark inputs & nested sub-cards
+          700: "#1d3266", // Dark borders & dividers
+          600: "#274385", // Dark active borders
+          500: "#3d63b8",
+          400: "#7093db", // Dark secondary & placeholder text
+          300: "#a3bdf0", // Dark body & subtitle text
+          200: "#cbd9f7",
+          100: "#e6edfb",
+          50: "#f4f7fd",
         },
-        // Unified Royal Indigo / Violet brand colors (matching Image 2 button)
+        // Primary Brand: Estud Electric Cobalt Blue (from top ribbon of logo)
         brand: {
-          50: "#f4f2fe",
-          100: "#ebe6fd",
-          200: "#d9d0fc",
-          300: "#beabfa",
-          400: "#9f7ef6",
-          500: "#825cf2",
-          600: "#6c5ce7", // Primary brand button from reference Image 2
-          700: "#5d4ce0", // Primary hover
-          800: "#4e3ecc", // Primary active
-          900: "#3d2fa6",
+          50: "#eff6ff",
+          100: "#dbeafe",
+          200: "#bfdbfe",
+          300: "#93c5fd",
+          400: "#60a5fa",
+          500: "#3b82f6",
+          600: "#1d6bf3", // Vibrant Electric Blue
+          700: "#144ecc", // Hover state
+          800: "#1040a8", // Active state
+          900: "#0c3080",
+          950: "#071c4d",
+        },
+        // Secondary Brand: Estud Golden Yellow / Amber (from bottom ribbon of logo)
+        gold: {
+          50: "#fffbeb",
+          100: "#fef3c7",
+          200: "#fde68a",
+          300: "#fcd34d",
+          400: "#fbbf24", // Luminous Gold
+          500: "#f59e0b", // Primary Logo Golden Amber
+          600: "#d97706", // Darker gold / hover
+          700: "#b45309",
+          800: "#92400e",
+          900: "#78350f",
         },
       },
     },

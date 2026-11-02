@@ -171,13 +171,13 @@ export function FeaturedProducts({
   const getBadgeStyle = (badge?: string) => {
     switch (badge) {
       case "Best Seller":
-        return "bg-blue-600 text-white";
+        return "bg-brand-600 text-white shadow-xs";
       case "Popular":
-        return "bg-amber-500 text-white";
+        return "bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black shadow-xs";
       case "New":
-        return "bg-emerald-600 text-white";
+        return "bg-brand-500 text-white shadow-xs";
       case "20% OFF":
-        return "bg-indigo-600 text-white";
+        return "bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black shadow-xs";
       default:
         return "bg-slate-800 text-white";
     }
@@ -212,7 +212,7 @@ export function FeaturedProducts({
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-brand-600 dark:bg-brand-400" />
+            <span className="h-2 w-2 rounded-full bg-amber-400 shadow-xs shadow-amber-400/50" />
             <span className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
               {t("products.sectionTag")}
             </span>

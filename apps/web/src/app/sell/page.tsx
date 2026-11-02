@@ -135,7 +135,7 @@ export default function SellPage() {
           <div className="space-y-8">
             {/* Title Header - Clean & Sleek */}
             <div className="text-center sm:text-left">
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 dark:bg-twilight-800 px-3 py-1 text-xs font-medium text-brand-600 dark:text-brand-400 border border-brand-200/50 dark:border-twilight-700 mb-3">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/15 dark:bg-amber-400/10 px-3 py-1 text-xs font-bold text-amber-600 dark:text-amber-400 border border-amber-400/30 mb-3 shadow-xs">
                 0% Seller Fee &bull; 100% Cash to You
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
@@ -390,7 +390,7 @@ export default function SellPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-700 py-3.5 text-sm font-medium text-white shadow-xs disabled:opacity-50 transition-all cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-600/25 disabled:opacity-50 transition-all cursor-pointer active:scale-[0.99]"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-2">

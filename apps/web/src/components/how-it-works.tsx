@@ -37,8 +37,8 @@ export function HowItWorks() {
     <section id="how-it-works" className="border-t border-slate-200/80 dark:border-twilight-700 bg-white dark:bg-twilight-900 py-16 sm:py-24 transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 dark:bg-twilight-750 border border-brand-100 dark:border-twilight-700 px-3 py-1 text-xs font-medium uppercase tracking-wider text-brand-600 dark:text-brand-300">
-            <Sparkles className="h-3.5 w-3.5 text-brand-600 dark:text-brand-400" /> {t("hiw.tag")}
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+            <Sparkles className="h-3.5 w-3.5 text-amber-500" /> {t("hiw.tag")}
           </div>
           <h2 className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
             {t("hiw.title")}
@@ -57,7 +57,11 @@ export function HowItWorks() {
                 className="relative flex flex-col rounded-2xl border border-slate-200/80 dark:border-twilight-700 bg-slate-50/50 dark:bg-twilight-800 p-6 shadow-xs transition duration-200 hover:-translate-y-0.5 hover:border-brand-500/50 dark:hover:border-brand-500/50"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 dark:bg-twilight-750 text-brand-600 dark:text-brand-400">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
+                    item.step === "02" || item.step === "04"
+                      ? "bg-amber-400/15 text-amber-500 dark:text-amber-400 border border-amber-400/25"
+                      : "bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20"
+                  }`}>
                     <Icon className="h-6 w-6" />
                   </div>
                   <span className="text-2xl font-black text-slate-300 dark:text-slate-700">{item.step}</span>

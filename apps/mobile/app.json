@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/logos/estud-app-icon-dark.jpg",
       "resizeMode": "contain",
-      "backgroundColor": "#181726"
+      "backgroundColor": "#070d1e"
     },
     "ios": {
       "supportsTablet": true,
@@ -20,7 +20,7 @@
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/logos/estud-app-icon-dark.jpg",
-        "backgroundColor": "#181726"
+        "backgroundColor": "#070d1e"
       },
       "permissions": [
         "CAMERA",

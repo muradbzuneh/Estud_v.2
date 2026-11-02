@@ -210,10 +210,10 @@ export function Navbar({
             )}
           </button>
 
-          {/* Primary Action Button: Clean Brand Violet-Indigo Button */}
+          {/* Primary Action Button: Luminous Golden Yellow Accent matching logo */}
           <Link
             href="/sell"
-            className="inline-flex items-center justify-center rounded-full bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 text-xs font-medium transition shadow-xs"
+            className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-slate-950 px-4 py-2 text-xs font-bold transition shadow-sm shadow-amber-500/20 active:scale-95"
           >
             <span>{t("nav.sell")}</span>
           </Link>
@@ -332,7 +332,7 @@ export function Navbar({
             <Link
               href="/sell"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-xl px-3 py-2 font-medium text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-twilight-800 transition"
+              className="rounded-xl px-3 py-2 font-bold text-amber-500 hover:bg-amber-50 dark:hover:bg-twilight-800 transition"
             >
               {t("nav.sell")}
             </Link>

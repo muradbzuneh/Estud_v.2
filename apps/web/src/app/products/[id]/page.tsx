@@ -317,7 +317,7 @@ export default function ProductDetailPage() {
                   <span className="rounded-full bg-emerald-500/15 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-3 py-1 text-xs font-bold uppercase tracking-wider">
                     {product.condition}
                   </span>
-                  <span className="rounded-full bg-slate-100 dark:bg-twilight-750 text-slate-700 dark:text-twilight-300 px-3 py-1 text-xs font-medium flex items-center gap-1 border border-transparent dark:border-twilight-700">
+                  <span className="rounded-full bg-amber-400/15 dark:bg-amber-400/10 text-amber-700 dark:text-amber-300 px-3 py-1 text-xs font-bold flex items-center gap-1 border border-amber-400/30 shadow-xs">
                     <Sparkles className="h-3 w-3 text-amber-500" /> Student Verified
                   </span>
                 </div>
@@ -370,7 +370,7 @@ export default function ProductDetailPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/20 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-400">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 dark:bg-amber-400/10 border border-amber-400/30 px-2.5 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">
                       Only 5% Escrow
                     </span>
                     <p className="text-[11px] text-slate-500 dark:text-twilight-300 mt-0.5">ETB {escrowFee.toLocaleString()} fee</p>

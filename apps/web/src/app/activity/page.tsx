@@ -110,8 +110,8 @@ export default function ActivityPage() {
         {/* Title & Trust Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 px-3 py-1 text-xs font-bold text-brand-600 dark:text-brand-400 mb-2">
-              <ShieldCheck className="h-3.5 w-3.5 text-brand-500" /> 100% Escrow Protection
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/15 dark:bg-amber-400/10 border border-amber-400/30 px-3 py-1 text-xs font-bold text-amber-600 dark:text-amber-400 mb-2 shadow-xs">
+              <ShieldCheck className="h-3.5 w-3.5 text-amber-500" /> 100% Escrow Protection
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
               Escrow Orders & Activity
@@ -123,7 +123,7 @@ export default function ActivityPage() {
 
           <Link
             href="/sell"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 px-6 py-3 text-xs font-bold text-white hover:bg-brand-700 transition shadow-md shadow-brand-600/20 active:scale-95"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-slate-950 px-6 py-3 text-xs font-bold transition shadow-md shadow-amber-400/20 active:scale-95"
           >
             <Sparkles className="h-3.5 w-3.5" /> Sell Another Item (0% Fee)
           </Link>
@@ -237,8 +237,8 @@ export default function ActivityPage() {
                     <div className="lg:col-span-6 rounded-2xl bg-gradient-to-br from-brand-50/50 to-slate-50 dark:from-twilight-750/70 dark:to-twilight-800/80 p-5 border border-brand-100/60 dark:border-twilight-700 space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <Lock className="h-4 w-4 text-brand-500" />
-                          <span className="text-xs font-bold uppercase tracking-wider text-brand-900 dark:text-brand-400">
+                          <Lock className="h-4 w-4 text-amber-500" />
+                          <span className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
                             Secret Inspection PIN
                           </span>
                         </div>
