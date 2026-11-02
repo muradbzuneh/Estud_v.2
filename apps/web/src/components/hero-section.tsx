@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   GraduationCap,
@@ -22,6 +22,15 @@ interface HeroSectionProps {
 
 export function HeroSection({ onSelectCategory }: HeroSectionProps = {}) {
   const { t } = useLanguage();
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const scrollToProducts = (e?: React.MouseEvent, category?: string) => {
     if (e) e.preventDefault();
     if (category && onSelectCategory) {
@@ -35,18 +44,27 @@ export function HeroSection({ onSelectCategory }: HeroSectionProps = {}) {
 
   return (
     <section
-      className="relative overflow-hidden -mt-18 pt-28 pb-16 lg:pt-36 lg:pb-24 bg-cover bg-center bg-no-repeat text-white transition-colors duration-200"
-      style={{ backgroundImage: "url('/images/school-supplies-bg.jpg')" }}
+      className="relative overflow-hidden py-12 lg:py-20 text-white transition-all duration-300"
+      style={{
+        backgroundImage: `url('${
+          isDesktop
+            ? "/images/school-supplies-bg-desktop.jpg"
+            : "/images/school-supplies-bg.jpg"
+        }')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundColor: "#073c72",
+      }}
     >
       {/* Translucent depth overlay so that stationery on borders is vibrant and center text is crisp */}
-      <div className="absolute inset-0 bg-blue-950/25 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/40 via-transparent to-blue-950/60 pointer-events-none" />
+      <div className="absolute inset-0 bg-blue-950/20 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/30 via-transparent to-blue-950/50 pointer-events-none" />
 
       {/* Background Soft Ambient Accents */}
       <div className="pointer-events-none absolute -left-20 top-1/4 h-96 w-96 rounded-full bg-amber-400/10 blur-3xl" />
       <div className="pointer-events-none absolute right-10 top-10 h-96 w-96 rounded-full bg-sky-400/15 blur-3xl" />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-10 lg:gap-12">
           {/* Left Column: Typography & CTAs */}
           <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
@@ -176,7 +194,7 @@ export function HeroSection({ onSelectCategory }: HeroSectionProps = {}) {
       </div>
 
       {/* Bottom subtle transition into the category dock */}
-      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#F8FAFC] dark:from-[#0B0F19] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-[#F8FAFC] dark:from-[#0B0F19] to-transparent pointer-events-none" />
     </section>
   );
 }
