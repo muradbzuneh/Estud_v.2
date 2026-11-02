@@ -23,13 +23,13 @@ export interface MobileCategory {
   icon: LucideIcon;
 }
 
-const CATEGORIES: MobileCategory[] = [
-  { id: "all", name: "All", icon: LayoutGrid },
-  { id: "books", name: "Books", icon: BookOpen },
+export const CATEGORIES: MobileCategory[] = [
+  { id: "all", name: "All Items", icon: LayoutGrid },
   { id: "laptops", name: "Laptops", icon: Laptop },
   { id: "phones", name: "Phones", icon: Smartphone },
-  { id: "fashion", name: "Fashion", icon: Shirt },
-  { id: "sports", name: "Sports", icon: Dumbbell },
+  { id: "books", name: "Books", icon: BookOpen },
+  { id: "fashion", name: "Gear", icon: Shirt },
+  { id: "sports", name: "Dorm", icon: Dumbbell },
   { id: "more", name: "More", icon: MoreHorizontal },
 ];
 
@@ -57,11 +57,8 @@ export function MobileCategoryList({
             <TouchableOpacity
               key={cat.id}
               onPress={() => onSelectCategory(cat.id)}
-              activeOpacity={0.7}
-              style={[
-                styles.categoryItem,
-                isSelected && styles.categoryItemSelected,
-              ]}
+              activeOpacity={0.75}
+              style={styles.categoryItem}
             >
               <View
                 style={[
@@ -71,7 +68,8 @@ export function MobileCategoryList({
               >
                 <Icon
                   size={20}
-                  color={isSelected ? "#6C5CE7" : "#64748B"}
+                  color={isSelected ? "#1D6BF3" : "#64748B"}
+                  strokeWidth={isSelected ? 2.4 : 1.8}
                 />
               </View>
               <Text
@@ -79,6 +77,7 @@ export function MobileCategoryList({
                   styles.categoryText,
                   isSelected && styles.categoryTextSelected,
                 ]}
+                numberOfLines={1}
               >
                 {cat.name}
               </Text>
@@ -100,9 +99,8 @@ const styles = StyleSheet.create({
   },
   categoryItem: {
     alignItems: "center",
-    width: 62,
+    width: 64,
   },
-  categoryItemSelected: {},
   iconBox: {
     width: 52,
     height: 52,
@@ -113,10 +111,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 6,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 3,
+    elevation: 1,
   },
   iconBoxSelected: {
-    backgroundColor: "#F4F2FE",
-    borderColor: "#6C5CE7",
+    backgroundColor: "#EFF6FF", // Light blue tint
+    borderColor: "#1D6BF3",
+    borderWidth: 2,
+    shadowColor: "#1D6BF3",
+    shadowOpacity: 0.15,
   },
   categoryText: {
     fontSize: 11,
@@ -125,7 +131,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   categoryTextSelected: {
-    color: "#6C5CE7",
+    color: "#1D6BF3",
     fontWeight: "800",
   },
 });

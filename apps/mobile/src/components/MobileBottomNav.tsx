@@ -13,8 +13,7 @@ import {
   Clock,
   User,
 } from "lucide-react-native";
-
-export type MobileTab = "home" | "explore" | "sell" | "activity" | "profile";
+import { MobileTab } from "../context/AppContext";
 
 interface MobileBottomNavProps {
   currentTab: MobileTab;
@@ -36,7 +35,8 @@ export function MobileBottomNav({
         >
           <Home
             size={22}
-            color={currentTab === "home" ? "#6C5CE7" : "#94A3B8"}
+            color={currentTab === "home" ? "#1D6BF3" : "#94A3B8"}
+            strokeWidth={currentTab === "home" ? 2.4 : 1.8}
           />
           <Text
             style={[
@@ -56,7 +56,8 @@ export function MobileBottomNav({
         >
           <Compass
             size={22}
-            color={currentTab === "explore" ? "#6C5CE7" : "#94A3B8"}
+            color={currentTab === "explore" ? "#1D6BF3" : "#94A3B8"}
+            strokeWidth={currentTab === "explore" ? 2.4 : 1.8}
           />
           <Text
             style={[
@@ -71,16 +72,18 @@ export function MobileBottomNav({
         {/* Center Tab 3: Elevated Sell (+) Button */}
         <TouchableOpacity
           onPress={() => onTabChange("sell")}
-          activeOpacity={0.85}
+          activeOpacity={0.88}
           style={styles.sellButtonContainer}
         >
-          <View style={styles.sellButton}>
-            <Plus size={26} color="#FFFFFF" strokeWidth={2.5} />
+          <View style={[styles.sellButton, currentTab === "sell" && styles.sellButtonActive]}>
+            <Plus size={26} color="#FFFFFF" strokeWidth={2.8} />
           </View>
-          <Text style={styles.sellLabel}>Sell</Text>
+          <Text style={[styles.sellLabel, currentTab === "sell" && styles.sellLabelActive]}>
+            Sell (0%)
+          </Text>
         </TouchableOpacity>
 
-        {/* Tab 4: Activity */}
+        {/* Tab 4: Activity (Escrow & PIN Tracker) */}
         <TouchableOpacity
           onPress={() => onTabChange("activity")}
           activeOpacity={0.7}
@@ -88,7 +91,8 @@ export function MobileBottomNav({
         >
           <Clock
             size={22}
-            color={currentTab === "activity" ? "#6C5CE7" : "#94A3B8"}
+            color={currentTab === "activity" ? "#1D6BF3" : "#94A3B8"}
+            strokeWidth={currentTab === "activity" ? 2.4 : 1.8}
           />
           <Text
             style={[
@@ -108,7 +112,8 @@ export function MobileBottomNav({
         >
           <User
             size={22}
-            color={currentTab === "profile" ? "#6C5CE7" : "#94A3B8"}
+            color={currentTab === "profile" ? "#1D6BF3" : "#94A3B8"}
+            strokeWidth={currentTab === "profile" ? 2.4 : 1.8}
           />
           <Text
             style={[
@@ -128,13 +133,13 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
-    borderTopColor: "#F1F5F9",
-    paddingBottom: Platform.OS === "ios" ? 20 : 8,
-    shadowColor: "#0F172A",
+    borderTopColor: "#E2E8F0",
+    paddingBottom: Platform.OS === "ios" ? 22 : 8,
+    shadowColor: "#070D1E",
     shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.08,
     shadowRadius: 10,
-    elevation: 8,
+    elevation: 10,
   },
   innerBar: {
     flexDirection: "row",
@@ -146,7 +151,7 @@ const styles = StyleSheet.create({
   tabButton: {
     alignItems: "center",
     justifyContent: "center",
-    width: 60,
+    width: 62,
   },
   tabLabel: {
     fontSize: 10,
@@ -155,32 +160,39 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   tabLabelActive: {
-    color: "#6C5CE7",
+    color: "#1D6BF3",
     fontWeight: "800",
   },
   sellButtonContainer: {
     alignItems: "center",
-    top: -12,
+    top: -14,
   },
   sellButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "#6C5CE7",
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#1D6BF3", // Electric Cobalt Blue
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#6C5CE7",
+    shadowColor: "#1D6BF3",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.38,
     shadowRadius: 8,
-    elevation: 6,
+    elevation: 8,
     borderWidth: 3,
     borderColor: "#FFFFFF",
+  },
+  sellButtonActive: {
+    backgroundColor: "#F59E0B", // Luminous Gold when active
+    shadowColor: "#F59E0B",
   },
   sellLabel: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#6C5CE7",
+    color: "#1D6BF3",
     marginTop: 2,
+  },
+  sellLabelActive: {
+    color: "#F59E0B",
   },
 });

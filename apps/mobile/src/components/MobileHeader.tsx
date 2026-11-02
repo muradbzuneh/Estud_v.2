@@ -1,46 +1,55 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { Menu, Bell, User } from "lucide-react-native";
+import { MapPin, Bell, User, LogIn, ChevronDown } from "lucide-react-native";
 import { EstudLogo } from "./EstudLogo";
 
 interface MobileHeaderProps {
   campusName?: string;
   unreadCount?: number;
+  isAuthenticated?: boolean;
   avatarUrl?: string;
-  onMenuPress?: () => void;
+  onCampusPress?: () => void;
   onNotificationsPress?: () => void;
   onProfilePress?: () => void;
+  onAuthPress?: () => void;
 }
 
 export function MobileHeader({
   campusName = "AAU 4 Kilo",
-  unreadCount = 2,
+  unreadCount = 1,
+  isAuthenticated = true,
   avatarUrl,
-  onMenuPress,
+  onCampusPress,
   onNotificationsPress,
   onProfilePress,
+  onAuthPress,
 }: MobileHeaderProps) {
   return (
     <View style={styles.container}>
-      {/* Left: Hamburger Menu & Official Estud Ribbon Logo */}
+      {/* Left: Official Estud Ribbon Logo & Brand Name */}
       <View style={styles.leftSection}>
-        <TouchableOpacity
-          onPress={onMenuPress}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          style={styles.iconButton}
-        >
-          <Menu size={22} color="#1E293B" />
-        </TouchableOpacity>
-
         <EstudLogo size={28} showText={true} />
       </View>
 
-      {/* Right: Notification Bell & Profile Avatar */}
+      {/* Center: Campus Hub Pill Button (Clickable to switch campus) */}
+      <TouchableOpacity
+        onPress={onCampusPress}
+        activeOpacity={0.75}
+        style={styles.campusPill}
+      >
+        <MapPin size={12} color="#1D6BF3" />
+        <Text numberOfLines={1} style={styles.campusText}>
+          {campusName}
+        </Text>
+        <ChevronDown size={12} color="#64748B" />
+      </TouchableOpacity>
+
+      {/* Right: Notification Bell & Profile Avatar / Sign In */}
       <View style={styles.rightSection}>
         <TouchableOpacity
           onPress={onNotificationsPress}
           style={styles.iconButton}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <Bell size={20} color="#334155" />
           {unreadCount > 0 && (
@@ -50,13 +59,28 @@ export function MobileHeader({
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={onProfilePress} style={styles.avatarWrapper}>
-          {avatarUrl ? (
-            <Image source={{ uri: avatarUrl }} style={styles.avatar} />
-          ) : (
-            <User size={18} color="#6C5CE7" />
-          )}
-        </TouchableOpacity>
+        {isAuthenticated ? (
+          <TouchableOpacity
+            onPress={onProfilePress}
+            activeOpacity={0.8}
+            style={styles.avatarWrapper}
+          >
+            {avatarUrl ? (
+              <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+            ) : (
+              <User size={16} color="#1D6BF3" />
+            )}
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={onAuthPress}
+            activeOpacity={0.8}
+            style={styles.signInButton}
+          >
+            <LogIn size={13} color="#FFFFFF" />
+            <Text style={styles.signInText}>Sign In</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -68,10 +92,34 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 10,
     backgroundColor: "#FFFFFF",
+    borderBottomWidth: 1,
+    borderBottomColor: "#F1F5F9",
   },
   leftSection: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  campusPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    maxWidth: 140,
+  },
+  campusText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#0F172A",
+    flexShrink: 1,
+  },
+  rightSection: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
@@ -80,45 +128,14 @@ const styles = StyleSheet.create({
     padding: 4,
     position: "relative",
   },
-  logoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  logoBadge: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    backgroundColor: "#059669",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logoDiamond: {
-    width: 12,
-    height: 12,
-    backgroundColor: "#FFFFFF",
-    transform: [{ rotate: "45deg" }],
-    borderRadius: 2,
-  },
-  brandTitle: {
-    fontSize: 20,
-    fontWeight: "900",
-    color: "#0F172A",
-    letterSpacing: -0.5,
-  },
-  rightSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-  },
   badge: {
     position: "absolute",
     top: 2,
     right: 2,
     backgroundColor: "#EF4444",
-    borderRadius: 10,
-    width: 16,
-    height: 16,
+    borderRadius: 8,
+    width: 15,
+    height: 15,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1.5,
@@ -126,18 +143,36 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     color: "#FFFFFF",
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: "800",
   },
   avatarWrapper: {
-    borderRadius: 18,
-    borderWidth: 2,
-    borderColor: "#10B981",
-    padding: 1,
-  },
-  avatar: {
     width: 32,
     height: 32,
     borderRadius: 16,
+    backgroundColor: "#EFF6FF",
+    borderWidth: 2,
+    borderColor: "#1D6BF3",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+  },
+  signInButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#1D6BF3",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  signInText: {
+    color: "#FFFFFF",
+    fontSize: 11,
+    fontWeight: "700",
   },
 });

@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { Star, MapPin, Heart, ShoppingBag } from "lucide-react-native";
+import { Star, MapPin, Heart, ShoppingBag, ShieldCheck } from "lucide-react-native";
 
 export interface MobileProductItem {
   id: string;
@@ -20,6 +20,9 @@ export interface MobileProductItem {
   badge?: "Best Seller" | "Popular" | "New" | "20% OFF";
   location: string;
   imageUrl: string;
+  description?: string;
+  sellerName?: string;
+  sellerTrust?: number;
 }
 
 interface MobileProductCardProps {
@@ -40,13 +43,13 @@ export function MobileProductCard({
   const getBadgeStyle = (badge?: string) => {
     switch (badge) {
       case "Best Seller":
-        return { bg: "#3B82F6", text: "#FFFFFF" };
+        return { bg: "#1D6BF3", text: "#FFFFFF" };
       case "Popular":
         return { bg: "#F59E0B", text: "#FFFFFF" };
       case "New":
         return { bg: "#10B981", text: "#FFFFFF" };
       case "20% OFF":
-        return { bg: "#6366F1", text: "#FFFFFF" };
+        return { bg: "#EF4444", text: "#FFFFFF" };
       default:
         return { bg: "#0F172A", text: "#FFFFFF" };
     }
@@ -76,14 +79,15 @@ export function MobileProductCard({
           </View>
         )}
 
+        {/* Favorite Heart Button */}
         <TouchableOpacity
           onPress={onFavoritePress}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           style={styles.heartButton}
         >
           <Heart
-            size={14}
-            color={isFavorite ? "#EF4444" : "#94A3B8"}
+            size={15}
+            color={isFavorite ? "#EF4444" : "#64748B"}
             fill={isFavorite ? "#EF4444" : "transparent"}
           />
         </TouchableOpacity>
@@ -91,13 +95,19 @@ export function MobileProductCard({
 
       {/* Details */}
       <View style={styles.content}>
+        {/* Condition & Escrow Badge */}
+        <View style={styles.conditionRow}>
+          <Text style={styles.conditionText}>{product.condition}</Text>
+          <View style={styles.escrowBadge}>
+            <ShieldCheck size={10} color="#10B981" />
+            <Text style={styles.escrowText}>Escrow</Text>
+          </View>
+        </View>
+
         {/* Title */}
-        <Text numberOfLines={1} style={styles.title}>
+        <Text numberOfLines={2} style={styles.title}>
           {product.title}
         </Text>
-
-        {/* Condition */}
-        <Text style={styles.conditionText}>{product.condition}</Text>
 
         {/* Price Row */}
         <View style={styles.priceRow}>
@@ -120,11 +130,11 @@ export function MobileProductCard({
           </View>
 
           <TouchableOpacity
-            onPress={onOrderPress}
+            onPress={onOrderPress || onPress}
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
             style={styles.actionButton}
           >
-            <ShoppingBag size={12} color="#6C5CE7" />
+            <ShoppingBag size={13} color="#1D6BF3" />
           </TouchableOpacity>
         </View>
 
@@ -150,14 +160,14 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
     marginBottom: 14,
   },
   imageContainer: {
     width: "100%",
-    height: 125,
+    height: 135,
     backgroundColor: "#F1F5F9",
     position: "relative",
   },
@@ -169,8 +179,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 8,
     left: 8,
-    paddingHorizontal: 7,
-    paddingVertical: 2,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: 8,
   },
   badgeText: {
@@ -182,37 +192,63 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 8,
     right: 8,
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: "rgba(255,255,255,0.9)",
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 2,
   },
   content: {
     padding: 10,
+  },
+  conditionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 4,
+  },
+  conditionText: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: "#64748B",
+  },
+  escrowBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2,
+    backgroundColor: "rgba(16, 185, 129, 0.1)",
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: 6,
+  },
+  escrowText: {
+    fontSize: 8,
+    fontWeight: "700",
+    color: "#059669",
   },
   title: {
     fontSize: 12,
     fontWeight: "800",
     color: "#0F172A",
-  },
-  conditionText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: "#6C5CE7",
-    marginTop: 2,
+    lineHeight: 16,
+    minHeight: 32,
   },
   priceRow: {
     flexDirection: "row",
     alignItems: "baseline",
     gap: 4,
-    marginTop: 6,
+    marginTop: 4,
   },
   price: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "900",
-    color: "#0F172A",
+    color: "#1D6BF3", // Electric Cobalt Blue
   },
   originalPrice: {
     fontSize: 9,
@@ -240,18 +276,20 @@ const styles = StyleSheet.create({
     color: "#94A3B8",
   },
   actionButton: {
-    width: 24,
-    height: 24,
+    width: 26,
+    height: 26,
     borderRadius: 8,
-    backgroundColor: "#ECFDF5",
+    backgroundColor: "#EFF6FF",
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#DBEAFE",
   },
   locationRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 2,
-    marginTop: 4,
+    marginTop: 6,
   },
   locationText: {
     fontSize: 9,
