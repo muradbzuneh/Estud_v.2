@@ -12,6 +12,7 @@
     "web": "bun --cwd apps/web dev",
     "mobile": "bun --cwd apps/mobile expo start",
     "mobile:tunnel": "bun --cwd apps/mobile expo start --tunnel",
+    "mobile:apk": "bun --cwd apps/mobile build:apk",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "db:generate": "bun --filter @estud/db db:generate",
