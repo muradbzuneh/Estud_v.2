@@ -89,7 +89,7 @@ export function ImageUploader({
   return (
     <div className="space-y-4">
       {/* Upload Zone */}
-      <div className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/50 p-6 transition hover:border-indigo-500 hover:bg-slate-50">
+      <div className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 dark:border-white/10 bg-slate-50/50 dark:bg-slate-800/30 p-6 transition hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-slate-50 dark:hover:bg-slate-800/50">
         <input
           type="file"
           accept="image/*"
@@ -100,24 +100,24 @@ export function ImageUploader({
         />
 
         <div className="flex flex-col items-center justify-center text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-700">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
             {isUploading ? (
-              <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+              <Loader2 className="h-6 w-6 animate-spin text-indigo-600 dark:text-indigo-400" />
             ) : (
               <UploadCloud className="h-6 w-6" />
             )}
           </div>
-          <div className="mt-3 text-xs font-semibold text-slate-800">
+          <div className="mt-3 text-xs font-medium text-slate-800 dark:text-slate-200">
             {isUploading ? "Uploading photos..." : "Click or drag photos to upload"}
           </div>
-          <p className="mt-1 text-[11px] text-slate-500">
+          <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 font-normal">
             PNG, JPG, or WebP (Up to {maxImages} photos max)
           </p>
         </div>
       </div>
 
       {uploadError && (
-        <div className="text-xs text-rose-600 font-medium">
+        <div className="text-xs text-rose-600 dark:text-rose-400 font-medium">
           {uploadError}
         </div>
       )}
@@ -128,7 +128,7 @@ export function ImageUploader({
           {value.map((url, idx) => (
             <div
               key={idx}
-              className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 bg-white"
+              className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800"
             >
               <img
                 src={url}

@@ -9,7 +9,7 @@ export function Footer() {
   const { t } = useLanguage();
 
   return (
-    <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 pt-12 pb-8 transition-colors duration-200">
+    <footer className="border-t border-slate-200/60 dark:border-white/5 bg-white dark:bg-[#0B0F19] pt-12 pb-8 transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
           {/* Brand info */}

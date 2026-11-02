@@ -37,10 +37,10 @@ export function HowItWorks() {
     <section id="how-it-works" className="border-t border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 py-16 sm:py-24 transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/70 border border-indigo-100 dark:border-indigo-800 px-3 py-1 text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/70 border border-indigo-100 dark:border-indigo-800/40 px-3 py-1 text-xs font-medium uppercase tracking-wider text-indigo-700 dark:text-indigo-300">
             <Sparkles className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" /> {t("hiw.tag")}
           </div>
-          <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+          <h2 className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
             {t("hiw.title")}
           </h2>
           <p className="mt-3 text-sm text-slate-600 dark:text-slate-400 sm:text-base">

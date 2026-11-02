@@ -24,7 +24,7 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
         <View style={styles.textColumn}>
           {/* Badge */}
           <View style={styles.badgeRow}>
-            <GraduationCap size={13} color="#FBBF24" />
+            <GraduationCap size={13} color="#FFFFFF" />
             <Text style={styles.badgeText}>Student Marketplace</Text>
           </View>
 
@@ -47,7 +47,7 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
               style={styles.primaryButton}
             >
               <Text style={styles.primaryButtonText}>Explore Marketplace</Text>
-              <ArrowRight size={13} color="#0F172A" />
+              <ArrowRight size={13} color="#FFFFFF" />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.4,
   },
   headingHighlight: {
-    color: "#FBBF24",
+    color: "#FFFFFF",
   },
   subtitle: {
     fontSize: 11,
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   primaryButton: {
-    backgroundColor: "#F59E0B",
+    backgroundColor: "#4F46E5",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -151,9 +151,9 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   primaryButtonText: {
-    color: "#0F172A",
+    color: "#FFFFFF",
     fontSize: 11,
-    fontWeight: "800",
+    fontWeight: "700",
   },
   secondaryButton: {
     backgroundColor: "rgba(255, 255, 255, 0.15)",

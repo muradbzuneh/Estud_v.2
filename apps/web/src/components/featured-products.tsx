@@ -212,12 +212,12 @@ export function FeaturedProducts({
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-amber-500" />
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+            <span className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
               {t("products.sectionTag")}
             </span>
           </div>
-          <h2 className="mt-1 text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
+          <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             {t("products.title")}
           </h2>
         </div>
@@ -367,7 +367,7 @@ export function FeaturedProducts({
           <div className="relative flex flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] p-6 text-white shadow-xl">
             <div className="space-y-4">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 backdrop-blur border border-white/20">
-                <Sparkles className="h-6 w-6 text-amber-400" />
+                <Sparkles className="h-6 w-6 text-indigo-400" />
               </div>
               <div>
                 <h3 className="text-lg font-black leading-snug">
@@ -382,7 +382,7 @@ export function FeaturedProducts({
             <div className="mt-6 pt-4 border-t border-white/10">
               <Link
                 href="/sell"
-                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-white py-3 text-xs font-bold text-slate-900 hover:bg-slate-100 transition shadow-md"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-indigo-600 hover:bg-indigo-500 py-3 text-xs font-medium text-white transition cursor-pointer"
               >
                 {t("products.promoBtn")} <ArrowRight className="h-3.5 w-3.5" />
               </Link>
