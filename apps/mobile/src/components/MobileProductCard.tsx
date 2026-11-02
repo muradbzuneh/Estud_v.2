@@ -124,7 +124,7 @@ export function MobileProductCard({
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
             style={styles.actionButton}
           >
-            <ShoppingBag size={12} color="#059669" />
+            <ShoppingBag size={12} color="#6C5CE7" />
           </TouchableOpacity>
         </View>
 
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   conditionText: {
     fontSize: 10,
     fontWeight: "600",
-    color: "#059669",
+    color: "#6C5CE7",
     marginTop: 2,
   },
   priceRow: {

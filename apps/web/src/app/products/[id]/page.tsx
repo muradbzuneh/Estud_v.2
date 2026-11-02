@@ -194,16 +194,16 @@ export default function ProductDetailPage() {
   const escrowFee = Math.round(product.price * 0.05);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFAFA] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-twilight-900 text-slate-900 dark:text-white transition-colors duration-200">
       <Navbar />
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-6 overflow-x-auto">
-          <Link href="/" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">Home</Link>
-          <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
-          <Link href="/" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">{product.category}</Link>
-          <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
+        <nav className="flex items-center gap-2 text-xs text-slate-500 dark:text-twilight-300 mb-6 overflow-x-auto">
+          <Link href="/" className="hover:text-brand-600 dark:hover:text-brand-400 transition">Home</Link>
+          <ChevronRight className="h-3.5 w-3.5 text-slate-400 dark:text-twilight-300" />
+          <Link href="/" className="hover:text-brand-600 dark:hover:text-brand-400 transition">{product.category}</Link>
+          <ChevronRight className="h-3.5 w-3.5 text-slate-400 dark:text-twilight-300" />
           <span className="text-slate-900 dark:text-white font-medium truncate max-w-xs">{product.title}</span>
         </nav>
 
@@ -213,17 +213,17 @@ export default function ProductDetailPage() {
             <ProductGallery images={product.images} title={product.title} />
 
             {/* Verification Guarantee Card */}
-            <div className="mt-8 rounded-3xl border border-indigo-100 dark:border-indigo-900/60 bg-gradient-to-br from-indigo-50/70 to-slate-50/50 dark:from-indigo-950/40 dark:to-slate-900/40 p-6">
+            <div className="mt-8 rounded-3xl border border-brand-500/20 bg-brand-50/50 dark:bg-twilight-800/80 p-6">
               <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-md shadow-indigo-600/20">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-600 text-white shadow-md shadow-brand-600/20">
                   <ShieldCheck className="h-6 w-6" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">Estud 48-Hour SafeTrade Escrow Protection</h3>
-                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  <p className="mt-1 text-xs text-slate-600 dark:text-twilight-300 leading-relaxed">
                     When you purchase through Estud, your payment is held securely in escrow. You meet the student seller at the <span className="font-semibold text-slate-900 dark:text-white">{product.campus}</span> partner desk or hub, inspect the item thoroughly, and only release payment using your secret 4-digit PIN.
                   </p>
-                  <div className="mt-3 flex flex-wrap gap-4 text-xs font-semibold text-indigo-900 dark:text-indigo-300">
+                  <div className="mt-3 flex flex-wrap gap-4 text-xs font-semibold text-brand-700 dark:text-brand-400">
                     <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> 100% Refund Guarantee</span>
                     <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> No Cash Risk</span>
                     <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> Campus Desk Handover</span>
@@ -233,14 +233,14 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Information Tabs */}
-            <div className="mt-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm">
-              <div className="flex border-b border-slate-100 dark:border-slate-800 pb-3 gap-6 text-sm font-semibold">
+            <div className="mt-8 bg-white dark:bg-twilight-800 rounded-3xl border border-slate-200/80 dark:border-twilight-700 p-6 shadow-sm">
+              <div className="flex border-b border-slate-100 dark:border-twilight-700 pb-3 gap-6 text-sm font-semibold">
                 <button
                   onClick={() => setActiveTab("specs")}
                   className={`relative pb-2 transition ${
                     activeTab === "specs"
-                      ? "text-indigo-600 dark:text-indigo-400 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-indigo-600 dark:after:bg-indigo-400"
-                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                      ? "text-brand-600 dark:text-brand-400 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-brand-600 dark:after:bg-brand-400"
+                      : "text-slate-500 dark:text-twilight-300 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
                   Technical Specifications
@@ -249,8 +249,8 @@ export default function ProductDetailPage() {
                   onClick={() => setActiveTab("inspection")}
                   className={`relative pb-2 transition ${
                     activeTab === "inspection"
-                      ? "text-indigo-600 dark:text-indigo-400 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-indigo-600 dark:after:bg-indigo-400"
-                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                      ? "text-brand-600 dark:text-brand-400 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-brand-600 dark:after:bg-brand-400"
+                      : "text-slate-500 dark:text-twilight-300 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
                   Condition & Flaws
@@ -259,8 +259,8 @@ export default function ProductDetailPage() {
                   onClick={() => setActiveTab("seller")}
                   className={`relative pb-2 transition ${
                     activeTab === "seller"
-                      ? "text-indigo-600 dark:text-indigo-400 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-indigo-600 dark:after:bg-indigo-400"
-                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                      ? "text-brand-600 dark:text-brand-400 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-brand-600 dark:after:bg-brand-400"
+                      : "text-slate-500 dark:text-twilight-300 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
                   Exchange Preferences
@@ -271,8 +271,8 @@ export default function ProductDetailPage() {
                 {activeTab === "specs" && (
                   <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
                     {product.specs.map((spec, i) => (
-                      <div key={i} className="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 p-3 border border-slate-100 dark:border-slate-700/60">
-                        <dt className="text-xs text-slate-500 dark:text-slate-400 font-medium">{spec.label}</dt>
+                      <div key={i} className="rounded-xl bg-slate-50/80 dark:bg-twilight-750 p-3 border border-slate-100 dark:border-twilight-700">
+                        <dt className="text-xs text-slate-500 dark:text-twilight-300 font-medium">{spec.label}</dt>
                         <dd className="text-xs font-semibold text-slate-900 dark:text-white mt-0.5">{spec.value}</dd>
                       </div>
                     ))}
@@ -281,26 +281,26 @@ export default function ProductDetailPage() {
 
                 {activeTab === "inspection" && (
                   <div className="space-y-3">
-                    <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/60 p-4 rounded-2xl">
+                    <p className="text-xs text-slate-700 dark:text-twilight-200 leading-relaxed bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 p-4 rounded-2xl">
                       {product.inspectionNotes}
                     </p>
-                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                      <Info className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-twilight-300">
+                      <Info className="h-4 w-4 text-brand-600 dark:text-brand-400" />
                       Inspected & pre-screened by Estud Campus Hub agents.
                     </div>
                   </div>
                 )}
 
                 {activeTab === "seller" && (
-                  <div className="space-y-3 text-xs text-slate-600 dark:text-slate-400">
+                  <div className="space-y-3 text-xs text-slate-600 dark:text-twilight-300">
                     <p>
                       <strong>Open for Item Exchange:</strong> {product.exchangePreferences}
                     </p>
                     <button
                       onClick={() => setIsExchangeOpen(true)}
-                      className="flex items-center gap-2 rounded-full border border-indigo-600 dark:border-indigo-500 text-indigo-700 dark:text-indigo-300 px-4 py-2 font-semibold hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition"
+                      className="flex items-center gap-2 rounded-full border border-brand-600 dark:border-brand-500 text-brand-700 dark:text-brand-400 px-4 py-2 font-semibold hover:bg-brand-50 dark:hover:bg-twilight-750 transition"
                     >
-                      <ArrowLeftRight className="h-3.5 w-3.5" /> Submit Exchange Proposal
+                      <ArrowLeftRight className="h-3.5 w-3.5" /> Propose Exchange Offer
                     </button>
                   </div>
                 )}
@@ -310,14 +310,14 @@ export default function ProductDetailPage() {
 
           {/* Right Column: Pricing, Escrow CTA & Seller Card */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 md:p-8 shadow-sm space-y-6">
+            <div className="bg-white dark:bg-twilight-800 rounded-3xl border border-slate-200/80 dark:border-twilight-700 p-6 md:p-8 shadow-sm space-y-6">
               {/* Badges */}
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 px-3 py-1 text-xs font-bold uppercase tracking-wider">
+                  <span className="rounded-full bg-emerald-500/15 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-3 py-1 text-xs font-bold uppercase tracking-wider">
                     {product.condition}
                   </span>
-                  <span className="rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1 text-xs font-medium flex items-center gap-1">
+                  <span className="rounded-full bg-slate-100 dark:bg-twilight-750 text-slate-700 dark:text-twilight-300 px-3 py-1 text-xs font-medium flex items-center gap-1 border border-transparent dark:border-twilight-700">
                     <Sparkles className="h-3 w-3 text-amber-500" /> Student Verified
                   </span>
                 </div>
@@ -325,12 +325,12 @@ export default function ProductDetailPage() {
                   <button
                     onClick={() => setIsSaved(!isSaved)}
                     className={`p-2 rounded-full border transition ${
-                      isSaved ? "border-rose-200 bg-rose-50 text-rose-600 dark:bg-rose-950/50" : "border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                      isSaved ? "border-rose-200 bg-rose-50 text-rose-600 dark:bg-rose-950/50" : "border-slate-200 dark:border-twilight-700 text-slate-400 hover:text-slate-600 dark:hover:text-white"
                     }`}
                   >
                     <Heart className={`h-4 w-4 ${isSaved ? "fill-rose-500" : ""}`} />
                   </button>
-                  <button className="p-2 rounded-full border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                  <button className="p-2 rounded-full border border-slate-200 dark:border-twilight-700 text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
                     <Share2 className="h-4 w-4" />
                   </button>
                 </div>
@@ -341,47 +341,47 @@ export default function ProductDetailPage() {
                 <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white leading-snug">
                   {product.title}
                 </h1>
-                <div className="mt-2.5 flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+                <div className="mt-2.5 flex items-center gap-4 text-xs text-slate-500 dark:text-twilight-300">
                   <span className="flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                    <MapPin className="h-3.5 w-3.5 text-brand-500" />
                     {product.campus}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Clock className="h-3.5 w-3.5 text-slate-400" />
+                    <Clock className="h-3.5 w-3.5 text-slate-400 dark:text-twilight-300" />
                     {product.createdAt}
                   </span>
                 </div>
               </div>
 
               {/* Price & Escrow Fee Transparency */}
-              <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/80 p-4 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
+              <div className="rounded-2xl bg-slate-50 dark:bg-twilight-750 p-4 border border-slate-200/80 dark:border-twilight-700 space-y-2">
                 <div className="flex items-baseline justify-between">
                   <div>
-                    <span className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Listing Price</span>
+                    <span className="text-xs font-semibold uppercase text-slate-500 dark:text-twilight-300">Listing Price</span>
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-black text-slate-900 dark:text-white">
                         ETB {product.price.toLocaleString()}
                       </span>
                       {product.originalPrice && (
-                        <span className="text-sm text-slate-400 line-through">
+                        <span className="text-sm text-slate-400 dark:text-twilight-300 line-through">
                           ETB {product.originalPrice.toLocaleString()}
                         </span>
                       )}
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600/10 dark:bg-emerald-950/70 px-2.5 py-1 text-xs font-bold text-emerald-800 dark:text-emerald-300">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/20 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-400">
                       Only 5% Escrow
                     </span>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">ETB {escrowFee.toLocaleString()} fee</p>
+                    <p className="text-[11px] text-slate-500 dark:text-twilight-300 mt-0.5">ETB {escrowFee.toLocaleString()} fee</p>
                   </div>
                 </div>
 
-                <div className="border-t border-slate-200/80 dark:border-slate-700/60 pt-2 flex items-center justify-between text-xs text-slate-600 dark:text-slate-300">
+                <div className="border-t border-slate-200/80 dark:border-twilight-700 pt-2 flex items-center justify-between text-xs text-slate-600 dark:text-twilight-300">
                   <span className="flex items-center gap-1">
-                    <Lock className="h-3 w-3 text-indigo-600 dark:text-indigo-400" /> Total Escrow Guarantee:
+                    <Lock className="h-3 w-3 text-brand-500" /> Total Escrow Guarantee:
                   </span>
-                  <strong className="text-indigo-700 dark:text-indigo-400 font-bold text-sm">
+                  <strong className="text-brand-600 dark:text-brand-400 font-bold text-sm">
                     ETB {(product.price + escrowFee).toLocaleString()}
                   </strong>
                 </div>
@@ -391,7 +391,7 @@ export default function ProductDetailPage() {
               <div className="space-y-3">
                 <button
                   onClick={() => setIsCheckoutOpen(true)}
-                  className="w-full flex items-center justify-center gap-2 rounded-full bg-indigo-600 py-4 text-sm font-bold text-white shadow-lg shadow-indigo-600/25 hover:bg-indigo-700 transition"
+                  className="w-full flex items-center justify-center gap-2 rounded-full bg-brand-600 py-4 text-sm font-bold text-white shadow-lg shadow-brand-600/25 hover:bg-brand-700 active:scale-[0.99] transition"
                 >
                   <ShieldCheck className="h-5 w-5" />
                   Buy with Estud Escrow
@@ -399,7 +399,7 @@ export default function ProductDetailPage() {
 
                 <button
                   onClick={() => setIsExchangeOpen(true)}
-                  className="w-full flex items-center justify-center gap-2 rounded-full border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 py-3 text-sm font-semibold text-slate-800 dark:text-slate-200 hover:border-indigo-600 hover:text-indigo-700 dark:hover:border-indigo-500 dark:hover:text-indigo-400 transition"
+                  className="w-full flex items-center justify-center gap-2 rounded-full border-2 border-slate-200 dark:border-twilight-700 bg-white dark:bg-twilight-800 py-3 text-sm font-semibold text-slate-800 dark:text-white hover:border-brand-600 hover:text-brand-600 dark:hover:border-brand-500 dark:hover:text-brand-400 active:scale-[0.99] transition"
                 >
                   <ArrowLeftRight className="h-4 w-4" />
                   Propose Exchange Offer
@@ -407,28 +407,28 @@ export default function ProductDetailPage() {
 
                 <button
                   onClick={() => setIsQuestionOpen(true)}
-                  className="w-full flex items-center justify-center gap-2 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                  className="w-full flex items-center justify-center gap-2 rounded-full border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 py-2.5 text-xs font-semibold text-slate-700 dark:text-twilight-300 hover:bg-slate-100 dark:hover:bg-twilight-700 transition"
                 >
-                  <MessageSquare className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                  <MessageSquare className="h-4 w-4 text-brand-500" />
                   Ask Seller a Quick Question
                 </button>
               </div>
 
               {/* Verified Seller Box */}
-              <div className="border-t border-slate-100 dark:border-slate-800 pt-5">
+              <div className="border-t border-slate-100 dark:border-twilight-700 pt-5">
                 <div className="flex items-center gap-3.5">
                   <img
                     src={product.seller.avatar}
                     alt={product.seller.name}
-                    className="h-12 w-12 rounded-full object-cover ring-2 ring-indigo-500/20"
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-brand-500/20"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-1.5">
                       <h4 className="text-sm font-bold text-slate-900 dark:text-white">{product.seller.name}</h4>
-                      <BadgeCheck className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                      <BadgeCheck className="h-4 w-4 text-brand-500" />
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
-                      <GraduationCap className="h-3.5 w-3.5 text-slate-400" />
+                    <p className="text-xs text-slate-500 dark:text-twilight-300 flex items-center gap-1 mt-0.5">
+                      <GraduationCap className="h-3.5 w-3.5 text-slate-400 dark:text-twilight-300" />
                       {product.seller.department}
                     </p>
                   </div>
@@ -437,7 +437,7 @@ export default function ProductDetailPage() {
                       <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                       {product.seller.rating}
                     </div>
-                    <span className="text-[10px] text-slate-400">{product.seller.completedOrders} sales</span>
+                    <span className="text-[10px] text-slate-400 dark:text-twilight-300">{product.seller.completedOrders} sales</span>
                   </div>
                 </div>
               </div>
@@ -476,35 +476,35 @@ export default function ProductDetailPage() {
 
       {/* Quick Seller Question Modal */}
       {isQuestionOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-xs animate-in fade-in">
-          <div className="relative w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 p-6 shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm animate-in fade-in">
+          <div className="relative w-full max-w-md rounded-3xl bg-white dark:bg-twilight-800 p-6 shadow-2xl border border-slate-100 dark:border-twilight-700 space-y-4">
             <button
               onClick={() => {
                 setIsQuestionOpen(false);
                 setQuestionSent(false);
               }}
-              className="absolute right-4 top-4 p-1.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+              className="absolute right-4 top-4 p-1.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-white"
             >
               <X className="h-4 w-4" />
             </button>
 
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500/10 dark:bg-twilight-750 text-brand-600 dark:text-brand-400">
                 <MessageSquare className="h-4 w-4" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">Ask {product.seller.name}</h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">Direct message regarding this item</p>
+                <p className="text-[11px] text-slate-500 dark:text-twilight-300">Direct message regarding this item</p>
               </div>
             </div>
 
             {questionSent ? (
               <div className="py-6 text-center space-y-2">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-600 mx-auto">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 mx-auto">
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
                 <h4 className="text-sm font-bold text-slate-900 dark:text-white">Question Sent to Seller!</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+                <p className="text-xs text-slate-500 dark:text-twilight-300 max-w-xs mx-auto">
                   Student {product.seller.name} will be notified via their Estud account and campus hub notification.
                 </p>
                 <button
@@ -513,7 +513,7 @@ export default function ProductDetailPage() {
                     setQuestionSent(false);
                     setQuestionText("");
                   }}
-                  className="mt-2 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-2 text-xs font-semibold"
+                  className="mt-2 rounded-full bg-brand-600 text-white px-6 py-2 text-xs font-semibold hover:bg-brand-700 transition"
                 >
                   Close
                 </button>
@@ -521,7 +521,7 @@ export default function ProductDetailPage() {
             ) : (
               <div className="space-y-3">
                 <div className="space-y-1.5">
-                  <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Quick Prompts:</span>
+                  <span className="text-[11px] font-semibold text-slate-500 dark:text-twilight-300">Quick Prompts:</span>
                   <div className="flex flex-wrap gap-1.5">
                     {[
                       "Is this still available at the hub?",
@@ -532,7 +532,7 @@ export default function ProductDetailPage() {
                         key={idx}
                         type="button"
                         onClick={() => setQuestionText(prompt)}
-                        className="rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-[10px] text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+                        className="rounded-full bg-slate-100 dark:bg-twilight-750 px-2.5 py-1 text-[10px] text-slate-700 dark:text-twilight-300 hover:bg-brand-500/15 dark:hover:bg-twilight-700 hover:text-brand-600 dark:hover:text-brand-400 transition"
                       >
                         {prompt}
                       </button>
@@ -546,7 +546,7 @@ export default function ProductDetailPage() {
                     value={questionText}
                     onChange={(e) => setQuestionText(e.target.value)}
                     placeholder="Type your question for the seller..."
-                    className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 p-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none"
+                    className="w-full rounded-2xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 p-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-twilight-400 focus:border-brand-500 focus:outline-none"
                   />
                 </div>
 
@@ -554,7 +554,7 @@ export default function ProductDetailPage() {
                   type="button"
                   disabled={!questionText.trim()}
                   onClick={() => setQuestionSent(true)}
-                  className="w-full flex items-center justify-center gap-1.5 rounded-full bg-indigo-600 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50 transition"
+                  className="w-full flex items-center justify-center gap-1.5 rounded-full bg-brand-600 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-brand-700 disabled:opacity-50 transition"
                 >
                   <Send className="h-3.5 w-3.5" /> Send Question
                 </button>

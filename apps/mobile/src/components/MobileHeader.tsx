@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { Menu, Bell } from "lucide-react-native";
+import { Menu, Bell, User } from "lucide-react-native";
 import { EstudLogo } from "./EstudLogo";
 
 interface MobileHeaderProps {
@@ -15,7 +15,7 @@ interface MobileHeaderProps {
 export function MobileHeader({
   campusName = "AAU 4 Kilo",
   unreadCount = 2,
-  avatarUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+  avatarUrl,
   onMenuPress,
   onNotificationsPress,
   onProfilePress,
@@ -51,7 +51,11 @@ export function MobileHeader({
         </TouchableOpacity>
 
         <TouchableOpacity onPress={onProfilePress} style={styles.avatarWrapper}>
-          <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+          {avatarUrl ? (
+            <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+          ) : (
+            <User size={18} color="#6C5CE7" />
+          )}
         </TouchableOpacity>
       </View>
     </View>

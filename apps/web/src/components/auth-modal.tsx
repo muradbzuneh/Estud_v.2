@@ -5,13 +5,11 @@ import {
   GraduationCap,
   Mail,
   Lock,
-  Smartphone,
   CheckCircle2,
   AlertCircle,
   X,
   Eye,
   EyeOff,
-  Building2,
   ShieldCheck,
 } from "lucide-react";
 import { signIn, signUp } from "@/lib/auth-client";
@@ -95,44 +93,44 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 dark:bg-black/70 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="relative w-full max-w-md rounded-2xl bg-white dark:bg-twilight-800 p-6 sm:p-8 shadow-2xl border border-slate-100 dark:border-twilight-700 text-slate-900 dark:text-twilight-100">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute right-5 top-5 p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+          className="absolute right-5 top-5 p-2 rounded-full text-slate-400 dark:text-twilight-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-twilight-750 transition-colors cursor-pointer"
         >
           <X className="h-5 w-5" />
         </button>
 
         {isSuccess ? (
           <div className="text-center py-6">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 mb-4 animate-in zoom-in-75">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-50 dark:bg-twilight-750 text-brand-600 dark:text-brand-400 mb-4 animate-in zoom-in-75">
               <CheckCircle2 className="h-8 w-8" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900">Welcome to Estud!</h3>
-            <p className="mt-2 text-xs text-slate-600 max-w-xs mx-auto">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Welcome to Estud!</h3>
+            <p className="mt-2 text-xs text-slate-600 dark:text-twilight-300 max-w-xs mx-auto">
               Your student account has been created. A confirmation link has been sent to verify your student status.
             </p>
             <button
               onClick={onClose}
-              className="mt-6 w-full rounded-full bg-emerald-600 py-3 text-sm font-semibold text-white hover:bg-emerald-700 transition"
+              className="mt-6 w-full rounded-xl bg-brand-600 py-3 text-sm font-semibold text-white hover:bg-brand-700 transition cursor-pointer"
             >
               Continue to Marketplace
             </button>
           </div>
         ) : (
           <div>
-            {/* Header */}
+            {/* Header matching Image 2 */}
             <div className="text-center mb-6">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 mb-3 shadow-inner">
-                <GraduationCap className="h-7 w-7" />
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 dark:bg-twilight-750 text-brand-600 dark:text-brand-400 mb-3 shadow-inner">
+                <GraduationCap className="h-6 w-6" />
               </div>
-              <h2 className="text-xl font-black text-slate-900">
-                {mode === "signin" ? "Sign in to Estud" : "Create Student Account"}
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                {mode === "signin" ? "Sign in to Estud" : "Create an account"}
               </h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Ethiopian university student-to-student marketplace
+              <p className="text-xs text-slate-500 dark:text-twilight-400 mt-1">
+                {mode === "signin" ? "Welcome back! Please enter your details." : "Join thousands of students trading securely across Ethiopia"}
               </p>
             </div>
 
@@ -141,7 +139,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
               type="button"
               onClick={handleGoogleSignIn}
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-3 rounded-2xl border-2 border-slate-200 bg-white py-3 px-4 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition shadow-sm"
+              className="w-full flex items-center justify-center gap-3 rounded-xl border border-slate-200 dark:border-twilight-700 bg-white dark:bg-twilight-750 py-2.5 px-4 text-xs font-semibold text-slate-700 dark:text-twilight-100 hover:bg-slate-50 dark:hover:bg-twilight-700 transition shadow-xs cursor-pointer"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24">
                 <path
@@ -167,16 +165,16 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
             {/* Separator */}
             <div className="relative my-5 text-center">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200" />
+                <div className="w-full border-t border-slate-200 dark:border-twilight-700" />
               </div>
-              <span className="relative bg-white px-3 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+              <span className="relative bg-white dark:bg-twilight-800 px-3 text-[11px] uppercase tracking-wider text-slate-400 dark:text-twilight-400 font-medium">
                 Or with {authMethod === "email" ? "Email" : "Phone"}
               </span>
             </div>
 
             {error && (
-              <div className="mb-4 rounded-xl bg-rose-50 border border-rose-200 p-3 flex items-center gap-2 text-xs text-rose-800">
-                <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
+              <div className="mb-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 p-3 flex items-center gap-2 text-xs text-rose-800 dark:text-rose-200">
+                <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
                 <span>{error}</span>
               </div>
             )}
@@ -184,7 +182,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
             <form onSubmit={handleSubmit} className="space-y-3.5">
               {mode === "signup" && (
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-twilight-300 mb-1">
                     Full Name
                   </label>
                   <input
@@ -193,20 +191,20 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Alazar Tadesse"
-                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-twilight-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-750 focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
                   />
                 </div>
               )}
 
               {/* Mode switch: Email vs Phone */}
-              <div className="flex justify-between items-center text-[11px] text-slate-500">
-                <span className="font-bold uppercase tracking-wider text-slate-600">
+              <div className="flex justify-between items-center text-[11px]">
+                <span className="font-medium uppercase tracking-wider text-slate-600 dark:text-twilight-300">
                   {authMethod === "email" ? "Student Email" : "Ethiopian Mobile Phone"}
                 </span>
                 <button
                   type="button"
                   onClick={() => setAuthMethod(authMethod === "email" ? "phone" : "email")}
-                  className="text-emerald-700 font-semibold hover:underline"
+                  className="text-brand-600 dark:text-brand-400 font-semibold hover:underline cursor-pointer"
                 >
                   Use {authMethod === "email" ? "Phone (+251)" : "Email"} instead
                 </button>
@@ -214,19 +212,19 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
 
               {authMethod === "email" ? (
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-twilight-400" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@aau.edu.et or personal@gmail.com"
-                    className="w-full rounded-xl border border-slate-200 pl-10 pr-3.5 py-2.5 text-xs placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-twilight-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-750 focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
                   />
                 </div>
               ) : (
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500 dark:text-twilight-400">
                     +251
                   </span>
                   <input
@@ -235,23 +233,25 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     placeholder="911 234 567"
-                    className="w-full rounded-xl border border-slate-200 pl-14 pr-3.5 py-2.5 text-xs font-mono placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 pl-14 pr-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-twilight-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-750 focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
                   />
                 </div>
               )}
 
               {mode === "signup" && (
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-twilight-300 mb-1">
                     Your University
                   </label>
                   <select
                     value={university}
                     onChange={(e) => setUniversity(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs bg-white focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-twilight-750 text-slate-900 dark:text-white focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-750 focus:outline-none focus:ring-1 focus:ring-brand-500 transition cursor-pointer"
                   >
                     {UNIVERSITIES.map((u) => (
-                      <option key={u} value={u}>{u}</option>
+                      <option key={u} value={u} className="bg-white dark:bg-twilight-800 text-slate-900 dark:text-white">
+                        {u}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -259,33 +259,34 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
 
               {/* Password */}
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
+                <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-twilight-300 mb-1">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-twilight-400" />
                   <input
                     type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="At least 8 characters"
-                    className="w-full rounded-xl border border-slate-200 pl-10 pr-10 py-2.5 text-xs placeholder:text-slate-400 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 pl-10 pr-10 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-twilight-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-750 focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-twilight-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
 
+              {/* Submit Button - Royal Violet-Indigo from Image 2 */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full rounded-full bg-emerald-600 py-3 text-xs font-bold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 disabled:opacity-50 transition mt-2"
+                className="w-full rounded-xl bg-brand-600 hover:bg-brand-700 py-3 text-xs font-semibold text-white shadow-xs disabled:opacity-50 transition cursor-pointer mt-2"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -295,20 +296,20 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                 ) : mode === "signin" ? (
                   "Sign In"
                 ) : (
-                  "Create Account"
+                  "Create account"
                 )}
               </button>
             </form>
 
-            {/* Toggle sign in / sign up */}
-            <div className="mt-5 text-center text-xs text-slate-500">
+            {/* Toggle sign in / sign up matching Image 2 */}
+            <div className="mt-5 text-center text-xs text-slate-500 dark:text-twilight-400">
               {mode === "signin" ? (
                 <span>
                   Don't have an account yet?{" "}
                   <button
                     type="button"
                     onClick={() => setMode("signup")}
-                    className="font-bold text-emerald-700 hover:underline"
+                    className="font-semibold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer"
                   >
                     Sign up free
                   </button>
@@ -319,17 +320,17 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                   <button
                     type="button"
                     onClick={() => setMode("signin")}
-                    className="font-bold text-emerald-700 hover:underline"
+                    className="font-semibold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer"
                   >
-                    Sign in
+                    Log in
                   </button>
                 </span>
               )}
             </div>
 
             {/* Trust badge */}
-            <div className="mt-6 flex items-center justify-center gap-1.5 text-[11px] text-slate-400 border-t border-slate-100 pt-4">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+            <div className="mt-6 flex items-center justify-center gap-1.5 text-[11px] text-slate-400 dark:text-twilight-400 border-t border-slate-100 dark:border-twilight-700 pt-4">
+              <ShieldCheck className="h-3.5 w-3.5 text-brand-600 dark:text-brand-400" />
               <span>Protected by Better Auth & Estud Student Escrow</span>
             </div>
           </div>

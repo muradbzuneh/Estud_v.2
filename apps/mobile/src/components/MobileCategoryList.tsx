@@ -71,7 +71,7 @@ export function MobileCategoryList({
               >
                 <Icon
                   size={20}
-                  color={isSelected ? "#059669" : "#64748B"}
+                  color={isSelected ? "#6C5CE7" : "#64748B"}
                 />
               </View>
               <Text
@@ -115,8 +115,8 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   iconBoxSelected: {
-    backgroundColor: "#ECFDF5",
-    borderColor: "#10B981",
+    backgroundColor: "#F4F2FE",
+    borderColor: "#6C5CE7",
   },
   categoryText: {
     fontSize: 11,
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   categoryTextSelected: {
-    color: "#059669",
+    color: "#6C5CE7",
     fontWeight: "800",
   },
 });

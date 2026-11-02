@@ -11,7 +11,7 @@ export default function AuthPage() {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFAFA]">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-twilight-900 text-slate-900 dark:text-twilight-100 transition-colors duration-200">
       <Navbar />
       <main className="flex-1 flex items-center justify-center p-4">
         <AuthModal

@@ -32,7 +32,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#0B0F19] transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-twilight-900 transition-colors duration-200">
       {/* Top Banner (Auto-dismisses smoothly after 5 seconds) */}
       <TopAnnouncementBanner autoHideDuration={5000} />
 

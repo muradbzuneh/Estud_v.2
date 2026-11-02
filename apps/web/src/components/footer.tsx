@@ -9,7 +9,7 @@ export function Footer() {
   const { t } = useLanguage();
 
   return (
-    <footer className="border-t border-slate-200/60 dark:border-white/5 bg-white dark:bg-[#0B0F19] pt-12 pb-8 transition-colors duration-200">
+    <footer className="border-t border-slate-200/80 dark:border-twilight-700 bg-white dark:bg-twilight-900 pt-12 pb-8 transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
           {/* Brand info */}
@@ -18,7 +18,7 @@ export function Footer() {
             <p className="mt-3 max-w-sm text-xs leading-relaxed text-slate-500 dark:text-slate-400">
               {t("footer.desc")}
             </p>
-            <div className="mt-4 flex items-center gap-2 text-xs font-semibold text-indigo-700 dark:text-indigo-400">
+            <div className="mt-4 flex items-center gap-2 text-xs font-semibold text-brand-600 dark:text-brand-400">
               <ShieldCheck className="h-4 w-4" />
               {t("footer.supported")}
             </div>

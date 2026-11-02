@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   primaryButton: {
-    backgroundColor: "#4F46E5",
+    backgroundColor: "#6C5CE7",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

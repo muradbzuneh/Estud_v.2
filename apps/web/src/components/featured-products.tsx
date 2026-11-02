@@ -212,7 +212,7 @@ export function FeaturedProducts({
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-600 dark:bg-brand-400" />
             <span className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
               {t("products.sectionTag")}
             </span>
@@ -225,7 +225,7 @@ export function FeaturedProducts({
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowAll(!showAll)}
-            className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+            className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 transition"
           >
             <span>{showAll ? t("products.showLess") : t("products.viewAll")}</span>
             <ArrowRight className="h-3.5 w-3.5" />
@@ -274,10 +274,10 @@ export function FeaturedProducts({
           {displayedList.map((item) => (
             <div
               key={item.id}
-              className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 transition duration-200 hover:-translate-y-1 hover:border-indigo-300 dark:hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-950/5 dark:hover:shadow-black/40"
+              className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-twilight-700 bg-white dark:bg-twilight-800 transition duration-200 hover:-translate-y-0.5 hover:border-brand-500/50 dark:hover:border-brand-500/50 shadow-xs"
             >
               {/* Image & Badges */}
-              <Link href={`/products/${item.id}`} className="relative aspect-square w-full overflow-hidden bg-slate-100 dark:bg-slate-800 block">
+              <Link href={`/products/${item.id}`} className="relative aspect-square w-full overflow-hidden bg-slate-100 dark:bg-twilight-750 block">
                 <img
                   src={item.imageUrl}
                   alt={item.title}
@@ -303,7 +303,7 @@ export function FeaturedProducts({
                   toggleFavorite(item.id);
                 }}
                 aria-label="Save to favorites"
-                className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur shadow-sm transition z-10 ${
+                className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 dark:bg-twilight-750/95 backdrop-blur shadow-xs transition z-10 ${
                   favorites[item.id] ? "text-rose-500" : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                 }`}
               >
@@ -320,7 +320,7 @@ export function FeaturedProducts({
                 {/* Title */}
                 <Link
                   href={`/products/${item.id}`}
-                  className="mt-1 line-clamp-2 text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition"
+                  className="mt-1 line-clamp-2 text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition"
                 >
                   {item.title}
                 </Link>
@@ -354,7 +354,7 @@ export function FeaturedProducts({
                   <button
                     onClick={() => setCheckoutProduct(item)}
                     aria-label="Order with SafeTrade Escrow"
-                    className="flex h-9 w-9 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 transition hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 dark:bg-twilight-750 text-brand-600 dark:text-brand-300 transition hover:bg-brand-600 hover:text-white dark:hover:bg-brand-600"
                   >
                     <ShoppingBag className="h-4 w-4" />
                   </button>
@@ -364,10 +364,10 @@ export function FeaturedProducts({
           ))}
 
           {/* Promotional Sell Card matching Mockup */}
-          <div className="relative flex flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] p-6 text-white shadow-xl">
+          <div className="relative flex flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-twilight-950 via-twilight-900 to-twilight-950 border border-twilight-700 p-6 text-white shadow-xl">
             <div className="space-y-4">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 backdrop-blur border border-white/20">
-                <Sparkles className="h-6 w-6 text-indigo-400" />
+                <Sparkles className="h-6 w-6 text-brand-400" />
               </div>
               <div>
                 <h3 className="text-lg font-black leading-snug">
@@ -382,7 +382,7 @@ export function FeaturedProducts({
             <div className="mt-6 pt-4 border-t border-white/10">
               <Link
                 href="/sell"
-                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-indigo-600 hover:bg-indigo-500 py-3 text-xs font-medium text-white transition cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 py-3 text-xs font-medium text-white transition cursor-pointer"
               >
                 {t("products.promoBtn")} <ArrowRight className="h-3.5 w-3.5" />
               </Link>

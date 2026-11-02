@@ -212,12 +212,12 @@ export default function MobileAppSimulatorPage() {
               </span>
             </button>
 
-            <Link href="/auth" className="h-8 w-8 rounded-full overflow-hidden ring-2 ring-indigo-600/30">
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-                alt="Avatar"
-                className="h-full w-full object-cover"
-              />
+            <Link
+              href="/auth"
+              className="h-8 w-8 rounded-full bg-slate-100 dark:bg-twilight-750 flex items-center justify-center text-slate-700 dark:text-twilight-200 border border-slate-200 dark:border-twilight-700 hover:text-brand-600 dark:hover:text-brand-400 transition"
+              aria-label="Account"
+            >
+              <User className="h-4 w-4" />
             </Link>
           </div>
 

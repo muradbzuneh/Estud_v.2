@@ -124,7 +124,7 @@ export function HomeScreen() {
       {/* Tab: Explore */}
       {activeTab === "explore" && (
         <ScrollView contentContainerStyle={styles.centerTab}>
-          <Compass size={48} color="#4F46E5" />
+          <Compass size={48} color="#6C5CE7" />
           <Text style={styles.tabTitle}>Explore Ethiopian Campuses</Text>
           <Text style={styles.tabSubtitle}>
             Browse verified student deals at Addis Ababa University, ASTU Adama, Hawassa, and Jimma.
@@ -141,14 +141,14 @@ export function HomeScreen() {
       {/* Tab: Sell */}
       {activeTab === "sell" && (
         <ScrollView contentContainerStyle={styles.centerTab}>
-          <Plus size={48} color="#059669" />
+          <Plus size={48} color="#6C5CE7" />
           <Text style={styles.tabTitle}>List an Item (0% Seller Fee)</Text>
           <Text style={styles.tabSubtitle}>
             Snap photos of your unused books, electronics, or gear and earn 100% of your asking price.
           </Text>
           <TouchableOpacity
             onPress={() => Alert.alert("Camera Upload", "Opening camera to take photo of item...")}
-            style={[styles.actionPill, { backgroundColor: "#059669" }]}
+            style={[styles.actionPill, { backgroundColor: "#6C5CE7" }]}
           >
             <Text style={styles.actionPillText}>Take Photo & List</Text>
           </TouchableOpacity>
@@ -179,7 +179,7 @@ export function HomeScreen() {
             {/* Secret 4-Digit PIN */}
             <View style={styles.pinBox}>
               <View style={styles.pinHeader}>
-                <Lock size={14} color="#4F46E5" />
+                <Lock size={14} color="#6C5CE7" />
                 <Text style={styles.pinLabel}>Secret 4-Digit Inspection PIN</Text>
               </View>
               <Text style={styles.pinCode}>7 2 9 4</Text>
@@ -246,7 +246,7 @@ export function HomeScreen() {
 
               {showOrderSuccess ? (
                 <View style={styles.successContainer}>
-                  <CheckCircle2 size={54} color="#059669" />
+                  <CheckCircle2 size={54} color="#6C5CE7" />
                   <Text style={styles.successTitle}>Escrow Payment Reserved!</Text>
                   <Text style={styles.successSubtitle}>
                     Your funds are protected in SafeTrade Escrow. Your 4-digit pickup PIN has been generated.
@@ -265,7 +265,7 @@ export function HomeScreen() {
               ) : (
                 <View>
                   <View style={styles.modalHeaderRow}>
-                    <ShieldCheck size={20} color="#059669" />
+                    <ShieldCheck size={20} color="#6C5CE7" />
                     <Text style={styles.modalTitle}>SafeTrade Escrow Checkout</Text>
                   </View>
 
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   actionPill: {
-    backgroundColor: "#4F46E5",
+    backgroundColor: "#6C5CE7",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 24,
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   confirmButton: {
-    backgroundColor: "#059669",
+    backgroundColor: "#6C5CE7",
     paddingVertical: 10,
     borderRadius: 20,
     alignItems: "center",
@@ -491,7 +491,7 @@ const styles = StyleSheet.create({
   modalCondition: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#059669",
+    color: "#6C5CE7",
     marginTop: 2,
     marginBottom: 12,
   },
@@ -531,10 +531,10 @@ const styles = StyleSheet.create({
   totalVal: {
     fontSize: 13,
     fontWeight: "900",
-    color: "#4F46E5",
+    color: "#6C5CE7",
   },
   escrowBuyButton: {
-    backgroundColor: "#4F46E5",
+    backgroundColor: "#6C5CE7",
     paddingVertical: 14,
     borderRadius: 24,
     alignItems: "center",
@@ -563,7 +563,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   viewActivityButton: {
-    backgroundColor: "#059669",
+    backgroundColor: "#6C5CE7",
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 24,

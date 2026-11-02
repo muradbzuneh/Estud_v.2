@@ -89,7 +89,7 @@ export function ImageUploader({
   return (
     <div className="space-y-4">
       {/* Upload Zone */}
-      <div className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 dark:border-white/10 bg-slate-50/50 dark:bg-slate-800/30 p-6 transition hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+      <div className="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 dark:border-twilight-700 bg-slate-50/50 dark:bg-twilight-750/50 p-6 transition hover:border-brand-500 dark:hover:border-brand-400 hover:bg-slate-50 dark:hover:bg-twilight-750">
         <input
           type="file"
           accept="image/*"
@@ -100,17 +100,17 @@ export function ImageUploader({
         />
 
         <div className="flex flex-col items-center justify-center text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 dark:bg-twilight-750 text-brand-600 dark:text-brand-400">
             {isUploading ? (
-              <Loader2 className="h-6 w-6 animate-spin text-indigo-600 dark:text-indigo-400" />
+              <Loader2 className="h-6 w-6 animate-spin text-brand-600 dark:text-brand-400" />
             ) : (
               <UploadCloud className="h-6 w-6" />
             )}
           </div>
-          <div className="mt-3 text-xs font-medium text-slate-800 dark:text-slate-200">
+          <div className="mt-3 text-xs font-medium text-slate-800 dark:text-twilight-100">
             {isUploading ? "Uploading photos..." : "Click or drag photos to upload"}
           </div>
-          <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 font-normal">
+          <p className="mt-1 text-[11px] text-slate-500 dark:text-twilight-400 font-normal">
             PNG, JPG, or WebP (Up to {maxImages} photos max)
           </p>
         </div>
@@ -128,7 +128,7 @@ export function ImageUploader({
           {value.map((url, idx) => (
             <div
               key={idx}
-              className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800"
+              className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 dark:border-twilight-700 bg-white dark:bg-twilight-800"
             >
               <img
                 src={url}
@@ -144,7 +144,7 @@ export function ImageUploader({
                 <X className="h-3.5 w-3.5" />
               </button>
               {idx === 0 && (
-                <span className="absolute bottom-1.5 left-1.5 rounded-md bg-indigo-600/90 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                <span className="absolute bottom-1.5 left-1.5 rounded-md bg-brand-600/90 px-1.5 py-0.5 text-[9px] font-bold text-white">
                   Cover
                 </span>
               )}

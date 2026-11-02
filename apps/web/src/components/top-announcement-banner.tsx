@@ -29,7 +29,7 @@ export function TopAnnouncementBanner({
 
   return (
     <div
-      className={`relative z-50 w-full bg-slate-900 dark:bg-black text-white transition-all duration-400 ease-in-out ${
+      className={`relative z-50 w-full bg-slate-900 dark:bg-twilight-950 text-white transition-all duration-400 ease-in-out ${
         isVisible ? "max-h-12 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-full overflow-hidden"
       }`}
     >

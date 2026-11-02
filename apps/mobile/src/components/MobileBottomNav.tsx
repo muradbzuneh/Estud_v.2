@@ -36,7 +36,7 @@ export function MobileBottomNav({
         >
           <Home
             size={22}
-            color={currentTab === "home" ? "#059669" : "#94A3B8"}
+            color={currentTab === "home" ? "#6C5CE7" : "#94A3B8"}
           />
           <Text
             style={[
@@ -56,7 +56,7 @@ export function MobileBottomNav({
         >
           <Compass
             size={22}
-            color={currentTab === "explore" ? "#059669" : "#94A3B8"}
+            color={currentTab === "explore" ? "#6C5CE7" : "#94A3B8"}
           />
           <Text
             style={[
@@ -88,7 +88,7 @@ export function MobileBottomNav({
         >
           <Clock
             size={22}
-            color={currentTab === "activity" ? "#059669" : "#94A3B8"}
+            color={currentTab === "activity" ? "#6C5CE7" : "#94A3B8"}
           />
           <Text
             style={[
@@ -108,7 +108,7 @@ export function MobileBottomNav({
         >
           <User
             size={22}
-            color={currentTab === "profile" ? "#059669" : "#94A3B8"}
+            color={currentTab === "profile" ? "#6C5CE7" : "#94A3B8"}
           />
           <Text
             style={[
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   tabLabelActive: {
-    color: "#059669",
+    color: "#6C5CE7",
     fontWeight: "800",
   },
   sellButtonContainer: {
@@ -166,10 +166,10 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "#059669",
+    backgroundColor: "#6C5CE7",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#059669",
+    shadowColor: "#6C5CE7",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 8,
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   sellLabel: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#059669",
+    color: "#6C5CE7",
     marginTop: 2,
   },
 });

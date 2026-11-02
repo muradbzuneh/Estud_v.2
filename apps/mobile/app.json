@@ -3,19 +3,30 @@
     "name": "Estud",
     "slug": "estud-mobile",
     "version": "1.0.0",
-    "sdkVersion": "58.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/logos/estud-app-icon-dark.jpg",
+    "userInterfaceStyle": "automatic",
     "splash": {
-      "backgroundColor": "#ffffff"
+      "image": "./assets/logos/estud-app-icon-dark.jpg",
+      "resizeMode": "contain",
+      "backgroundColor": "#181726"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.estud.mobile"
     },
     "android": {
+      "package": "com.estud.mobile",
+      "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#ffffff"
-      }
+        "foregroundImage": "./assets/logos/estud-app-icon-dark.jpg",
+        "backgroundColor": "#181726"
+      },
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     }
   }
 }
