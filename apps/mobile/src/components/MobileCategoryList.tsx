@@ -16,21 +16,22 @@ import {
   MoreHorizontal,
   LucideIcon,
 } from "lucide-react-native";
+import { useApp } from "../context/AppContext";
 
 export interface MobileCategory {
   id: string;
-  name: string;
+  nameKey: "catAll" | "catLaptops" | "catPhones" | "catBooks" | "catGear" | "catDorm" | "catMore";
   icon: LucideIcon;
 }
 
 export const CATEGORIES: MobileCategory[] = [
-  { id: "all", name: "All Items", icon: LayoutGrid },
-  { id: "laptops", name: "Laptops", icon: Laptop },
-  { id: "phones", name: "Phones", icon: Smartphone },
-  { id: "books", name: "Books", icon: BookOpen },
-  { id: "fashion", name: "Gear", icon: Shirt },
-  { id: "sports", name: "Dorm", icon: Dumbbell },
-  { id: "more", name: "More", icon: MoreHorizontal },
+  { id: "all", nameKey: "catAll", icon: LayoutGrid },
+  { id: "laptops", nameKey: "catLaptops", icon: Laptop },
+  { id: "phones", nameKey: "catPhones", icon: Smartphone },
+  { id: "books", nameKey: "catBooks", icon: BookOpen },
+  { id: "fashion", nameKey: "catGear", icon: Shirt },
+  { id: "sports", nameKey: "catDorm", icon: Dumbbell },
+  { id: "more", nameKey: "catMore", icon: MoreHorizontal },
 ];
 
 interface MobileCategoryListProps {
@@ -42,6 +43,8 @@ export function MobileCategoryList({
   selectedId,
   onSelectCategory,
 }: MobileCategoryListProps) {
+  const { colors, t } = useApp();
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -52,6 +55,7 @@ export function MobileCategoryList({
         {CATEGORIES.map((cat) => {
           const Icon = cat.icon;
           const isSelected = selectedId === cat.id;
+          const categoryName = t[cat.nameKey];
 
           return (
             <TouchableOpacity
@@ -63,23 +67,28 @@ export function MobileCategoryList({
               <View
                 style={[
                   styles.iconBox,
+                  {
+                    backgroundColor: isSelected ? colors.primaryLight : colors.inputBg,
+                    borderColor: isSelected ? colors.primary : colors.border,
+                  },
                   isSelected && styles.iconBoxSelected,
                 ]}
               >
                 <Icon
                   size={20}
-                  color={isSelected ? "#1D6BF3" : "#64748B"}
+                  color={isSelected ? colors.primary : colors.textSecondary}
                   strokeWidth={isSelected ? 2.4 : 1.8}
                 />
               </View>
               <Text
                 style={[
                   styles.categoryText,
+                  { color: isSelected ? colors.primary : colors.textSecondary },
                   isSelected && styles.categoryTextSelected,
                 ]}
                 numberOfLines={1}
               >
-                {cat.name}
+                {categoryName}
               </Text>
             </TouchableOpacity>
           );
@@ -105,9 +114,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 16,
-    backgroundColor: "#F8FAFC",
     borderWidth: 1.5,
-    borderColor: "#E2E8F0",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 6,
@@ -118,8 +125,6 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   iconBoxSelected: {
-    backgroundColor: "#EFF6FF", // Light blue tint
-    borderColor: "#1D6BF3",
     borderWidth: 2,
     shadowColor: "#1D6BF3",
     shadowOpacity: 0.15,
@@ -127,11 +132,9 @@ const styles = StyleSheet.create({
   categoryText: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#64748B",
     textAlign: "center",
   },
   categoryTextSelected: {
-    color: "#1D6BF3",
     fontWeight: "800",
   },
 });

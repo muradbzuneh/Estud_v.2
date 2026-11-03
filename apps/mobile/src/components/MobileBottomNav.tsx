@@ -13,7 +13,7 @@ import {
   Clock,
   User,
 } from "lucide-react-native";
-import { MobileTab } from "../context/AppContext";
+import { MobileTab, useApp } from "../context/AppContext";
 
 interface MobileBottomNavProps {
   currentTab: MobileTab;
@@ -24,8 +24,10 @@ export function MobileBottomNav({
   currentTab,
   onTabChange,
 }: MobileBottomNavProps) {
+  const { colors, t } = useApp();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.tabBarBg, borderTopColor: colors.tabBarBorder }]}>
       <View style={styles.innerBar}>
         {/* Tab 1: Home */}
         <TouchableOpacity
@@ -35,16 +37,17 @@ export function MobileBottomNav({
         >
           <Home
             size={22}
-            color={currentTab === "home" ? "#1D6BF3" : "#94A3B8"}
-            strokeWidth={currentTab === "home" ? 2.4 : 1.8}
+            color={currentTab === "home" ? colors.primary : colors.textMuted}
+            strokeWidth={currentTab === "home" ? 2.5 : 1.8}
           />
           <Text
             style={[
               styles.tabLabel,
+              { color: currentTab === "home" ? colors.primary : colors.textMuted },
               currentTab === "home" && styles.tabLabelActive,
             ]}
           >
-            Home
+            {t.tabHome}
           </Text>
         </TouchableOpacity>
 
@@ -56,16 +59,17 @@ export function MobileBottomNav({
         >
           <Compass
             size={22}
-            color={currentTab === "explore" ? "#1D6BF3" : "#94A3B8"}
-            strokeWidth={currentTab === "explore" ? 2.4 : 1.8}
+            color={currentTab === "explore" ? colors.primary : colors.textMuted}
+            strokeWidth={currentTab === "explore" ? 2.5 : 1.8}
           />
           <Text
             style={[
               styles.tabLabel,
+              { color: currentTab === "explore" ? colors.primary : colors.textMuted },
               currentTab === "explore" && styles.tabLabelActive,
             ]}
           >
-            Explore
+            {t.tabExplore}
           </Text>
         </TouchableOpacity>
 
@@ -75,11 +79,24 @@ export function MobileBottomNav({
           activeOpacity={0.88}
           style={styles.sellButtonContainer}
         >
-          <View style={[styles.sellButton, currentTab === "sell" && styles.sellButtonActive]}>
+          <View
+            style={[
+              styles.sellButton,
+              {
+                backgroundColor: currentTab === "sell" ? colors.accent : colors.primary,
+                borderColor: colors.card,
+              },
+            ]}
+          >
             <Plus size={26} color="#FFFFFF" strokeWidth={2.8} />
           </View>
-          <Text style={[styles.sellLabel, currentTab === "sell" && styles.sellLabelActive]}>
-            Sell (0%)
+          <Text
+            style={[
+              styles.sellLabel,
+              { color: currentTab === "sell" ? colors.accent : colors.primary },
+            ]}
+          >
+            {t.tabSell}
           </Text>
         </TouchableOpacity>
 
@@ -91,16 +108,17 @@ export function MobileBottomNav({
         >
           <Clock
             size={22}
-            color={currentTab === "activity" ? "#1D6BF3" : "#94A3B8"}
-            strokeWidth={currentTab === "activity" ? 2.4 : 1.8}
+            color={currentTab === "activity" ? colors.primary : colors.textMuted}
+            strokeWidth={currentTab === "activity" ? 2.5 : 1.8}
           />
           <Text
             style={[
               styles.tabLabel,
+              { color: currentTab === "activity" ? colors.primary : colors.textMuted },
               currentTab === "activity" && styles.tabLabelActive,
             ]}
           >
-            Activity
+            {t.tabActivity}
           </Text>
         </TouchableOpacity>
 
@@ -112,16 +130,17 @@ export function MobileBottomNav({
         >
           <User
             size={22}
-            color={currentTab === "profile" ? "#1D6BF3" : "#94A3B8"}
-            strokeWidth={currentTab === "profile" ? 2.4 : 1.8}
+            color={currentTab === "profile" ? colors.primary : colors.textMuted}
+            strokeWidth={currentTab === "profile" ? 2.5 : 1.8}
           />
           <Text
             style={[
               styles.tabLabel,
+              { color: currentTab === "profile" ? colors.primary : colors.textMuted },
               currentTab === "profile" && styles.tabLabelActive,
             ]}
           >
-            Profile
+            {t.tabProfile}
           </Text>
         </TouchableOpacity>
       </View>
@@ -131,9 +150,7 @@ export function MobileBottomNav({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
-    borderTopColor: "#E2E8F0",
     paddingBottom: Platform.OS === "ios" ? 22 : 8,
     shadowColor: "#070D1E",
     shadowOffset: { width: 0, height: -3 },
@@ -156,11 +173,9 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: 10,
     fontWeight: "600",
-    color: "#94A3B8",
     marginTop: 3,
   },
   tabLabelActive: {
-    color: "#1D6BF3",
     fontWeight: "800",
   },
   sellButtonContainer: {
@@ -171,7 +186,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#1D6BF3", // Electric Cobalt Blue
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#1D6BF3",
@@ -180,19 +194,10 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 8,
     borderWidth: 3,
-    borderColor: "#FFFFFF",
-  },
-  sellButtonActive: {
-    backgroundColor: "#F59E0B", // Luminous Gold when active
-    shadowColor: "#F59E0B",
   },
   sellLabel: {
     fontSize: 10,
-    fontWeight: "700",
-    color: "#1D6BF3",
+    fontWeight: "800",
     marginTop: 2,
-  },
-  sellLabelActive: {
-    color: "#F59E0B",
   },
 });

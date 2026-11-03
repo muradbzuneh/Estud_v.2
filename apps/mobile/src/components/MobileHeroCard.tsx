@@ -8,7 +8,9 @@ import {
   ImageBackground,
   useWindowDimensions,
 } from "react-native";
+import * as Animatable from "react-native-animatable";
 import { GraduationCap, ArrowRight, ShieldCheck, CheckCircle2, Sparkles } from "lucide-react-native";
+import { useApp } from "../context/AppContext";
 
 interface MobileHeroCardProps {
   onExplorePress?: () => void;
@@ -17,10 +19,16 @@ interface MobileHeroCardProps {
 
 export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardProps) {
   const { width } = useWindowDimensions();
+  const { colors, t, language } = useApp();
   const isCompact = width < 380;
+  const isDark = colors.mode === "dark";
 
   return (
-    <View style={styles.outerContainer}>
+    <Animatable.View
+      animation="fadeIn"
+      duration={600}
+      style={[styles.outerContainer, { backgroundColor: colors.heroNavy }]}
+    >
       <ImageBackground
         source={require("../../assets/school-supplies-bg.jpg")}
         style={[
@@ -32,20 +40,20 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
         ]}
         resizeMode="cover"
       >
-        {/* Layered Estud Midnight Navy Vignette Overlay */}
-        <View style={styles.overlayNavy} />
-        <View style={styles.overlayGradient} />
+        {/* Layered Estud Vignette Overlays */}
+        <View style={[styles.overlayNavy, { backgroundColor: isDark ? "rgba(5, 22, 46, 0.85)" : "rgba(7, 36, 72, 0.72)" }]} />
+        <View style={[styles.overlayGradient, { backgroundColor: isDark ? "rgba(7, 13, 30, 0.92)" : "rgba(7, 13, 30, 0.82)" }]} />
 
         <View style={styles.contentContainer}>
           {/* Top Row: Student Marketplace Badge */}
           <View style={styles.badgeRow}>
             <View style={styles.badgePill}>
               <GraduationCap size={14} color="#FBBF24" />
-              <Text style={styles.badgeText}>Verified Student Marketplace</Text>
+              <Text style={styles.badgeText}>{t.heroBadge}</Text>
             </View>
             <View style={styles.liveIndicator}>
               <View style={styles.liveDot} />
-              <Text style={styles.liveText}>Campus Live</Text>
+              <Text style={styles.liveText}>{t.heroLiveCampus}</Text>
             </View>
           </View>
 
@@ -54,14 +62,14 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
             style={[
               styles.heading,
               {
-                fontSize: isCompact ? 26 : 30,
-                lineHeight: isCompact ? 32 : 36,
+                fontSize: isCompact ? 24 : 28,
+                lineHeight: isCompact ? 30 : 35,
               },
             ]}
           >
-            Buy, Sell and{"\n"}
-            Exchange with{"\n"}
-            <Text style={styles.headingAccent}>Confidence.</Text>
+            {t.heroTitle1}{"\n"}
+            {t.heroTitle2}{"\n"}
+            <Text style={styles.headingAccent}>{t.heroTitleAccent}</Text>
           </Text>
 
           {/* Subtitle */}
@@ -69,16 +77,21 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
             style={[
               styles.subtitle,
               {
-                fontSize: isCompact ? 12 : 13,
-                lineHeight: isCompact ? 17 : 19,
+                fontSize: isCompact ? 11 : 12,
+                lineHeight: isCompact ? 16 : 18,
               },
             ]}
           >
-            Find great deals on educational and campus essentials across Ethiopian universities with 100% SafeTrade Escrow protection.
+            {t.heroSubtitle}
           </Text>
 
-          {/* 3D Student Backpack Showcase Feature Container */}
-          <View style={styles.showcaseRow}>
+          {/* 3D Student Backpack Showcase Feature Container with subtle animation */}
+          <Animatable.View
+            animation="zoomIn"
+            delay={200}
+            duration={500}
+            style={styles.showcaseRow}
+          >
             <View style={styles.showcaseImageCard}>
               <Image
                 source={require("../../assets/student-backpack-3d.jpg")}
@@ -89,18 +102,18 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
             <View style={styles.showcaseTextCol}>
               <View style={styles.featureItem}>
                 <ShieldCheck size={14} color="#10B981" />
-                <Text style={styles.featureText}>SafeTrade Escrow Protection</Text>
+                <Text style={styles.featureText}>{t.heroFeature1}</Text>
               </View>
               <View style={styles.featureItem}>
                 <CheckCircle2 size={14} color="#FBBF24" />
-                <Text style={styles.featureText}>Campus Intermediary Desks</Text>
+                <Text style={styles.featureText}>{t.heroFeature2}</Text>
               </View>
               <View style={styles.featureItem}>
                 <Sparkles size={14} color="#60A5FA" />
-                <Text style={styles.featureText}>0% Seller Fee &bull; 100% Cash</Text>
+                <Text style={styles.featureText}>{t.heroFeature3}</Text>
               </View>
             </View>
-          </View>
+          </Animatable.View>
 
           {/* Dual Action CTA Buttons (Full width responsive) */}
           <View style={styles.ctaRow}>
@@ -109,7 +122,7 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
               activeOpacity={0.88}
               style={[styles.primaryButton, { flex: isCompact ? 1 : 1.2 }]}
             >
-              <Text style={styles.primaryButtonText}>Explore Marketplace</Text>
+              <Text style={styles.primaryButtonText}>{t.heroExploreBtn}</Text>
               <ArrowRight size={15} color="#FFFFFF" strokeWidth={2.5} />
             </TouchableOpacity>
 
@@ -118,7 +131,7 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
               activeOpacity={0.85}
               style={[styles.secondaryButton, { flex: 1 }]}
             >
-              <Text style={styles.secondaryButtonText}>Start Selling</Text>
+              <Text style={styles.secondaryButtonText}>{t.heroSellBtn}</Text>
               <View style={styles.zeroFeePill}>
                 <Text style={styles.zeroFeeText}>0% Fee</Text>
               </View>
@@ -126,14 +139,13 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
           </View>
         </View>
       </ImageBackground>
-    </View>
+    </Animatable.View>
   );
 }
 
 const styles = StyleSheet.create({
   outerContainer: {
     width: "100%",
-    backgroundColor: "#072448",
     overflow: "hidden",
     borderBottomLeftRadius: 28,
     borderBottomRightRadius: 28,
@@ -150,11 +162,9 @@ const styles = StyleSheet.create({
   },
   overlayNavy: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(7, 36, 72, 0.72)",
   },
   overlayGradient: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(7, 13, 30, 0.82)",
   },
   contentContainer: {
     position: "relative",
@@ -208,10 +218,10 @@ const styles = StyleSheet.create({
   heading: {
     fontWeight: "900",
     color: "#FFFFFF",
-    letterSpacing: -0.6,
+    letterSpacing: -0.5,
   },
   headingAccent: {
-    color: "#FBBF24", // Golden Yellow Accent matching Estud Ribbon
+    color: "#FBBF24", // Golden Yellow Accent
   },
   subtitle: {
     color: "#CBD5E1",
@@ -231,8 +241,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   showcaseImageCard: {
-    width: 80,
-    height: 80,
+    width: 76,
+    height: 76,
     borderRadius: 14,
     backgroundColor: "#FFFFFF",
     padding: 4,
@@ -250,7 +260,7 @@ const styles = StyleSheet.create({
   },
   showcaseTextCol: {
     flex: 1,
-    gap: 6,
+    gap: 5,
   },
   featureItem: {
     flexDirection: "row",

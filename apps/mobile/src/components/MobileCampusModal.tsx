@@ -7,8 +7,9 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import * as Animatable from "react-native-animatable";
 import { MapPin, Check, X, Building2 } from "lucide-react-native";
-import { ETHIOPIAN_CAMPUSES } from "../context/AppContext";
+import { ETHIOPIAN_CAMPUSES, useApp } from "../context/AppContext";
 
 interface MobileCampusModalProps {
   visible: boolean;
@@ -23,6 +24,9 @@ export function MobileCampusModal({
   onSelectCampus,
   onClose,
 }: MobileCampusModalProps) {
+  const { colors, language } = useApp();
+  const isDark = colors.mode === "dark";
+
   return (
     <Modal
       visible={visible}
@@ -31,22 +35,31 @@ export function MobileCampusModal({
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <View style={styles.modalCard}>
+        <Animatable.View
+          animation="fadeInUp"
+          duration={300}
+          style={[styles.modalCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+        >
           {/* Header */}
-          <View style={styles.header}>
+          <View style={[styles.header, { borderBottomColor: colors.border }]}>
             <View style={styles.headerLeft}>
-              <View style={styles.iconCircle}>
-                <Building2 size={18} color="#1D6BF3" />
+              <View style={[styles.iconCircle, { backgroundColor: colors.primaryLight }]}>
+                <Building2 size={18} color={colors.primary} />
               </View>
               <View>
-                <Text style={styles.title}>Select Campus Hub</Text>
-                <Text style={styles.subtitle}>
-                  Browse verified student listings near you
+                <Text style={[styles.title, { color: colors.textPrimary }]}>
+                  {language === "am" ? "የካምፓስ ማዕከል ይምረጡ" : "Select Campus Hub"}
+                </Text>
+                <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+                  {language === "am" ? "በአቅራቢያዎ ያሉ የተረጋገጡ የተማሪ ዕቃዎችን ይመልከቱ" : "Browse verified student listings near you"}
                 </Text>
               </View>
             </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <X size={18} color="#64748B" />
+            <TouchableOpacity
+              onPress={onClose}
+              style={[styles.closeBtn, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "#F1F5F9" }]}
+            >
+              <X size={18} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -64,33 +77,37 @@ export function MobileCampusModal({
                   activeOpacity={0.7}
                   style={[
                     styles.campusItem,
-                    isSelected && styles.campusItemSelected,
+                    {
+                      backgroundColor: isSelected ? colors.primaryLight : (isDark ? "#0A1628" : "#F8FAFC"),
+                      borderColor: isSelected ? colors.primary : colors.border,
+                    },
                   ]}
                 >
                   <View style={styles.campusItemLeft}>
                     <MapPin
                       size={16}
-                      color={isSelected ? "#1D6BF3" : "#94A3B8"}
+                      color={isSelected ? colors.primary : colors.textMuted}
                     />
                     <Text
                       style={[
                         styles.campusName,
-                        isSelected && styles.campusNameSelected,
+                        { color: isSelected ? colors.primary : colors.textPrimary },
+                        isSelected && { fontWeight: "800" },
                       ]}
                     >
                       {campus}
                     </Text>
                   </View>
                   {isSelected && (
-                    <View style={styles.checkPill}>
-                      <Check size={14} color="#1D6BF3" strokeWidth={3} />
+                    <View style={[styles.checkPill, { backgroundColor: colors.primaryLight }]}>
+                      <Check size={14} color={colors.primary} strokeWidth={3} />
                     </View>
                   )}
                 </TouchableOpacity>
               );
             })}
           </ScrollView>
-        </View>
+        </Animatable.View>
       </View>
     </Modal>
   );
@@ -103,9 +120,9 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   modalCard: {
-    backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+    borderWidth: 1,
     maxHeight: "75%",
     paddingTop: 16,
     paddingBottom: 28,
@@ -122,7 +139,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: "#F1F5F9",
   },
   headerLeft: {
     flexDirection: "row",
@@ -133,24 +149,20 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#EFF6FF",
     alignItems: "center",
     justifyContent: "center",
   },
   title: {
     fontSize: 16,
     fontWeight: "800",
-    color: "#0F172A",
   },
   subtitle: {
     fontSize: 11,
-    color: "#64748B",
     marginTop: 2,
   },
   closeBtn: {
     padding: 6,
     borderRadius: 16,
-    backgroundColor: "#F1F5F9",
   },
   campusList: {
     marginTop: 12,
@@ -163,13 +175,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 14,
     marginBottom: 6,
-    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
-  },
-  campusItemSelected: {
-    backgroundColor: "#EFF6FF",
-    borderColor: "#1D6BF3",
   },
   campusItemLeft: {
     flexDirection: "row",
@@ -180,17 +186,11 @@ const styles = StyleSheet.create({
   campusName: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#334155",
-  },
-  campusNameSelected: {
-    color: "#1D6BF3",
-    fontWeight: "800",
   },
   checkPill: {
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: "#DBEAFE",
     alignItems: "center",
     justifyContent: "center",
   },

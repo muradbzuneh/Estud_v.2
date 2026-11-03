@@ -1,7 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { MapPin, Bell, User, LogIn, ChevronDown } from "lucide-react-native";
+import { MapPin, Bell, User, LogIn, ChevronDown, Sparkles } from "lucide-react-native";
 import { EstudLogo } from "./EstudLogo";
+import { useApp } from "../context/AppContext";
 
 interface MobileHeaderProps {
   campusName?: string;
@@ -24,34 +25,47 @@ export function MobileHeader({
   onProfilePress,
   onAuthPress,
 }: MobileHeaderProps) {
+  const { colors, t, checkForUpdates } = useApp();
+  const isDark = colors.mode === "dark";
+
   return (
-    <View style={styles.container}>
-      {/* Left: Official Estud Ribbon Logo & Brand Name */}
+    <View style={[styles.container, { backgroundColor: colors.headerBg, borderBottomColor: colors.border }]}>
+      {/* Left: Official Estud Ribbon Logo */}
       <View style={styles.leftSection}>
-        <EstudLogo size={28} showText={true} />
+        <EstudLogo size={28} showText={true} variant={isDark ? "dark" : "light"} />
       </View>
 
-      {/* Center: Campus Hub Pill Button (Clickable to switch campus) */}
+      {/* Center: Campus Hub Pill Button */}
       <TouchableOpacity
         onPress={onCampusPress}
         activeOpacity={0.75}
-        style={styles.campusPill}
+        style={[styles.campusPill, { backgroundColor: colors.inputBg, borderColor: colors.border }]}
       >
-        <MapPin size={12} color="#1D6BF3" />
-        <Text numberOfLines={1} style={styles.campusText}>
+        <MapPin size={12} color={colors.primary} />
+        <Text numberOfLines={1} style={[styles.campusText, { color: colors.textPrimary }]}>
           {campusName}
         </Text>
-        <ChevronDown size={12} color="#64748B" />
+        <ChevronDown size={12} color={colors.textMuted} />
       </TouchableOpacity>
 
-      {/* Right: Notification Bell & Profile Avatar / Sign In */}
+      {/* Right: Quick Update Pill, Notifications & Avatar */}
       <View style={styles.rightSection}>
+        {/* Quick Update Button (Top Header shortcut) */}
+        <TouchableOpacity
+          onPress={checkForUpdates}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          style={[styles.updatePill, { backgroundColor: isDark ? "rgba(245, 158, 11, 0.2)" : "#FEF3C7" }]}
+        >
+          <Sparkles size={13} color="#F59E0B" />
+        </TouchableOpacity>
+
+        {/* Notifications Bell */}
         <TouchableOpacity
           onPress={onNotificationsPress}
           style={styles.iconButton}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Bell size={20} color="#334155" />
+          <Bell size={19} color={colors.textSecondary} />
           {unreadCount > 0 && (
             <View style={styles.badge}>
               <Text style={styles.badgeText}>{unreadCount}</Text>
@@ -59,26 +73,27 @@ export function MobileHeader({
           )}
         </TouchableOpacity>
 
+        {/* Profile Avatar / Sign In */}
         {isAuthenticated ? (
           <TouchableOpacity
             onPress={onProfilePress}
             activeOpacity={0.8}
-            style={styles.avatarWrapper}
+            style={[styles.avatarWrapper, { borderColor: colors.primary, backgroundColor: colors.primaryLight }]}
           >
             {avatarUrl ? (
               <Image source={{ uri: avatarUrl }} style={styles.avatar} />
             ) : (
-              <User size={16} color="#1D6BF3" />
+              <User size={15} color={colors.primary} />
             )}
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             onPress={onAuthPress}
             activeOpacity={0.8}
-            style={styles.signInButton}
+            style={[styles.signInButton, { backgroundColor: colors.primary }]}
           >
             <LogIn size={13} color="#FFFFFF" />
-            <Text style={styles.signInText}>Sign In</Text>
+            <Text style={styles.signInText}>{t.signIn}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -93,9 +108,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 10,
-    backgroundColor: "#FFFFFF",
     borderBottomWidth: 1,
-    borderBottomColor: "#F1F5F9",
   },
   leftSection: {
     flexDirection: "row",
@@ -105,37 +118,41 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20,
-    maxWidth: 140,
+    maxWidth: 135,
   },
   campusText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#0F172A",
     flexShrink: 1,
   },
   rightSection: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 10,
+  },
+  updatePill: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
   },
   iconButton: {
-    padding: 4,
+    padding: 3,
     position: "relative",
   },
   badge: {
     position: "absolute",
-    top: 2,
-    right: 2,
+    top: 1,
+    right: 1,
     backgroundColor: "#EF4444",
     borderRadius: 8,
-    width: 15,
-    height: 15,
+    width: 14,
+    height: 14,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1.5,
@@ -147,25 +164,22 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
   avatarWrapper: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "#EFF6FF",
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     borderWidth: 2,
-    borderColor: "#1D6BF3",
     alignItems: "center",
     justifyContent: "center",
   },
   avatar: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
   },
   signInButton: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "#1D6BF3",
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 16,

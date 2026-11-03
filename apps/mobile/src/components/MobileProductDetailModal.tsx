@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  Alert,
 } from "react-native";
+import * as Animatable from "react-native-animatable";
 import {
   X,
   ShieldCheck,
@@ -25,7 +25,7 @@ import {
 import { useApp } from "../context/AppContext";
 
 export function MobileProductDetailModal() {
-  const { selectedProduct, setSelectedProduct, createOrder, setActiveTab } = useApp();
+  const { selectedProduct, setSelectedProduct, createOrder, setActiveTab, colors, language } = useApp();
   const [collectionMethod, setCollectionMethod] = useState<"hub" | "runner">("hub");
   const [paymentMethod, setPaymentMethod] = useState<"telebirr" | "cbe" | "cash">("telebirr");
   const [createdOrderPin, setCreatedOrderPin] = useState<string | null>(null);
@@ -36,6 +36,7 @@ export function MobileProductDetailModal() {
   const escrowFee = Math.round(itemPrice * 0.05);
   const runnerFee = collectionMethod === "runner" ? 75 : 0;
   const totalAmount = itemPrice + escrowFee + runnerFee;
+  const isDark = colors.mode === "dark";
 
   const handleClose = () => {
     setCreatedOrderPin(null);
@@ -72,49 +73,75 @@ export function MobileProductDetailModal() {
       onRequestClose={handleClose}
     >
       <View style={styles.overlay}>
-        <View style={styles.modalCard}>
+        <Animatable.View
+          animation="fadeInUp"
+          duration={350}
+          style={[styles.modalCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+        >
           {/* Close Button */}
-          <TouchableOpacity onPress={handleClose} style={styles.closeBtn}>
-            <X size={18} color="#64748B" />
+          <TouchableOpacity
+            onPress={handleClose}
+            style={[styles.closeBtn, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "#F1F5F9" }]}
+          >
+            <X size={18} color={colors.textSecondary} />
           </TouchableOpacity>
 
           {createdOrderPin ? (
             /* Order Placed & PIN Generated View */
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.successScroll}>
-              <View style={styles.successIconCircle}>
+              <Animatable.View animation="zoomIn" duration={450} style={styles.successIconCircle}>
                 <CheckCircle2 size={46} color="#10B981" />
-              </View>
+              </Animatable.View>
 
-              <Text style={styles.successTitle}>Funds Locked in Escrow!</Text>
-              <Text style={styles.successSubtitle}>
-                Your payment of ETB {totalAmount.toLocaleString()} is held securely by SafeTrade Escrow. The seller is notified to drop the item off at the campus desk.
+              <Text style={[styles.successTitle, { color: colors.textPrimary }]}>
+                {language === "am" ? "ገንዘብ በኤስክሮው ውስጥ ተቆልፏል!" : "Funds Locked in Escrow!"}
+              </Text>
+              <Text style={[styles.successSubtitle, { color: colors.textSecondary }]}>
+                {language === "am"
+                  ? `የ ETB ${totalAmount.toLocaleString()} ክፍያዎ በሴፍ ትሬድ ኤስክሮው ደህንነቱ ተጠብቋል። ሻጩ ዕቃውን በካምፓስ ዴስክ እንዲያደርስ ተነግሮታል።`
+                  : `Your payment of ETB ${totalAmount.toLocaleString()} is held securely by SafeTrade Escrow. The seller is notified to drop the item off at the campus desk.`}
               </Text>
 
-              {/* Secret Inspection PIN Box */}
-              <View style={styles.pinBox}>
+              {/* Secret Inspection PIN Box with subtle pulsing animation */}
+              <Animatable.View
+                animation="pulse"
+                iterationCount="infinite"
+                duration={2500}
+                style={[
+                  styles.pinBox,
+                  {
+                    backgroundColor: isDark ? "rgba(29, 107, 243, 0.15)" : "#EFF6FF",
+                    borderColor: colors.primary,
+                  },
+                ]}
+              >
                 <View style={styles.pinHeader}>
-                  <Lock size={15} color="#1D6BF3" />
-                  <Text style={styles.pinHeaderTitle}>Secret 4-Digit Inspection PIN</Text>
+                  <Lock size={15} color={colors.primary} />
+                  <Text style={[styles.pinHeaderTitle, { color: colors.primary }]}>
+                    {language === "am" ? "ሚስጥራዊ ባለ 4-ዲጂት መፈተሻ ፒን" : "Secret 4-Digit Inspection PIN"}
+                  </Text>
                 </View>
-                <Text style={styles.pinCode}>{createdOrderPin}</Text>
+                <Text style={[styles.pinCode, { color: colors.textPrimary }]}>{createdOrderPin}</Text>
                 <Text style={styles.pinWarning}>
-                  DO NOT share this code with anyone until you meet at the campus desk and physically inspect the item!
+                  {language === "am"
+                    ? "ዕቃውን በአካል ፈትሸው ካላረጋገጡ በስተቀር ይህን ኮድ ለማንም ሰው አያጋሩ!"
+                    : "DO NOT share this code with anyone until you meet at the campus desk and physically inspect the item!"}
                 </Text>
-              </View>
+              </Animatable.View>
 
               {/* Handover Instructions */}
-              <View style={styles.instructionCard}>
+              <View style={[styles.instructionCard, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", borderColor: colors.border }]}>
                 <View style={styles.stepRow}>
-                  <View style={styles.stepNum}><Text style={styles.stepNumText}>1</Text></View>
-                  <Text style={styles.stepText}>Seller drops item at {selectedProduct.location}.</Text>
+                  <View style={[styles.stepNum, { backgroundColor: colors.primary }]}><Text style={styles.stepNumText}>1</Text></View>
+                  <Text style={[styles.stepText, { color: colors.textSecondary }]}>Seller drops item at {selectedProduct.location}.</Text>
                 </View>
                 <View style={styles.stepRow}>
-                  <View style={styles.stepNum}><Text style={styles.stepNumText}>2</Text></View>
-                  <Text style={styles.stepText}>You inspect and test the item in person.</Text>
+                  <View style={[styles.stepNum, { backgroundColor: colors.primary }]}><Text style={styles.stepNumText}>2</Text></View>
+                  <Text style={[styles.stepText, { color: colors.textSecondary }]}>You inspect and test the item in person.</Text>
                 </View>
                 <View style={styles.stepRow}>
-                  <View style={styles.stepNum}><Text style={styles.stepNumText}>3</Text></View>
-                  <Text style={styles.stepText}>Give this PIN to release 100% payout to seller.</Text>
+                  <View style={[styles.stepNum, { backgroundColor: colors.primary }]}><Text style={styles.stepNumText}>3</Text></View>
+                  <Text style={[styles.stepText, { color: colors.textSecondary }]}>Give this PIN to release 100% payout to seller.</Text>
                 </View>
               </View>
 
@@ -122,9 +149,11 @@ export function MobileProductDetailModal() {
               <TouchableOpacity
                 onPress={handleGoToActivity}
                 activeOpacity={0.88}
-                style={styles.activityButton}
+                style={[styles.activityButton, { backgroundColor: colors.primary }]}
               >
-                <Text style={styles.activityButtonText}>Track Order in Activity Tab</Text>
+                <Text style={styles.activityButtonText}>
+                  {language === "am" ? "በእንቅስቃሴ ገጽ ውስጥ ተከታተል" : "Track Order in Activity Tab"}
+                </Text>
                 <ArrowRight size={15} color="#FFFFFF" />
               </TouchableOpacity>
             </ScrollView>
@@ -146,27 +175,29 @@ export function MobileProductDetailModal() {
 
               {/* Title & Price Row */}
               <View style={styles.titleSection}>
-                <Text style={styles.conditionPill}>{selectedProduct.condition}</Text>
-                <Text style={styles.productTitle}>{selectedProduct.title}</Text>
+                <Text style={[styles.conditionPill, { color: colors.primary }]}>{selectedProduct.condition}</Text>
+                <Text style={[styles.productTitle, { color: colors.textPrimary }]}>{selectedProduct.title}</Text>
                 <View style={styles.priceRow}>
-                  <Text style={styles.priceText}>ETB {selectedProduct.price.toLocaleString()}</Text>
+                  <Text style={[styles.priceText, { color: colors.primary }]}>ETB {selectedProduct.price.toLocaleString()}</Text>
                   {selectedProduct.originalPrice && (
-                    <Text style={styles.origPriceText}>ETB {selectedProduct.originalPrice.toLocaleString()}</Text>
+                    <Text style={[styles.origPriceText, { color: colors.textMuted }]}>
+                      ETB {selectedProduct.originalPrice.toLocaleString()}
+                    </Text>
                   )}
                 </View>
               </View>
 
               {/* Campus Location & Seller */}
-              <View style={styles.sellerCard}>
+              <View style={[styles.sellerCard, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", borderColor: colors.border }]}>
                 <View style={styles.sellerLeft}>
-                  <View style={styles.sellerAvatar}>
-                    <Text style={styles.sellerAvatarText}>ST</Text>
+                  <View style={[styles.sellerAvatar, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
+                    <Text style={[styles.sellerAvatarText, { color: colors.primary }]}>ST</Text>
                   </View>
                   <View>
-                    <Text style={styles.sellerName}>Verified Student Seller</Text>
+                    <Text style={[styles.sellerName, { color: colors.textPrimary }]}>Verified Student Seller</Text>
                     <View style={styles.locationMeta}>
-                      <MapPin size={11} color="#64748B" />
-                      <Text style={styles.locationMetaText}>{selectedProduct.location}</Text>
+                      <MapPin size={11} color={colors.textMuted} />
+                      <Text style={[styles.locationMetaText, { color: colors.textSecondary }]}>{selectedProduct.location}</Text>
                     </View>
                   </View>
                 </View>
@@ -177,83 +208,113 @@ export function MobileProductDetailModal() {
               </View>
 
               {/* Collection Method Picker */}
-              <Text style={styles.sectionHeading}>Choose Handover Method</Text>
+              <Text style={[styles.sectionHeading, { color: colors.textPrimary }]}>Choose Handover Method</Text>
               <View style={styles.methodRow}>
                 <TouchableOpacity
                   onPress={() => setCollectionMethod("hub")}
-                  style={[styles.methodCard, collectionMethod === "hub" && styles.methodCardActive]}
+                  style={[
+                    styles.methodCard,
+                    {
+                      backgroundColor: collectionMethod === "hub" ? colors.primaryLight : (isDark ? "#0A1628" : "#F8FAFC"),
+                      borderColor: collectionMethod === "hub" ? colors.primary : colors.border,
+                    },
+                  ]}
                 >
-                  <Building2 size={18} color={collectionMethod === "hub" ? "#1D6BF3" : "#64748B"} />
+                  <Building2 size={18} color={collectionMethod === "hub" ? colors.primary : colors.textSecondary} />
                   <View style={styles.methodInfo}>
-                    <Text style={[styles.methodTitle, collectionMethod === "hub" && styles.methodTitleActive]}>
+                    <Text style={[styles.methodTitle, { color: collectionMethod === "hub" ? colors.primary : colors.textPrimary }]}>
                       Campus Intermediary Hub
                     </Text>
-                    <Text style={styles.methodSub}>Inspect at desk &bull; Free</Text>
+                    <Text style={[styles.methodSub, { color: colors.textSecondary }]}>Inspect at desk &bull; Free</Text>
                   </View>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={() => setCollectionMethod("runner")}
-                  style={[styles.methodCard, collectionMethod === "runner" && styles.methodCardActive]}
+                  style={[
+                    styles.methodCard,
+                    {
+                      backgroundColor: collectionMethod === "runner" ? colors.primaryLight : (isDark ? "#0A1628" : "#F8FAFC"),
+                      borderColor: collectionMethod === "runner" ? colors.primary : colors.border,
+                    },
+                  ]}
                 >
-                  <Bike size={18} color={collectionMethod === "runner" ? "#1D6BF3" : "#64748B"} />
+                  <Bike size={18} color={collectionMethod === "runner" ? colors.primary : colors.textSecondary} />
                   <View style={styles.methodInfo}>
-                    <Text style={[styles.methodTitle, collectionMethod === "runner" && styles.methodTitleActive]}>
+                    <Text style={[styles.methodTitle, { color: collectionMethod === "runner" ? colors.primary : colors.textPrimary }]}>
                       Student Runner
                     </Text>
-                    <Text style={styles.methodSub}>To dorm room &bull; ETB 75</Text>
+                    <Text style={[styles.methodSub, { color: colors.textSecondary }]}>To dorm room &bull; ETB 75</Text>
                   </View>
                 </TouchableOpacity>
               </View>
 
               {/* Payment Method Selector */}
-              <Text style={styles.sectionHeading}>Select Payment Gateway</Text>
+              <Text style={[styles.sectionHeading, { color: colors.textPrimary }]}>Select Payment Gateway</Text>
               <View style={styles.payMethodRow}>
                 <TouchableOpacity
                   onPress={() => setPaymentMethod("telebirr")}
-                  style={[styles.payChip, paymentMethod === "telebirr" && styles.payChipActive]}
+                  style={[
+                    styles.payChip,
+                    {
+                      backgroundColor: paymentMethod === "telebirr" ? colors.primaryLight : (isDark ? "#0A1628" : "#F8FAFC"),
+                      borderColor: paymentMethod === "telebirr" ? colors.primary : colors.border,
+                    },
+                  ]}
                 >
-                  <Text style={[styles.payChipText, paymentMethod === "telebirr" && styles.payChipTextActive]}>
+                  <Text style={[styles.payChipText, { color: paymentMethod === "telebirr" ? colors.primary : colors.textSecondary }, paymentMethod === "telebirr" && { fontWeight: "800" }]}>
                     Telebirr
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setPaymentMethod("cbe")}
-                  style={[styles.payChip, paymentMethod === "cbe" && styles.payChipActive]}
+                  style={[
+                    styles.payChip,
+                    {
+                      backgroundColor: paymentMethod === "cbe" ? colors.primaryLight : (isDark ? "#0A1628" : "#F8FAFC"),
+                      borderColor: paymentMethod === "cbe" ? colors.primary : colors.border,
+                    },
+                  ]}
                 >
-                  <Text style={[styles.payChipText, paymentMethod === "cbe" && styles.payChipTextActive]}>
+                  <Text style={[styles.payChipText, { color: paymentMethod === "cbe" ? colors.primary : colors.textSecondary }, paymentMethod === "cbe" && { fontWeight: "800" }]}>
                     CBE Birr
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setPaymentMethod("cash")}
-                  style={[styles.payChip, paymentMethod === "cash" && styles.payChipActive]}
+                  style={[
+                    styles.payChip,
+                    {
+                      backgroundColor: paymentMethod === "cash" ? colors.primaryLight : (isDark ? "#0A1628" : "#F8FAFC"),
+                      borderColor: paymentMethod === "cash" ? colors.primary : colors.border,
+                    },
+                  ]}
                 >
-                  <Text style={[styles.payChipText, paymentMethod === "cash" && styles.payChipTextActive]}>
+                  <Text style={[styles.payChipText, { color: paymentMethod === "cash" ? colors.primary : colors.textSecondary }, paymentMethod === "cash" && { fontWeight: "800" }]}>
                     Cash at Hub
                   </Text>
                 </TouchableOpacity>
               </View>
 
               {/* Math Escrow Breakdown */}
-              <View style={styles.breakdownBox}>
+              <View style={[styles.breakdownBox, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", borderColor: colors.border }]}>
                 <View style={styles.breakdownRow}>
-                  <Text style={styles.breakdownLabel}>Item Price:</Text>
-                  <Text style={styles.breakdownVal}>ETB {itemPrice.toLocaleString()}</Text>
+                  <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>Item Price:</Text>
+                  <Text style={[styles.breakdownVal, { color: colors.textPrimary }]}>ETB {itemPrice.toLocaleString()}</Text>
                 </View>
                 <View style={styles.breakdownRow}>
-                  <Text style={styles.breakdownLabel}>SafeTrade Escrow Fee (5%):</Text>
-                  <Text style={styles.breakdownVal}>+ETB {escrowFee.toLocaleString()}</Text>
+                  <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>SafeTrade Escrow Fee (5%):</Text>
+                  <Text style={[styles.breakdownVal, { color: colors.textPrimary }]}>+ETB {escrowFee.toLocaleString()}</Text>
                 </View>
                 {collectionMethod === "runner" && (
                   <View style={styles.breakdownRow}>
-                    <Text style={styles.breakdownLabel}>Dorm Runner Delivery:</Text>
-                    <Text style={styles.breakdownVal}>+ETB {runnerFee}</Text>
+                    <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>Dorm Runner Delivery:</Text>
+                    <Text style={[styles.breakdownVal, { color: colors.textPrimary }]}>+ETB {runnerFee}</Text>
                   </View>
                 )}
-                <View style={[styles.breakdownRow, styles.breakdownTotal]}>
-                  <Text style={styles.totalLabel}>Total Escrow Due:</Text>
-                  <Text style={styles.totalVal}>ETB {totalAmount.toLocaleString()}</Text>
+                <View style={[styles.breakdownRow, styles.breakdownTotal, { borderTopColor: colors.border }]}>
+                  <Text style={[styles.totalLabel, { color: colors.textPrimary }]}>Total Escrow Due:</Text>
+                  <Text style={[styles.totalVal, { color: colors.primary }]}>ETB {totalAmount.toLocaleString()}</Text>
                 </View>
               </View>
 
@@ -261,7 +322,7 @@ export function MobileProductDetailModal() {
               <TouchableOpacity
                 onPress={handleConfirmEscrow}
                 activeOpacity={0.88}
-                style={styles.checkoutBtn}
+                style={[styles.checkoutBtn, { backgroundColor: colors.primary }]}
               >
                 <ShieldCheck size={18} color="#FFFFFF" />
                 <Text style={styles.checkoutBtnText}>
@@ -270,7 +331,7 @@ export function MobileProductDetailModal() {
               </TouchableOpacity>
             </ScrollView>
           )}
-        </View>
+        </Animatable.View>
       </View>
     </Modal>
   );
@@ -283,9 +344,9 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   modalCard: {
-    backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
+    borderWidth: 1,
     maxHeight: "90%",
     paddingTop: 16,
     paddingBottom: 24,
@@ -300,7 +361,6 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     padding: 6,
     borderRadius: 16,
-    backgroundColor: "#F1F5F9",
     marginBottom: 8,
   },
   scrollContent: {
@@ -312,7 +372,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     overflow: "hidden",
     position: "relative",
-    backgroundColor: "#F1F5F9",
     marginBottom: 14,
   },
   productImage: {
@@ -342,13 +401,11 @@ const styles = StyleSheet.create({
   conditionPill: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#1D6BF3",
     marginBottom: 4,
   },
   productTitle: {
     fontSize: 18,
     fontWeight: "900",
-    color: "#0F172A",
     lineHeight: 24,
   },
   priceRow: {
@@ -360,20 +417,16 @@ const styles = StyleSheet.create({
   priceText: {
     fontSize: 20,
     fontWeight: "900",
-    color: "#1D6BF3",
   },
   origPriceText: {
     fontSize: 12,
-    color: "#94A3B8",
     textDecorationLine: "line-through",
   },
   sellerCard: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     borderRadius: 14,
     padding: 10,
     marginBottom: 16,
@@ -387,21 +440,17 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: "#EFF6FF",
     borderWidth: 1,
-    borderColor: "#BFDBFE",
     alignItems: "center",
     justifyContent: "center",
   },
   sellerAvatarText: {
     fontSize: 12,
     fontWeight: "800",
-    color: "#1D6BF3",
   },
   sellerName: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#0F172A",
   },
   locationMeta: {
     flexDirection: "row",
@@ -411,7 +460,6 @@ const styles = StyleSheet.create({
   },
   locationMetaText: {
     fontSize: 10,
-    color: "#64748B",
   },
   trustScorePill: {
     flexDirection: "row",
@@ -430,7 +478,6 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontSize: 13,
     fontWeight: "800",
-    color: "#334155",
     marginBottom: 8,
   },
   methodRow: {
@@ -443,13 +490,7 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 12,
     borderRadius: 14,
-    backgroundColor: "#F8FAFC",
     borderWidth: 1.5,
-    borderColor: "#E2E8F0",
-  },
-  methodCardActive: {
-    backgroundColor: "#EFF6FF",
-    borderColor: "#1D6BF3",
   },
   methodInfo: {
     flex: 1,
@@ -457,14 +498,9 @@ const styles = StyleSheet.create({
   methodTitle: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#334155",
-  },
-  methodTitleActive: {
-    color: "#1D6BF3",
   },
   methodSub: {
     fontSize: 10,
-    color: "#64748B",
     marginTop: 2,
   },
   payMethodRow: {
@@ -477,28 +513,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     alignItems: "center",
     borderRadius: 12,
-    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
-  },
-  payChipActive: {
-    backgroundColor: "#EFF6FF",
-    borderColor: "#1D6BF3",
-    borderWidth: 1.5,
   },
   payChipText: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#64748B",
-  },
-  payChipTextActive: {
-    color: "#1D6BF3",
-    fontWeight: "800",
   },
   breakdownBox: {
-    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     borderRadius: 14,
     padding: 12,
     marginBottom: 16,
@@ -511,40 +533,34 @@ const styles = StyleSheet.create({
   },
   breakdownLabel: {
     fontSize: 11,
-    color: "#64748B",
   },
   breakdownVal: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#334155",
   },
   breakdownTotal: {
     borderTopWidth: 1,
-    borderTopColor: "#E2E8F0",
     paddingTop: 8,
     marginTop: 4,
   },
   totalLabel: {
     fontSize: 13,
     fontWeight: "800",
-    color: "#0F172A",
   },
   totalVal: {
     fontSize: 15,
     fontWeight: "900",
-    color: "#1D6BF3",
   },
   checkoutBtn: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    backgroundColor: "#1D6BF3", // Electric Blue
     paddingVertical: 14,
     borderRadius: 18,
-    shadowColor: "#1D6BF3",
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 4,
   },
@@ -570,11 +586,9 @@ const styles = StyleSheet.create({
   successTitle: {
     fontSize: 20,
     fontWeight: "900",
-    color: "#0F172A",
   },
   successSubtitle: {
     fontSize: 12,
-    color: "#64748B",
     textAlign: "center",
     marginTop: 4,
     lineHeight: 18,
@@ -582,9 +596,7 @@ const styles = StyleSheet.create({
   },
   pinBox: {
     width: "100%",
-    backgroundColor: "#EFF6FF",
     borderWidth: 2,
-    borderColor: "#1D6BF3",
     borderRadius: 18,
     padding: 16,
     alignItems: "center",
@@ -600,13 +612,11 @@ const styles = StyleSheet.create({
   pinHeaderTitle: {
     fontSize: 12,
     fontWeight: "800",
-    color: "#1D6BF3",
     letterSpacing: 0.3,
   },
   pinCode: {
     fontSize: 32,
     fontWeight: "900",
-    color: "#0F172A",
     letterSpacing: 6,
     marginVertical: 4,
   },
@@ -619,9 +629,7 @@ const styles = StyleSheet.create({
   },
   instructionCard: {
     width: "100%",
-    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     borderRadius: 14,
     padding: 12,
     marginBottom: 20,
@@ -636,7 +644,6 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: "#1D6BF3",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -647,7 +654,6 @@ const styles = StyleSheet.create({
   },
   stepText: {
     fontSize: 11,
-    color: "#334155",
     flex: 1,
   },
   activityButton: {
@@ -655,7 +661,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    backgroundColor: "#1D6BF3",
     width: "100%",
     paddingVertical: 14,
     borderRadius: 18,

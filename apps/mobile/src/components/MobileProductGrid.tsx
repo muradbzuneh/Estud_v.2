@@ -5,8 +5,10 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import * as Animatable from "react-native-animatable";
 import { ChevronRight } from "lucide-react-native";
 import { MobileProductCard, MobileProductItem } from "./MobileProductCard";
+import { useApp } from "../context/AppContext";
 
 interface MobileProductGridProps {
   products: MobileProductItem[];
@@ -23,15 +25,19 @@ export function MobileProductGrid({
   onProductPress,
   onFavoritePress,
   onViewAllPress,
-  title = "Featured Student Listings",
+  title,
 }: MobileProductGridProps) {
+  const { colors, t } = useApp();
+
   return (
     <View style={styles.container}>
       {/* Section Header */}
       <View style={styles.headerRow}>
         <View style={styles.titleGroup}>
-          <View style={styles.accentBar} />
-          <Text style={styles.sectionTitle}>{title}</Text>
+          <View style={[styles.accentBar, { backgroundColor: colors.accent }]} />
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+            {title || t.featuredTitle}
+          </Text>
         </View>
 
         {onViewAllPress && (
@@ -40,24 +46,29 @@ export function MobileProductGrid({
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             style={styles.viewAllButton}
           >
-            <Text style={styles.viewAllText}>View All</Text>
-            <ChevronRight size={14} color="#1D6BF3" />
+            <Text style={[styles.viewAllText, { color: colors.primary }]}>{t.viewAll}</Text>
+            <ChevronRight size={14} color={colors.primary} />
           </TouchableOpacity>
         )}
       </View>
 
       {/* Empty State */}
       {products.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyTitle}>No matching student listings found</Text>
-          <Text style={styles.emptySubtitle}>Try adjusting your search query or campus filter.</Text>
+        <View style={[styles.emptyContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>No matching student listings found</Text>
+          <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+            Try adjusting your search query or campus filter.
+          </Text>
         </View>
       ) : (
-        /* 2-Column Responsive Grid */
+        /* 2-Column Responsive Grid with Motion */
         <View style={styles.grid}>
           {products.map((item, index) => (
-            <View
+            <Animatable.View
               key={item.id}
+              animation="fadeInUp"
+              duration={400}
+              delay={Math.min(index * 70, 350)}
               style={[
                 styles.gridItem,
                 index % 2 === 0 ? { paddingRight: 6 } : { paddingLeft: 6 },
@@ -70,7 +81,7 @@ export function MobileProductGrid({
                 onFavoritePress={() => onFavoritePress?.(item.id)}
                 onOrderPress={() => onProductPress?.(item.id)}
               />
-            </View>
+            </Animatable.View>
           ))}
         </View>
       )}
@@ -98,12 +109,10 @@ const styles = StyleSheet.create({
     width: 3.5,
     height: 16,
     borderRadius: 2,
-    backgroundColor: "#F59E0B", // Luminous Gold / Yellow
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "900",
-    color: "#0F172A",
     letterSpacing: -0.3,
   },
   viewAllButton: {
@@ -114,7 +123,6 @@ const styles = StyleSheet.create({
   viewAllText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#1D6BF3",
   },
   grid: {
     flexDirection: "row",
@@ -125,22 +133,18 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     padding: 24,
-    backgroundColor: "#F8FAFC",
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
   },
   emptyTitle: {
     fontSize: 13,
     fontWeight: "700",
-    color: "#334155",
     marginBottom: 4,
   },
   emptySubtitle: {
     fontSize: 11,
-    color: "#64748B",
     textAlign: "center",
   },
 });
