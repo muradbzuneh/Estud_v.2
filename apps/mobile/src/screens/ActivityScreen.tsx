@@ -6,8 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  Alert,
 } from "react-native";
+import * as Animatable from "react-native-animatable";
 import {
   ShieldCheck,
   Lock,
@@ -19,9 +19,10 @@ import {
   Sparkles,
 } from "lucide-react-native";
 import { useApp } from "../context/AppContext";
+import { showSuccessToast, showInfoToast } from "../utils/toast";
 
 export function ActivityScreen() {
-  const { orders, completeOrder, setActiveTab } = useApp();
+  const { orders, completeOrder, setActiveTab, colors, t, language } = useApp();
   const [filter, setFilter] = useState<"active" | "completed">("active");
 
   const activeOrders = orders.filter((o) => o.status !== "completed");
@@ -29,109 +30,133 @@ export function ActivityScreen() {
   const displayOrders = filter === "active" ? activeOrders : completedOrders;
 
   const handleConfirmInspection = (orderId: string, orderNumber: string) => {
-    Alert.alert(
-      "Confirm Item Handover",
-      `Have you physically inspected order ${orderNumber} at the campus desk and verified it meets your expectations?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Yes, Release Payout",
-          style: "default",
-          onPress: () => {
-            completeOrder(orderId);
-            Alert.alert(
-              "Trade Completed!",
-              "100% of the funds have been released to the student seller. SafeTrade Escrow completed successfully."
-            );
-          },
-        },
-      ]
-    );
+    completeOrder(orderId);
   };
 
   const handleDispute = (orderNumber: string) => {
-    Alert.alert(
-      "SafeTrade Buyer Protection",
-      `Order ${orderNumber} is on escrow hold. If the item does not match description, the campus intermediary will cancel and refund 100% of your funds.`
+    showInfoToast(
+      language === "am" ? "የሴፍ ትሬድ የገዢ ዋስትና" : "SafeTrade Buyer Protection",
+      `Order ${orderNumber} is under escrow protection. Contact campus desk.`
     );
   };
 
+  const isDark = colors.mode === "dark";
+
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-      {/* Top Banner */}
-      <View style={styles.header}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}
+    >
+      {/* Top Banner with Animation */}
+      <Animatable.View animation="fadeInDown" duration={450} style={styles.header}>
         <View style={styles.headerLeft}>
-          <ShieldCheck size={26} color="#1D6BF3" />
+          <ShieldCheck size={26} color={colors.primary} />
           <View>
-            <Text style={styles.title}>SafeTrade Escrow Activity</Text>
-            <Text style={styles.subtitle}>Track your student trades & secret pickup PINs</Text>
+            <Text style={[styles.title, { color: colors.textPrimary }]}>{t.activityTitle}</Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{t.activitySubtitle}</Text>
           </View>
         </View>
-      </View>
+      </Animatable.View>
 
       {/* Tabs: Active vs Completed */}
-      <View style={styles.tabToggle}>
+      <View style={[styles.tabToggle, { backgroundColor: isDark ? "#0A1628" : "#F1F5F9" }]}>
         <TouchableOpacity
           onPress={() => setFilter("active")}
-          style={[styles.toggleBtn, filter === "active" && styles.toggleBtnActive]}
+          style={[
+            styles.toggleBtn,
+            filter === "active" && [styles.toggleBtnActive, { backgroundColor: colors.card }],
+          ]}
         >
-          <Text style={[styles.toggleBtnText, filter === "active" && styles.toggleBtnTextActive]}>
-            Active Escrows ({activeOrders.length})
+          <Text
+            style={[
+              styles.toggleBtnText,
+              { color: filter === "active" ? colors.primary : colors.textSecondary },
+              filter === "active" && { fontWeight: "800" },
+            ]}
+          >
+            {t.tabActiveEscrow} ({activeOrders.length})
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setFilter("completed")}
-          style={[styles.toggleBtn, filter === "completed" && styles.toggleBtnActive]}
+          style={[
+            styles.toggleBtn,
+            filter === "completed" && [styles.toggleBtnActive, { backgroundColor: colors.card }],
+          ]}
         >
-          <Text style={[styles.toggleBtnText, filter === "completed" && styles.toggleBtnTextActive]}>
-            Completed ({completedOrders.length})
+          <Text
+            style={[
+              styles.toggleBtnText,
+              { color: filter === "completed" ? colors.primary : colors.textSecondary },
+              filter === "completed" && { fontWeight: "800" },
+            ]}
+          >
+            {t.tabCompletedEscrow} ({completedOrders.length})
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* Empty State */}
       {displayOrders.length === 0 ? (
-        <View style={styles.emptyCard}>
-          <Clock size={44} color="#94A3B8" />
-          <Text style={styles.emptyTitle}>
-            No {filter === "active" ? "active" : "completed"} orders yet
+        <Animatable.View
+          animation="fadeInUp"
+          duration={500}
+          style={[styles.emptyCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+        >
+          <Clock size={44} color={colors.textMuted} />
+          <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+            {language === "am"
+              ? `ምንም ${filter === "active" ? "በሂደት ላይ ያለ" : "የተጠናቀቀ"} ግብይት የለም`
+              : `No ${filter === "active" ? "active" : "completed"} orders yet`}
           </Text>
-          <Text style={styles.emptySubtitle}>
-            Browse student listings on the Home or Explore tab to buy with safe escrow.
+          <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+            {language === "am"
+              ? "በካምፓስ ዕቃዎችን በኤስክሮው ለመግዛት መነሻ ወይም አስስ ገጽን ይመልከቱ።"
+              : "Browse student listings on the Home or Explore tab to buy with safe escrow."}
           </Text>
           <TouchableOpacity
             onPress={() => setActiveTab("home")}
-            style={styles.browseBtn}
+            style={[styles.browseBtn, { backgroundColor: colors.primary }]}
           >
-            <Text style={styles.browseBtnText}>Browse Marketplace</Text>
+            <Text style={styles.browseBtnText}>{t.heroExploreBtn}</Text>
           </TouchableOpacity>
-        </View>
+        </Animatable.View>
       ) : (
         /* Orders List */
-        displayOrders.map((order) => {
+        displayOrders.map((order, idx) => {
           const isCompleted = order.status === "completed";
 
           return (
-            <View key={order.id} style={styles.orderCard}>
+            <Animatable.View
+              key={order.id}
+              animation="fadeInUp"
+              duration={450}
+              delay={idx * 100}
+              style={[styles.orderCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+            >
               {/* Card Header */}
               <View style={styles.orderTopRow}>
                 <View>
-                  <Text style={styles.orderNumber}>{order.orderNumber}</Text>
-                  <Text style={styles.orderTime}>{order.createdAt}</Text>
+                  <Text style={[styles.orderNumber, { color: colors.textPrimary }]}>{order.orderNumber}</Text>
+                  <Text style={[styles.orderTime, { color: colors.textMuted }]}>{order.createdAt}</Text>
                 </View>
                 <View
                   style={[
                     styles.statusBadge,
-                    isCompleted ? styles.statusBadgeCompleted : styles.statusBadgeActive,
+                    isCompleted
+                      ? { backgroundColor: isDark ? "rgba(16, 185, 129, 0.2)" : "#ECFDF5", borderColor: "#A7F3D0" }
+                      : { backgroundColor: colors.primaryLight, borderColor: colors.primary },
                   ]}
                 >
                   <Text
                     style={[
                       styles.statusBadgeText,
-                      isCompleted ? styles.statusTextCompleted : styles.statusTextActive,
+                      { color: isCompleted ? "#10B981" : colors.primary },
                     ]}
                   >
-                    {isCompleted ? "Handover Completed" : "Ready for Inspection"}
+                    {isCompleted
+                      ? (language === "am" ? "መረከብ ተጠናቋል" : "Handover Completed")
+                      : (language === "am" ? "ለመፈተሽ ዝግጁ ነው" : "Ready for Inspection")}
                   </Text>
                 </View>
               </View>
@@ -140,39 +165,56 @@ export function ActivityScreen() {
               <View style={styles.productRow}>
                 <Image source={{ uri: order.imageUrl }} style={styles.productThumb} />
                 <View style={styles.productInfo}>
-                  <Text style={styles.productTitle} numberOfLines={2}>
+                  <Text style={[styles.productTitle, { color: colors.textPrimary }]} numberOfLines={2}>
                     {order.productTitle}
                   </Text>
-                  <Text style={styles.sellerName}>Seller: {order.sellerName}</Text>
-                  <Text style={styles.priceTag}>ETB {order.totalAmount.toLocaleString()} in Escrow</Text>
+                  <Text style={[styles.sellerName, { color: colors.textSecondary }]}>Seller: {order.sellerName}</Text>
+                  <Text style={[styles.priceTag, { color: colors.primary }]}>
+                    ETB {order.totalAmount.toLocaleString()} in Escrow
+                  </Text>
                 </View>
               </View>
 
               {/* Campus Desk Location */}
-              <View style={styles.locationBox}>
-                <Building2 size={13} color="#1D6BF3" />
-                <Text style={styles.locationText} numberOfLines={1}>
+              <View style={[styles.locationBox, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", borderColor: colors.border }]}>
+                <Building2 size={13} color={colors.primary} />
+                <Text style={[styles.locationText, { color: colors.textSecondary }]} numberOfLines={1}>
                   {order.campusHub}
                 </Text>
               </View>
 
-              {/* Secret 4-Digit PIN Box (Only if active) */}
+              {/* Secret 4-Digit PIN Box with Animation */}
               {!isCompleted ? (
-                <View style={styles.pinCard}>
+                <Animatable.View
+                  animation="pulse"
+                  iterationCount="infinite"
+                  duration={3000}
+                  style={[
+                    styles.pinCard,
+                    {
+                      backgroundColor: isDark ? "rgba(29, 107, 243, 0.15)" : "#EFF6FF",
+                      borderColor: colors.primary,
+                    },
+                  ]}
+                >
                   <View style={styles.pinHeader}>
-                    <Lock size={14} color="#1D6BF3" />
-                    <Text style={styles.pinHeaderTitle}>Secret 4-Digit Inspection PIN</Text>
+                    <Lock size={14} color={colors.primary} />
+                    <Text style={[styles.pinHeaderTitle, { color: colors.primary }]}>
+                      {t.secretPinTitle}
+                    </Text>
                   </View>
-                  <Text style={styles.pinCode}>{order.secretPin}</Text>
-                  <Text style={styles.pinNotice}>
-                    Share this code with the desk intermediary only after you physically test the item.
+                  <Text style={[styles.pinCode, { color: colors.textPrimary }]}>{order.secretPin}</Text>
+                  <Text style={[styles.pinNotice, { color: colors.textSecondary }]}>
+                    {t.secretPinNotice}
                   </Text>
-                </View>
+                </Animatable.View>
               ) : (
                 <View style={styles.completedNoticeBox}>
                   <CheckCircle2 size={16} color="#10B981" />
                   <Text style={styles.completedNoticeText}>
-                    Payout released to seller. Thank you for trading safely!
+                    {language === "am"
+                      ? "ክፍያው ለሻጩ ተለቋል። በደህንነት ስለነገዱ እናመሰግናለን!"
+                      : "Payout released to seller. Thank you for trading safely!"}
                   </Text>
                 </View>
               )}
@@ -183,10 +225,10 @@ export function ActivityScreen() {
                   <TouchableOpacity
                     onPress={() => handleConfirmInspection(order.id, order.orderNumber)}
                     activeOpacity={0.88}
-                    style={styles.confirmInspectBtn}
+                    style={[styles.confirmInspectBtn, { backgroundColor: colors.primary }]}
                   >
                     <CheckCircle2 size={15} color="#FFFFFF" />
-                    <Text style={styles.confirmInspectBtnText}>I Inspected & Accept Item</Text>
+                    <Text style={styles.confirmInspectBtnText}>{t.btnConfirmInspection}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -194,11 +236,11 @@ export function ActivityScreen() {
                     style={styles.disputeBtn}
                   >
                     <AlertTriangle size={13} color="#EF4444" />
-                    <Text style={styles.disputeBtnText}>Report Issue</Text>
+                    <Text style={styles.disputeBtnText}>{t.btnReportIssue}</Text>
                   </TouchableOpacity>
                 </View>
               )}
-            </View>
+            </Animatable.View>
           );
         })
       )}
@@ -223,17 +265,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "900",
-    color: "#0F172A",
     letterSpacing: -0.4,
   },
   subtitle: {
     fontSize: 11,
-    color: "#64748B",
     marginTop: 2,
   },
   tabToggle: {
     flexDirection: "row",
-    backgroundColor: "#F1F5F9",
     borderRadius: 14,
     padding: 4,
     marginBottom: 16,
@@ -245,7 +284,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   toggleBtnActive: {
-    backgroundColor: "#FFFFFF",
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -255,17 +293,10 @@ const styles = StyleSheet.create({
   toggleBtnText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#64748B",
-  },
-  toggleBtnTextActive: {
-    color: "#1D6BF3",
-    fontWeight: "800",
   },
   orderCard: {
-    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     padding: 16,
     marginBottom: 14,
     shadowColor: "#0F172A",
@@ -283,37 +314,20 @@ const styles = StyleSheet.create({
   orderNumber: {
     fontSize: 14,
     fontWeight: "800",
-    color: "#0F172A",
   },
   orderTime: {
     fontSize: 10,
-    color: "#94A3B8",
     marginTop: 2,
   },
   statusBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
-  },
-  statusBadgeActive: {
-    backgroundColor: "#EFF6FF",
     borderWidth: 1,
-    borderColor: "#BFDBFE",
-  },
-  statusBadgeCompleted: {
-    backgroundColor: "#ECFDF5",
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
   },
   statusBadgeText: {
     fontSize: 10,
     fontWeight: "800",
-  },
-  statusTextActive: {
-    color: "#1D6BF3",
-  },
-  statusTextCompleted: {
-    color: "#059669",
   },
   productRow: {
     flexDirection: "row",
@@ -332,27 +346,22 @@ const styles = StyleSheet.create({
   productTitle: {
     fontSize: 13,
     fontWeight: "800",
-    color: "#0F172A",
     lineHeight: 17,
   },
   sellerName: {
     fontSize: 10,
-    color: "#64748B",
     marginTop: 2,
   },
   priceTag: {
     fontSize: 13,
     fontWeight: "900",
-    color: "#1D6BF3",
     marginTop: 4,
   },
   locationBox: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 10,
@@ -360,14 +369,11 @@ const styles = StyleSheet.create({
   },
   locationText: {
     fontSize: 10,
-    color: "#334155",
     fontWeight: "600",
     flex: 1,
   },
   pinCard: {
-    backgroundColor: "#EFF6FF",
     borderWidth: 1.5,
-    borderColor: "#1D6BF3",
     borderRadius: 14,
     padding: 12,
     alignItems: "center",
@@ -382,18 +388,15 @@ const styles = StyleSheet.create({
   pinHeaderTitle: {
     fontSize: 11,
     fontWeight: "800",
-    color: "#1D6BF3",
   },
   pinCode: {
     fontSize: 26,
     fontWeight: "900",
-    color: "#0F172A",
     letterSpacing: 6,
     marginVertical: 2,
   },
   pinNotice: {
     fontSize: 9,
-    color: "#64748B",
     textAlign: "center",
     marginTop: 2,
   },
@@ -420,10 +423,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
-    backgroundColor: "#1D6BF3",
     paddingVertical: 12,
     borderRadius: 14,
-    shadowColor: "#1D6BF3",
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 6,
@@ -450,28 +452,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 40,
     paddingHorizontal: 20,
-    backgroundColor: "#F8FAFC",
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     marginTop: 20,
   },
   emptyTitle: {
     fontSize: 15,
     fontWeight: "800",
-    color: "#334155",
     marginTop: 12,
   },
   emptySubtitle: {
     fontSize: 12,
-    color: "#64748B",
     textAlign: "center",
     marginTop: 4,
     lineHeight: 18,
     marginBottom: 16,
   },
   browseBtn: {
-    backgroundColor: "#1D6BF3",
     paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 14,

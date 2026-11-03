@@ -5,11 +5,14 @@ import {
   ScrollView,
   StyleSheet,
   SafeAreaView,
-  TouchableOpacity,
   Platform,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { ShieldCheck, CheckCircle2, Building2, Sparkles } from "lucide-react-native";
+import * as Animatable from "react-native-animatable";
+import { ShieldCheck, Building2 } from "lucide-react-native";
+import Toast from "react-native-toast-message";
+import { toastConfig } from "../components/ToastConfig";
+
 import { useApp } from "../context/AppContext";
 import { MobileHeader } from "../components/MobileHeader";
 import { MobileHeroCard } from "../components/MobileHeroCard";
@@ -20,6 +23,7 @@ import { MobileBottomNav } from "../components/MobileBottomNav";
 import { MobileProductDetailModal } from "../components/MobileProductDetailModal";
 import { MobileAuthModal } from "../components/MobileAuthModal";
 import { MobileCampusModal } from "../components/MobileCampusModal";
+import { MobileUpdateModal } from "../components/MobileUpdateModal";
 
 import { ExploreScreen } from "./ExploreScreen";
 import { SellScreen } from "./SellScreen";
@@ -42,6 +46,8 @@ export function HomeScreen() {
     toggleFavorite,
     setSelectedProduct,
     orders,
+    colors,
+    t,
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,10 +69,11 @@ export function HomeScreen() {
   });
 
   const activeOrdersCount = orders.filter((o) => o.status !== "completed").length;
+  const isDark = colors.mode === "dark";
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar style="dark" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.headerBg }]}>
+      <StatusBar style={isDark ? "light" : "dark"} />
 
       {/* Persistent Top Mobile Header */}
       <MobileHeader
@@ -81,7 +88,7 @@ export function HomeScreen() {
       />
 
       {/* Screen Body depending on active tab */}
-      <View style={styles.screenBody}>
+      <View style={[styles.screenBody, { backgroundColor: colors.background }]}>
         {activeTab === "home" && (
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -101,7 +108,6 @@ export function HomeScreen() {
               value={searchQuery}
               onChangeText={setSearchQuery}
               onFilterPress={() => setCampusModalVisible(true)}
-              placeholder="Search for laptops, textbooks, phones..."
             />
 
             {/* Interactive Category Carousel */}
@@ -111,25 +117,35 @@ export function HomeScreen() {
             />
 
             {/* SafeTrade Value Props Strip */}
-            <View style={styles.trustStrip}>
+            <Animatable.View
+              animation="fadeInUp"
+              duration={450}
+              style={[
+                styles.trustStrip,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                },
+              ]}
+            >
               <View style={styles.trustItem}>
                 <ShieldCheck size={16} color="#10B981" />
                 <View>
-                  <Text style={styles.trustTitle}>5% Escrow Protection</Text>
-                  <Text style={styles.trustSub}>Funds held until inspection</Text>
+                  <Text style={[styles.trustTitle, { color: colors.textPrimary }]}>{t.trustEscrowTitle}</Text>
+                  <Text style={[styles.trustSub, { color: colors.textSecondary }]}>{t.trustEscrowSub}</Text>
                 </View>
               </View>
 
-              <View style={styles.trustDivider} />
+              <View style={[styles.trustDivider, { backgroundColor: colors.border }]} />
 
               <View style={styles.trustItem}>
-                <Building2 size={16} color="#1D6BF3" />
+                <Building2 size={16} color={colors.primary} />
                 <View>
-                  <Text style={styles.trustTitle}>Campus Hub Desks</Text>
-                  <Text style={styles.trustSub}>Safe in-person pickup</Text>
+                  <Text style={[styles.trustTitle, { color: colors.textPrimary }]}>{t.trustHubTitle}</Text>
+                  <Text style={[styles.trustSub, { color: colors.textSecondary }]}>{t.trustHubSub}</Text>
                 </View>
               </View>
-            </View>
+            </Animatable.View>
 
             {/* 2-Column Responsive Product Grid */}
             <MobileProductGrid
@@ -141,7 +157,7 @@ export function HomeScreen() {
               }}
               onFavoritePress={toggleFavorite}
               onViewAllPress={() => setActiveTab("explore")}
-              title="Featured for Students"
+              title={t.featuredTitle}
             />
           </ScrollView>
         )}
@@ -158,15 +174,19 @@ export function HomeScreen() {
         onTabChange={setActiveTab}
       />
 
-      {/* Global Interactive Modals */}
+      {/* Global Modals */}
       <MobileProductDetailModal />
       <MobileAuthModal />
+      <MobileUpdateModal />
       <MobileCampusModal
         visible={isCampusModalVisible}
         selectedCampus={currentCampus}
         onSelectCampus={setCurrentCampus}
         onClose={() => setCampusModalVisible(false)}
       />
+
+      {/* Modern Open-Source Toast Notification Layer */}
+      <Toast config={toastConfig} />
     </SafeAreaView>
   );
 }
@@ -174,12 +194,10 @@ export function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
     paddingTop: Platform.OS === "android" ? 30 : 0,
   },
   screenBody: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
   },
   scrollContent: {
     paddingBottom: 24,
@@ -187,11 +205,9 @@ const styles = StyleSheet.create({
   trustStrip: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
     marginHorizontal: 16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     paddingVertical: 10,
     paddingHorizontal: 12,
     marginBottom: 16,
@@ -210,17 +226,14 @@ const styles = StyleSheet.create({
   trustTitle: {
     fontSize: 11,
     fontWeight: "800",
-    color: "#0F172A",
   },
   trustSub: {
     fontSize: 9,
-    color: "#64748B",
     marginTop: 1,
   },
   trustDivider: {
     width: 1,
     height: 28,
-    backgroundColor: "#E2E8F0",
     marginHorizontal: 8,
   },
 });

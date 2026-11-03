@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+import * as Animatable from "react-native-animatable";
 import { SlidersHorizontal, ArrowUpDown, MapPin } from "lucide-react-native";
 import { useApp } from "../context/AppContext";
 import { MobileSearchBar } from "../components/MobileSearchBar";
@@ -20,6 +21,8 @@ export function ExploreScreen() {
     setSelectedProduct,
     currentCampus,
     setCampusModalVisible,
+    colors,
+    t,
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,34 +51,46 @@ export function ExploreScreen() {
     return 0;
   });
 
+  const isDark = colors.mode === "dark";
+
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-      {/* Top Banner */}
-      <View style={styles.topBanner}>
-        <Text style={styles.bannerTitle}>Explore Campus Listings</Text>
-        <Text style={styles.bannerSubtitle}>
-          Verified university gear, laptops, and study materials
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}
+    >
+      {/* Top Banner with Animation */}
+      <Animatable.View animation="fadeInDown" duration={450} style={styles.topBanner}>
+        <Text style={[styles.bannerTitle, { color: colors.textPrimary }]}>{t.exploreTitle}</Text>
+        <Text style={[styles.bannerSubtitle, { color: colors.textSecondary }]}>
+          {t.exploreSubtitle}
         </Text>
 
         {/* Campus Location Switcher Bar */}
         <TouchableOpacity
           onPress={() => setCampusModalVisible(true)}
-          style={styles.campusBar}
+          style={[
+            styles.campusBar,
+            {
+              backgroundColor: isDark ? "rgba(29, 107, 243, 0.15)" : "#EFF6FF",
+              borderColor: isDark ? colors.primary : "#BFDBFE",
+            },
+          ]}
         >
           <View style={styles.campusBarLeft}>
-            <MapPin size={13} color="#1D6BF3" />
-            <Text style={styles.campusBarText}>Filtered by: {currentCampus}</Text>
+            <MapPin size={13} color={colors.primary} />
+            <Text style={[styles.campusBarText, { color: colors.primary }]}>
+              {t.filterByCampus} {currentCampus}
+            </Text>
           </View>
-          <Text style={styles.changeText}>Change</Text>
+          <Text style={[styles.changeText, { color: colors.primary }]}>{t.change}</Text>
         </TouchableOpacity>
-      </View>
+      </Animatable.View>
 
       {/* Search Input */}
       <MobileSearchBar
         value={searchQuery}
         onChangeText={setSearchQuery}
         onFilterPress={() => setCampusModalVisible(true)}
-        placeholder="Search textbooks, laptops, phones..."
       />
 
       {/* Category Horizontal Filter */}
@@ -86,35 +101,73 @@ export function ExploreScreen() {
 
       {/* Sort Pills Row */}
       <View style={styles.sortRow}>
-        <View style={styles.countBadge}>
-          <Text style={styles.countText}>{sortedProducts.length} items</Text>
+        <View style={[styles.countBadge, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Text style={[styles.countText, { color: colors.textSecondary }]}>
+            {sortedProducts.length} {t.itemsCount}
+          </Text>
         </View>
 
         <View style={styles.sortOptions}>
           <TouchableOpacity
             onPress={() => setSortBy("featured")}
-            style={[styles.sortChip, sortBy === "featured" && styles.sortChipActive]}
+            style={[
+              styles.sortChip,
+              {
+                backgroundColor: sortBy === "featured" ? colors.primaryLight : colors.card,
+                borderColor: sortBy === "featured" ? colors.primary : colors.border,
+              },
+            ]}
           >
-            <Text style={[styles.sortChipText, sortBy === "featured" && styles.sortChipTextActive]}>
-              Featured
+            <Text
+              style={[
+                styles.sortChipText,
+                { color: sortBy === "featured" ? colors.primary : colors.textSecondary },
+                sortBy === "featured" && { fontWeight: "800" },
+              ]}
+            >
+              {t.sortFeatured}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => setSortBy("price_asc")}
-            style={[styles.sortChip, sortBy === "price_asc" && styles.sortChipActive]}
+            style={[
+              styles.sortChip,
+              {
+                backgroundColor: sortBy === "price_asc" ? colors.primaryLight : colors.card,
+                borderColor: sortBy === "price_asc" ? colors.primary : colors.border,
+              },
+            ]}
           >
-            <Text style={[styles.sortChipText, sortBy === "price_asc" && styles.sortChipTextActive]}>
-              Lowest Price
+            <Text
+              style={[
+                styles.sortChipText,
+                { color: sortBy === "price_asc" ? colors.primary : colors.textSecondary },
+                sortBy === "price_asc" && { fontWeight: "800" },
+              ]}
+            >
+              {t.sortLowestPrice}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => setSortBy("rating")}
-            style={[styles.sortChip, sortBy === "rating" && styles.sortChipActive]}
+            style={[
+              styles.sortChip,
+              {
+                backgroundColor: sortBy === "rating" ? colors.primaryLight : colors.card,
+                borderColor: sortBy === "rating" ? colors.primary : colors.border,
+              },
+            ]}
           >
-            <Text style={[styles.sortChipText, sortBy === "rating" && styles.sortChipTextActive]}>
-              Top Rated
+            <Text
+              style={[
+                styles.sortChipText,
+                { color: sortBy === "rating" ? colors.primary : colors.textSecondary },
+                sortBy === "rating" && { fontWeight: "800" },
+              ]}
+            >
+              {t.sortTopRated}
             </Text>
           </TouchableOpacity>
         </View>
@@ -129,7 +182,7 @@ export function ExploreScreen() {
           if (item) setSelectedProduct(item);
         }}
         onFavoritePress={toggleFavorite}
-        title="All Available Listings"
+        title={t.exploreTitle}
       />
     </ScrollView>
   );
@@ -147,12 +200,10 @@ const styles = StyleSheet.create({
   bannerTitle: {
     fontSize: 22,
     fontWeight: "900",
-    color: "#0F172A",
     letterSpacing: -0.4,
   },
   bannerSubtitle: {
     fontSize: 12,
-    color: "#64748B",
     marginTop: 2,
     marginBottom: 10,
   },
@@ -160,9 +211,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#EFF6FF",
     borderWidth: 1,
-    borderColor: "#BFDBFE",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 14,
@@ -175,12 +224,10 @@ const styles = StyleSheet.create({
   campusBarText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#1D6BF3",
   },
   changeText: {
     fontSize: 11,
     fontWeight: "800",
-    color: "#1D6BF3",
   },
   sortRow: {
     flexDirection: "row",
@@ -190,7 +237,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   countBadge: {
-    backgroundColor: "#F1F5F9",
+    borderWidth: 1,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -198,7 +245,6 @@ const styles = StyleSheet.create({
   countText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#64748B",
   },
   sortOptions: {
     flexDirection: "row",
@@ -208,21 +254,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
-    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
-  },
-  sortChipActive: {
-    backgroundColor: "#EFF6FF",
-    borderColor: "#1D6BF3",
   },
   sortChipText: {
     fontSize: 10,
     fontWeight: "600",
-    color: "#64748B",
-  },
-  sortChipTextActive: {
-    color: "#1D6BF3",
-    fontWeight: "800",
   },
 });

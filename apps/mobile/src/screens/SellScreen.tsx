@@ -8,8 +8,8 @@ import {
   TextInput,
   Image,
   Switch,
-  Alert,
 } from "react-native";
+import * as Animatable from "react-native-animatable";
 import {
   Camera,
   Plus,
@@ -23,6 +23,7 @@ import {
   ArrowRight,
 } from "lucide-react-native";
 import { useApp, ETHIOPIAN_CAMPUSES } from "../context/AppContext";
+import { showErrorToast, showSuccessToast, showInfoToast } from "../utils/toast";
 
 const SAMPLE_PHOTO_PRESETS = [
   "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&auto=format&fit=crop&q=80",
@@ -48,7 +49,7 @@ const CONDITION_OPTIONS = [
 ];
 
 export function SellScreen() {
-  const { addProduct, currentCampus, setActiveTab, setSelectedProduct } = useApp();
+  const { addProduct, currentCampus, setActiveTab, colors, t, language } = useApp();
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("laptops");
@@ -62,19 +63,30 @@ export function SellScreen() {
 
   const numericPrice = parseFloat(price.replace(/[^0-9.]/g, "")) || 0;
   const buyerEscrowFee = Math.round(numericPrice * 0.05);
+  const isDark = colors.mode === "dark";
 
   const handleAddPhoto = () => {
     if (photos.length >= 5) {
-      Alert.alert("Photo Limit", "You can upload up to 5 photos max.");
+      showErrorToast(
+        language === "am" ? "የፎቶ ገደብ" : "Photo Limit",
+        "You can upload up to 5 photos max."
+      );
       return;
     }
     const nextPhoto = SAMPLE_PHOTO_PRESETS[photos.length % SAMPLE_PHOTO_PRESETS.length];
     setPhotos([...photos, nextPhoto]);
+    showSuccessToast(
+      language === "am" ? "ፎቶ ተጨምሯል" : "Photo Added",
+      `Listing has ${photos.length + 1} photos`
+    );
   };
 
   const handleRemovePhoto = (index: number) => {
     if (photos.length === 1) {
-      Alert.alert("At Least 1 Photo", "Your listing must have at least one photo.");
+      showErrorToast(
+        language === "am" ? "ቢያንስ 1 ፎቶ ያስፈልጋል" : "Photo Required",
+        "Your listing must have at least one photo."
+      );
       return;
     }
     setPhotos(photos.filter((_, i) => i !== index));
@@ -82,11 +94,17 @@ export function SellScreen() {
 
   const handleSubmit = () => {
     if (!title.trim()) {
-      Alert.alert("Missing Title", "Please enter a descriptive item title.");
+      showErrorToast(
+        language === "am" ? "የዕቃው ስም ይጎድላል" : "Missing Title",
+        "Please enter a descriptive item title"
+      );
       return;
     }
     if (numericPrice <= 0) {
-      Alert.alert("Missing Price", "Please enter a valid asking price in ETB.");
+      showErrorToast(
+        language === "am" ? "ዋጋ ያስገቡ" : "Invalid Price",
+        "Please enter a valid asking price in ETB"
+      );
       return;
     }
 
@@ -115,25 +133,35 @@ export function SellScreen() {
 
   if (submittedProduct) {
     return (
-      <ScrollView contentContainerStyle={styles.successContainer}>
-        <View style={styles.successIconCircle}>
+      <ScrollView contentContainerStyle={[styles.successContainer, { backgroundColor: colors.background }]}>
+        <Animatable.View animation="zoomIn" duration={450} style={styles.successIconCircle}>
           <CheckCircle2 size={52} color="#10B981" />
-        </View>
-        <Text style={styles.successTitle}>Listing Published Live!</Text>
-        <Text style={styles.successSubtitle}>
-          Your item "{submittedProduct.title}" is now visible to students across {campus}.
+        </Animatable.View>
+        <Text style={[styles.successTitle, { color: colors.textPrimary }]}>
+          {language === "am" ? "ዕቃው በተሳካ ሁኔታ ተለጥፏል!" : "Listing Published Live!"}
+        </Text>
+        <Text style={[styles.successSubtitle, { color: colors.textSecondary }]}>
+          {language === "am"
+            ? `ዕቃዎ "${submittedProduct.title}" በ${campus} ላሉ ተማሪዎች ክፍት ሆኗል።`
+            : `Your item "${submittedProduct.title}" is now visible to students across ${campus}.`}
         </Text>
 
-        <View style={styles.liveSummaryBox}>
+        <Animatable.View
+          animation="fadeInUp"
+          duration={500}
+          style={[styles.liveSummaryBox, { backgroundColor: colors.card, borderColor: colors.border }]}
+        >
           <Image source={{ uri: submittedProduct.imageUrl }} style={styles.liveSummaryImage} />
           <View style={styles.liveSummaryInfo}>
-            <Text style={styles.liveSummaryTitle}>{submittedProduct.title}</Text>
-            <Text style={styles.liveSummaryPrice}>ETB {submittedProduct.price.toLocaleString()}</Text>
+            <Text style={[styles.liveSummaryTitle, { color: colors.textPrimary }]}>{submittedProduct.title}</Text>
+            <Text style={[styles.liveSummaryPrice, { color: colors.primary }]}>
+              ETB {submittedProduct.price.toLocaleString()}
+            </Text>
             <View style={styles.sellerFeeHighlight}>
               <Text style={styles.sellerFeeHighlightText}>0% Seller Fee - 100% Payout Guaranteed</Text>
             </View>
           </View>
-        </View>
+        </Animatable.View>
 
         <TouchableOpacity
           onPress={() => {
@@ -141,48 +169,59 @@ export function SellScreen() {
             setActiveTab("home");
           }}
           activeOpacity={0.88}
-          style={styles.actionBtnPrimary}
+          style={[styles.actionBtnPrimary, { backgroundColor: colors.primary }]}
         >
-          <Text style={styles.actionBtnPrimaryText}>Return to Home Feed</Text>
+          <Text style={styles.actionBtnPrimaryText}>
+            {language === "am" ? "ወደ መነሻ ገጽ ተመለስ" : "Return to Home Feed"}
+          </Text>
           <ArrowRight size={15} color="#FFFFFF" />
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={handleResetForm}
           activeOpacity={0.8}
-          style={styles.actionBtnSecondary}
+          style={[styles.actionBtnSecondary, { backgroundColor: isDark ? "#0A1628" : "#F1F5F9" }]}
         >
-          <Text style={styles.actionBtnSecondaryText}>List Another Item</Text>
+          <Text style={[styles.actionBtnSecondaryText, { color: colors.textSecondary }]}>
+            {language === "am" ? "ሌላ ዕቃ ለመሸጥ ይለጥፉ" : "List Another Item"}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     );
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-      {/* 0% Fee Banner */}
-      <View style={styles.feeBanner}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}
+    >
+      {/* 0% Fee Banner with Animation */}
+      <Animatable.View animation="fadeInDown" duration={400} style={styles.feeBanner}>
         <Sparkles size={16} color="#B45309" />
-        <Text style={styles.feeBannerText}>
-          0% Seller Fee &bull; 100% Cash to You via Campus SafeTrade Escrow
-        </Text>
-      </View>
+        <Text style={styles.feeBannerText}>{t.sellBannerText}</Text>
+      </Animatable.View>
 
-      <Text style={styles.screenTitle}>List an Item for Sale / Exchange</Text>
-      <Text style={styles.screenSubtitle}>
-        Sell directly to fellow students across Ethiopian universities with safe escrow handover.
-      </Text>
+      <Text style={[styles.screenTitle, { color: colors.textPrimary }]}>{t.sellTitle}</Text>
+      <Text style={[styles.screenSubtitle, { color: colors.textSecondary }]}>{t.sellSubtitle}</Text>
 
       {/* Step 1: Photos */}
-      <View style={styles.cardSection}>
+      <Animatable.View
+        animation="fadeInUp"
+        duration={450}
+        style={[styles.cardSection, { backgroundColor: colors.card, borderColor: colors.border }]}
+      >
         <View style={styles.sectionHeader}>
-          <View style={styles.stepBadge}><Text style={styles.stepBadgeText}>1</Text></View>
-          <Text style={styles.sectionTitle}>Upload Photos ({photos.length}/5)</Text>
+          <View style={[styles.stepBadge, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
+            <Text style={[styles.stepBadgeText, { color: colors.primary }]}>1</Text>
+          </View>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+            {t.step1Photo} ({photos.length}/5)
+          </Text>
         </View>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.photosScroll}>
           {photos.map((uri, idx) => (
-            <View key={idx} style={styles.photoThumbWrapper}>
+            <View key={idx} style={[styles.photoThumbWrapper, { borderColor: colors.border }]}>
               <Image source={{ uri }} style={styles.photoThumb} />
               <TouchableOpacity
                 onPress={() => handleRemovePhoto(idx)}
@@ -194,41 +233,68 @@ export function SellScreen() {
           ))}
 
           {photos.length < 5 && (
-            <TouchableOpacity onPress={handleAddPhoto} style={styles.addPhotoBtn}>
-              <Camera size={20} color="#1D6BF3" />
-              <Text style={styles.addPhotoText}>+ Add Photo</Text>
+            <TouchableOpacity
+              onPress={handleAddPhoto}
+              style={[
+                styles.addPhotoBtn,
+                {
+                  borderColor: colors.primary,
+                  backgroundColor: colors.primaryLight,
+                },
+              ]}
+            >
+              <Camera size={20} color={colors.primary} />
+              <Text style={[styles.addPhotoText, { color: colors.primary }]}>+ Add Photo</Text>
             </TouchableOpacity>
           )}
         </ScrollView>
-      </View>
+      </Animatable.View>
 
       {/* Step 2: Item Details */}
-      <View style={styles.cardSection}>
+      <Animatable.View
+        animation="fadeInUp"
+        duration={500}
+        style={[styles.cardSection, { backgroundColor: colors.card, borderColor: colors.border }]}
+      >
         <View style={styles.sectionHeader}>
-          <View style={styles.stepBadge}><Text style={styles.stepBadgeText}>2</Text></View>
-          <Text style={styles.sectionTitle}>Item Specifications</Text>
+          <View style={[styles.stepBadge, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
+            <Text style={[styles.stepBadgeText, { color: colors.primary }]}>2</Text>
+          </View>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t.step2Specs}</Text>
         </View>
 
         {/* Title */}
-        <Text style={styles.fieldLabel}>Item Title *</Text>
+        <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>{t.itemTitleLabel}</Text>
         <TextInput
           value={title}
           onChangeText={setTitle}
           placeholder="e.g. Dell Inspiron 15 (16GB RAM) or Organic Chemistry 8th Ed"
-          placeholderTextColor="#94A3B8"
-          style={styles.inputField}
+          placeholderTextColor={colors.textMuted}
+          style={[styles.inputField, { backgroundColor: colors.inputBg, borderColor: colors.border, color: colors.textPrimary }]}
         />
 
         {/* Category */}
-        <Text style={styles.fieldLabel}>Category *</Text>
+        <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>{t.categoryLabel}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRowScroll}>
           {CATEGORY_OPTIONS.map((c) => (
             <TouchableOpacity
               key={c.id}
               onPress={() => setCategory(c.id)}
-              style={[styles.chipPill, category === c.id && styles.chipPillActive]}
+              style={[
+                styles.chipPill,
+                {
+                  backgroundColor: category === c.id ? colors.primaryLight : colors.inputBg,
+                  borderColor: category === c.id ? colors.primary : colors.border,
+                },
+              ]}
             >
-              <Text style={[styles.chipPillText, category === c.id && styles.chipPillTextActive]}>
+              <Text
+                style={[
+                  styles.chipPillText,
+                  { color: category === c.id ? colors.primary : colors.textSecondary },
+                  category === c.id && { fontWeight: "800" },
+                ]}
+              >
                 {c.label}
               </Text>
             </TouchableOpacity>
@@ -236,15 +302,27 @@ export function SellScreen() {
         </ScrollView>
 
         {/* Campus Hub */}
-        <Text style={styles.fieldLabel}>Campus Hub *</Text>
+        <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>{t.campusHubLabel}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRowScroll}>
           {ETHIOPIAN_CAMPUSES.map((c) => (
             <TouchableOpacity
               key={c}
               onPress={() => setCampus(c)}
-              style={[styles.chipPill, campus === c && styles.chipPillActive]}
+              style={[
+                styles.chipPill,
+                {
+                  backgroundColor: campus === c ? colors.primaryLight : colors.inputBg,
+                  borderColor: campus === c ? colors.primary : colors.border,
+                },
+              ]}
             >
-              <Text style={[styles.chipPillText, campus === c && styles.chipPillTextActive]}>
+              <Text
+                style={[
+                  styles.chipPillText,
+                  { color: campus === c ? colors.primary : colors.textSecondary },
+                  campus === c && { fontWeight: "800" },
+                ]}
+              >
                 {c}
               </Text>
             </TouchableOpacity>
@@ -252,100 +330,128 @@ export function SellScreen() {
         </ScrollView>
 
         {/* Condition */}
-        <Text style={styles.fieldLabel}>Condition Grade *</Text>
+        <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>{t.conditionLabel}</Text>
         <View style={styles.conditionRow}>
           {CONDITION_OPTIONS.map((cond) => (
             <TouchableOpacity
               key={cond}
               onPress={() => setCondition(cond)}
-              style={[styles.conditionChip, condition === cond && styles.conditionChipActive]}
+              style={[
+                styles.conditionChip,
+                {
+                  backgroundColor: condition === cond ? colors.primaryLight : colors.inputBg,
+                  borderColor: condition === cond ? colors.primary : colors.border,
+                },
+              ]}
             >
-              <Text style={[styles.conditionChipText, condition === cond && styles.conditionChipTextActive]}>
+              <Text
+                style={[
+                  styles.conditionChipText,
+                  { color: condition === cond ? colors.primary : colors.textSecondary },
+                  condition === cond && { fontWeight: "800" },
+                ]}
+              >
                 {cond}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
-      </View>
+      </Animatable.View>
 
       {/* Step 3: Pricing & Guaranteed Payout Calculator */}
-      <View style={styles.cardSection}>
+      <Animatable.View
+        animation="fadeInUp"
+        duration={550}
+        style={[styles.cardSection, { backgroundColor: colors.card, borderColor: colors.border }]}
+      >
         <View style={styles.sectionHeader}>
-          <View style={styles.stepBadge}><Text style={styles.stepBadgeText}>3</Text></View>
-          <Text style={styles.sectionTitle}>Pricing & Guaranteed Payout</Text>
+          <View style={[styles.stepBadge, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
+            <Text style={[styles.stepBadgeText, { color: colors.primary }]}>3</Text>
+          </View>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t.step3Pricing}</Text>
         </View>
 
-        <Text style={styles.fieldLabel}>Asking Price (ETB) *</Text>
+        <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>{t.askingPriceLabel}</Text>
         <TextInput
           value={price}
           onChangeText={setPrice}
           placeholder="e.g. 2500"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
-          style={styles.priceInputField}
+          style={[styles.priceInputField, { backgroundColor: colors.inputBg, borderColor: colors.primary, color: colors.primary }]}
         />
 
         {/* Live Guaranteed Payout Box */}
-        <View style={styles.payoutBox}>
+        <View style={[styles.payoutBox, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", borderColor: colors.border }]}>
           <View style={styles.payoutRow}>
-            <Text style={styles.payoutLabel}>Your Asking Price:</Text>
-            <Text style={styles.payoutValue}>ETB {numericPrice.toLocaleString()}</Text>
+            <Text style={[styles.payoutLabel, { color: colors.textSecondary }]}>Your Asking Price:</Text>
+            <Text style={[styles.payoutValue, { color: colors.textPrimary }]}>ETB {numericPrice.toLocaleString()}</Text>
           </View>
           <View style={styles.payoutRow}>
-            <Text style={styles.payoutLabel}>Seller Platform Fee (0%):</Text>
+            <Text style={[styles.payoutLabel, { color: colors.textSecondary }]}>Seller Platform Fee (0%):</Text>
             <Text style={[styles.payoutValue, { color: "#10B981" }]}>ETB 0 (FREE)</Text>
           </View>
           <View style={styles.payoutRow}>
-            <Text style={styles.payoutLabel}>Buyer Escrow Protection Fee (+5%):</Text>
-            <Text style={styles.payoutValue}>+ETB {buyerEscrowFee.toLocaleString()} (Paid by buyer)</Text>
+            <Text style={[styles.payoutLabel, { color: colors.textSecondary }]}>Buyer Escrow Fee (+5%):</Text>
+            <Text style={[styles.payoutValue, { color: colors.textSecondary }]}>+ETB {buyerEscrowFee.toLocaleString()}</Text>
           </View>
-          <View style={[styles.payoutRow, styles.payoutHighlightRow]}>
-            <Text style={styles.payoutHighlightLabel}>Your Guaranteed Payout at Campus Desk:</Text>
+          <View style={[styles.payoutRow, styles.payoutHighlightRow, { borderTopColor: colors.border }]}>
+            <Text style={[styles.payoutHighlightLabel, { color: colors.textPrimary }]}>
+              {t.guaranteedPayoutLabel}
+            </Text>
             <Text style={styles.payoutHighlightValue}>ETB {numericPrice.toLocaleString()}</Text>
           </View>
         </View>
-      </View>
+      </Animatable.View>
 
       {/* Step 4: Barter / Exchange Option */}
-      <View style={styles.cardSection}>
+      <Animatable.View
+        animation="fadeInUp"
+        duration={600}
+        style={[styles.cardSection, { backgroundColor: colors.card, borderColor: colors.border }]}
+      >
         <View style={styles.barterHeaderRow}>
           <View style={styles.sectionHeader}>
-            <View style={styles.stepBadge}><Text style={styles.stepBadgeText}>4</Text></View>
+            <View style={[styles.stepBadge, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
+              <Text style={[styles.stepBadgeText, { color: colors.primary }]}>4</Text>
+            </View>
             <View>
-              <Text style={styles.sectionTitle}>Open for Item Exchange / Barter?</Text>
-              <Text style={styles.sectionSub}>Allow students to offer another item with cash balance.</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t.step4Barter}</Text>
+              <Text style={[styles.sectionSub, { color: colors.textSecondary }]}>{t.barterToggleLabel}</Text>
             </View>
           </View>
           <Switch
             value={isBarterOpen}
             onValueChange={setIsBarterOpen}
-            trackColor={{ false: "#CBD5E1", true: "#BFDBFE" }}
-            thumbColor={isBarterOpen ? "#1D6BF3" : "#F1F5F9"}
+            trackColor={{ false: colors.border, true: colors.primaryLight }}
+            thumbColor={isBarterOpen ? colors.primary : "#CBD5E1"}
           />
         </View>
 
         {isBarterOpen && (
           <View style={styles.barterInputBox}>
-            <Text style={styles.fieldLabel}>What would you exchange this for? (Optional)</Text>
+            <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>
+              What would you exchange this for? (Optional)
+            </Text>
             <TextInput
               value={barterPreference}
               onChangeText={setBarterPreference}
               placeholder="e.g. Willing to trade for iPad 9th Gen or iPhone 11"
-              placeholderTextColor="#94A3B8"
-              style={styles.inputField}
+              placeholderTextColor={colors.textMuted}
+              style={[styles.inputField, { backgroundColor: colors.inputBg, borderColor: colors.border, color: colors.textPrimary }]}
             />
           </View>
         )}
-      </View>
+      </Animatable.View>
 
       {/* Submit Button */}
       <TouchableOpacity
         onPress={handleSubmit}
         activeOpacity={0.88}
-        style={styles.submitBtn}
+        style={[styles.submitBtn, { backgroundColor: colors.primary }]}
       >
         <ShieldCheck size={18} color="#FFFFFF" />
-        <Text style={styles.submitBtnText}>Submit Listing for Campus Review</Text>
+        <Text style={styles.submitBtnText}>{t.submitListingBtn}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -378,21 +484,17 @@ const styles = StyleSheet.create({
   screenTitle: {
     fontSize: 22,
     fontWeight: "900",
-    color: "#0F172A",
     letterSpacing: -0.4,
   },
   screenSubtitle: {
     fontSize: 12,
-    color: "#64748B",
     marginTop: 3,
     marginBottom: 16,
     lineHeight: 17,
   },
   cardSection: {
-    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     padding: 16,
     marginBottom: 16,
     shadowColor: "#0F172A",
@@ -411,26 +513,22 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: "#EFF6FF",
     borderWidth: 1,
-    borderColor: "#BFDBFE",
     alignItems: "center",
     justifyContent: "center",
   },
   stepBadgeText: {
     fontSize: 11,
     fontWeight: "800",
-    color: "#1D6BF3",
   },
   sectionTitle: {
     fontSize: 14,
     fontWeight: "800",
-    color: "#0F172A",
   },
   sectionSub: {
     fontSize: 10,
-    color: "#64748B",
     marginTop: 2,
+    maxWidth: "88%",
   },
   photosScroll: {
     flexDirection: "row",
@@ -443,7 +541,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginRight: 10,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
   },
   photoThumb: {
     width: "100%",
@@ -466,8 +563,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1.5,
     borderStyle: "dashed",
-    borderColor: "#1D6BF3",
-    backgroundColor: "#EFF6FF",
     alignItems: "center",
     justifyContent: "center",
     gap: 4,
@@ -475,61 +570,42 @@ const styles = StyleSheet.create({
   addPhotoText: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#1D6BF3",
   },
   fieldLabel: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#334155",
     marginBottom: 6,
     marginTop: 8,
   },
   inputField: {
-    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 13,
-    color: "#0F172A",
   },
   priceInputField: {
-    backgroundColor: "#F8FAFC",
     borderWidth: 1.5,
-    borderColor: "#1D6BF3",
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 18,
     fontWeight: "900",
-    color: "#1D6BF3",
   },
   chipRowScroll: {
     flexDirection: "row",
     marginBottom: 6,
   },
   chipPill: {
-    backgroundColor: "#F1F5F9",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
     marginRight: 8,
   },
-  chipPillActive: {
-    backgroundColor: "#EFF6FF",
-    borderColor: "#1D6BF3",
-  },
   chipPillText: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#64748B",
-  },
-  chipPillTextActive: {
-    color: "#1D6BF3",
-    fontWeight: "800",
   },
   conditionRow: {
     flexDirection: "row",
@@ -540,27 +616,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 10,
-    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
-  },
-  conditionChipActive: {
-    backgroundColor: "#EFF6FF",
-    borderColor: "#1D6BF3",
   },
   conditionChipText: {
     fontSize: 11,
-    color: "#64748B",
     fontWeight: "600",
   },
-  conditionChipTextActive: {
-    color: "#1D6BF3",
-    fontWeight: "800",
-  },
   payoutBox: {
-    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     borderRadius: 14,
     padding: 12,
     marginTop: 12,
@@ -573,23 +636,19 @@ const styles = StyleSheet.create({
   },
   payoutLabel: {
     fontSize: 11,
-    color: "#64748B",
   },
   payoutValue: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#334155",
   },
   payoutHighlightRow: {
     borderTopWidth: 1,
-    borderTopColor: "#E2E8F0",
     paddingTop: 8,
     marginTop: 4,
   },
   payoutHighlightLabel: {
     fontSize: 12,
     fontWeight: "800",
-    color: "#0F172A",
   },
   payoutHighlightValue: {
     fontSize: 15,
@@ -609,12 +668,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    backgroundColor: "#1D6BF3",
     paddingVertical: 14,
     borderRadius: 18,
-    shadowColor: "#1D6BF3",
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 4,
     marginTop: 8,
@@ -641,11 +699,9 @@ const styles = StyleSheet.create({
   successTitle: {
     fontSize: 22,
     fontWeight: "900",
-    color: "#0F172A",
   },
   successSubtitle: {
     fontSize: 12,
-    color: "#64748B",
     textAlign: "center",
     marginTop: 4,
     lineHeight: 18,
@@ -654,9 +710,7 @@ const styles = StyleSheet.create({
   liveSummaryBox: {
     width: "100%",
     flexDirection: "row",
-    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     borderRadius: 16,
     padding: 12,
     alignItems: "center",
@@ -674,12 +728,10 @@ const styles = StyleSheet.create({
   liveSummaryTitle: {
     fontSize: 13,
     fontWeight: "800",
-    color: "#0F172A",
   },
   liveSummaryPrice: {
     fontSize: 15,
     fontWeight: "900",
-    color: "#1D6BF3",
     marginTop: 2,
   },
   sellerFeeHighlight: {
@@ -700,7 +752,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    backgroundColor: "#1D6BF3",
     width: "100%",
     paddingVertical: 14,
     borderRadius: 18,
@@ -716,10 +767,8 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     borderRadius: 18,
     alignItems: "center",
-    backgroundColor: "#F1F5F9",
   },
   actionBtnSecondaryText: {
-    color: "#475569",
     fontSize: 13,
     fontWeight: "700",
   },
