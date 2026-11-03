@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   Heart,
   ShoppingCart,
@@ -272,9 +273,14 @@ export function FeaturedProducts({
         /* Cards Grid + Promotional Card */
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-6">
           {displayedList.map((item) => (
-            <div
+            <motion.div
               key={item.id}
-              className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-twilight-700 bg-white dark:bg-twilight-800 transition duration-200 hover:-translate-y-0.5 hover:border-brand-500/50 dark:hover:border-brand-500/50 shadow-xs"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-20px" }}
+              transition={{ duration: 0.35 }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-twilight-700 bg-white dark:bg-twilight-800 transition-shadow duration-200 hover:border-brand-500/50 dark:hover:border-brand-500/50 hover:shadow-md shadow-xs"
             >
               {/* Image & Badges */}
               <Link href={`/products/${item.id}`} className="relative aspect-square w-full overflow-hidden bg-slate-100 dark:bg-twilight-750 block">
@@ -297,18 +303,20 @@ export function FeaturedProducts({
               </Link>
 
               {/* Favorite Heart Button */}
-              <button
+              <motion.button
+                whileTap={{ scale: 0.82 }}
                 onClick={(e) => {
                   e.preventDefault();
                   toggleFavorite(item.id);
                 }}
                 aria-label="Save to favorites"
-                className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 dark:bg-twilight-750/95 backdrop-blur shadow-xs transition z-10 ${
+                className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 dark:bg-twilight-750/95 backdrop-blur shadow-xs transition z-10 cursor-pointer ${
+
                   favorites[item.id] ? "text-rose-500" : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                 }`}
               >
                 <Heart className={`h-4 w-4 ${favorites[item.id] ? "fill-rose-500" : ""}`} />
-              </button>
+              </motion.button>
 
               {/* Content */}
               <div className="flex flex-1 flex-col p-4">
@@ -351,20 +359,29 @@ export function FeaturedProducts({
                     )}
                   </div>
 
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.08 }}
+                    whileTap={{ scale: 0.92 }}
                     onClick={() => setCheckoutProduct(item)}
                     aria-label="Order with SafeTrade Escrow"
-                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 dark:bg-twilight-750 text-brand-600 dark:text-brand-300 transition hover:bg-brand-600 hover:text-white dark:hover:bg-brand-600"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 dark:bg-twilight-750 text-brand-600 dark:text-brand-300 transition hover:bg-brand-600 hover:text-white dark:hover:bg-brand-600 cursor-pointer"
                   >
                     <ShoppingBag className="h-4 w-4" />
-                  </button>
+                  </motion.button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
 
           {/* Promotional Sell Card matching Mockup */}
-          <div className="relative flex flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-twilight-950 via-twilight-900 to-twilight-950 border border-twilight-700 p-6 text-white shadow-xl">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4 }}
+            whileHover={{ y: -3 }}
+            className="relative flex flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-twilight-950 via-twilight-900 to-twilight-950 border border-twilight-700 p-6 text-white shadow-xl"
+          >
             <div className="space-y-4">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 backdrop-blur border border-white/20">
                 <Sparkles className="h-6 w-6 text-brand-400" />
@@ -387,7 +404,7 @@ export function FeaturedProducts({
                 {t("products.promoBtn")} <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
 

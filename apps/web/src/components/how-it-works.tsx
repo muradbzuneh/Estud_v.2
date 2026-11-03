@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { ShieldCheck, Lock, Truck, Banknote, Sparkles } from "lucide-react";
 import { useLanguage } from "./language-context";
 
@@ -36,7 +37,13 @@ export function HowItWorks() {
   return (
     <section id="how-it-works" className="border-t border-slate-200/80 dark:border-twilight-700 bg-white dark:bg-twilight-900 py-16 sm:py-24 transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="mx-auto max-w-2xl text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4 }}
+          className="mx-auto max-w-2xl text-center"
+        >
           <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">
             <Sparkles className="h-3.5 w-3.5 text-amber-500" /> {t("hiw.tag")}
           </div>
@@ -46,15 +53,20 @@ export function HowItWorks() {
           <p className="mt-3 text-sm text-slate-600 dark:text-slate-400 sm:text-base">
             {t("hiw.subtitle")}
           </p>
-        </div>
+        </motion.div>
 
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {steps.map((item) => {
+          {steps.map((item, index) => {
             const Icon = item.icon;
             return (
-              <div
+              <motion.div
                 key={item.step}
-                className="relative flex flex-col rounded-2xl border border-slate-200/80 dark:border-twilight-700 bg-slate-50/50 dark:bg-twilight-800 p-6 shadow-xs transition duration-200 hover:-translate-y-0.5 hover:border-brand-500/50 dark:hover:border-brand-500/50"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.35, delay: index * 0.08 }}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                className="relative flex flex-col rounded-2xl border border-slate-200/80 dark:border-twilight-700 bg-slate-50/50 dark:bg-twilight-800 p-6 shadow-xs transition duration-200 hover:border-brand-500/50 dark:hover:border-brand-500/50 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
                   <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
@@ -68,7 +80,7 @@ export function HowItWorks() {
                 </div>
                 <h3 className="mt-5 text-base font-bold text-slate-900 dark:text-white">{item.title}</h3>
                 <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-400">{item.description}</p>
-              </div>
+              </motion.div>
             );
           })}
         </div>
