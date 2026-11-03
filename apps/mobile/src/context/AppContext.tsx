@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { MobileProductItem } from "../components/MobileProductCard";
+import { ThemeMode, ColorPalette, getThemeColors } from "../theme/theme";
+import { Language, Translations, translations } from "../i18n/translations";
+import { showSuccessToast, showInfoToast, showUpdateToast } from "../utils/toast";
 
 export interface StudentUser {
   id: string;
@@ -157,10 +160,20 @@ const DEFAULT_USER: StudentUser = {
 };
 
 interface AppContextType {
+  // Theme & Language
+  theme: ThemeMode;
+  toggleTheme: () => void;
+  setTheme: (theme: ThemeMode) => void;
+  colors: ColorPalette;
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  t: Translations;
+
   // User & Auth
   user: StudentUser | null;
   isAuthenticated: boolean;
   login: (name: string, email: string, campus: string) => void;
+  loginWithGoogle: () => Promise<void>;
   logout: () => void;
   isAuthModalVisible: boolean;
   setAuthModalVisible: (visible: boolean) => void;
@@ -189,37 +202,108 @@ interface AppContextType {
   orders: EscrowOrder[];
   createOrder: (order: Omit<EscrowOrder, "id" | "orderNumber" | "secretPin" | "status" | "createdAt">) => EscrowOrder;
   completeOrder: (orderId: string) => void;
+
+  // Version & Updates
+  appVersion: string;
+  isUpdateModalVisible: boolean;
+  setUpdateModalVisible: (visible: boolean) => void;
+  checkForUpdates: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  // Theme default: light as requested
+  const [theme, setThemeState] = useState<ThemeMode>("light");
+  const [language, setLanguageState] = useState<Language>("en");
+
   const [user, setUser] = useState<StudentUser | null>(DEFAULT_USER);
   const [activeTab, setActiveTab] = useState<MobileTab>("home");
-  const [currentCampus, setCurrentCampus] = useState<string>("AAU 4 Kilo (Science)");
+  const [currentCampus, setCurrentCampusState] = useState<string>("AAU 4 Kilo (Science)");
   const [isCampusModalVisible, setCampusModalVisible] = useState(false);
   const [isAuthModalVisible, setAuthModalVisible] = useState(false);
+  const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
   const [products, setProducts] = useState<MobileProductItem[]>(INITIAL_PRODUCTS);
   const [favorites, setFavorites] = useState<Record<string, boolean>>({ "prod-1": true, "prod-2": true });
   const [selectedProduct, setSelectedProduct] = useState<MobileProductItem | null>(null);
   const [orders, setOrders] = useState<EscrowOrder[]>(INITIAL_ORDERS);
 
+  const colors = getThemeColors(theme);
+  const t = translations[language];
+  const appVersion = "v2.1.0";
+
+  const toggleTheme = () => {
+    const nextTheme: ThemeMode = theme === "light" ? "dark" : "light";
+    setThemeState(nextTheme);
+    showInfoToast(
+      nextTheme === "dark" ? "Dark Midnight Active" : "Light Mode Active",
+      nextTheme === "dark" ? "Dark navy palette enabled" : "Clean light palette enabled"
+    );
+  };
+
+  const setTheme = (newTheme: ThemeMode) => {
+    setThemeState(newTheme);
+  };
+
+  const setLanguage = (newLang: Language) => {
+    setLanguageState(newLang);
+    showInfoToast(
+      newLang === "am" ? "ቋንቋ ወደ አማርኛ ተቀይሯል" : "Language set to English",
+      newLang === "am" ? "የኢስቱድ ካምፓስ መተግበሪያ" : "Campus marketplace updated"
+    );
+  };
+
+  const setCurrentCampus = (campus: string) => {
+    setCurrentCampusState(campus);
+    showInfoToast("Campus Hub Selected", campus);
+  };
+
   const login = (name: string, email: string, campus: string) => {
-    setUser({
+    const newUser: StudentUser = {
       id: "usr-" + Date.now(),
       name: name.trim() || "Student Trader",
       email: email.trim() || "student@estud.et",
       campus: campus || "AAU 4 Kilo (Science)",
       studentId: `UGR/${Math.floor(1000 + Math.random() * 9000)}/16`,
-      trustScore: 98,
+      trustScore: 99,
       tradesCompleted: 4,
       isVerified: true,
-    });
+    };
+    setUser(newUser);
     setAuthModalVisible(false);
+    showSuccessToast(
+      language === "am" ? "እንኳን ደህና መጡ!" : "Welcome to Estud!",
+      `Logged in as ${newUser.name}`
+    );
+  };
+
+  const loginWithGoogle = async () => {
+    // Realistic Google OAuth sign-in flow
+    const googleUser: StudentUser = {
+      id: "google-" + Date.now(),
+      name: "Murad Bezuneh",
+      email: "murad.b@student.aau.edu.et",
+      campus: "AAU 4 Kilo (Science)",
+      studentId: "UGR/4921/14",
+      trustScore: 100,
+      tradesCompleted: 18,
+      avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      isVerified: true,
+    };
+    setUser(googleUser);
+    setAuthModalVisible(false);
+    showSuccessToast(
+      language === "am" ? "በGoogle በተሳካ ሁኔታ ገብተዋል" : "Signed in with Google",
+      `Connected as ${googleUser.email}`
+    );
   };
 
   const logout = () => {
     setUser(null);
+    showInfoToast(
+      language === "am" ? "ከመለያዎ ወጥተዋል" : "Signed Out",
+      "You are browsing in guest mode"
+    );
   };
 
   const addProduct = (newProduct: Omit<MobileProductItem, "id" | "rating" | "reviewCount">) => {
@@ -231,10 +315,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
       badge: "New",
     };
     setProducts((prev) => [item, ...prev]);
+    showSuccessToast(
+      language === "am" ? "ዕቃዎ ተለጥፏል!" : "Listing Published!",
+      `"${item.title}" is now visible to campus students`
+    );
   };
 
   const toggleFavorite = (id: string) => {
-    setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
+    const willBeFavorite = !favorites[id];
+    setFavorites((prev) => ({ ...prev, [id]: willBeFavorite }));
+    if (willBeFavorite) {
+      showSuccessToast(
+        language === "am" ? "ወደ የተቀመጡ ተጨምሯል" : "Added to Saved",
+        "View it anytime in your Profile tab"
+      );
+    }
   };
 
   const createOrder = (orderData: Omit<EscrowOrder, "id" | "orderNumber" | "secretPin" | "status" | "createdAt">) => {
@@ -251,6 +346,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
 
     setOrders((prev) => [newOrder, ...prev]);
+    showSuccessToast(
+      language === "am" ? "የኤስክሮው ክፍያ ተይዟል!" : "Funds Locked in Escrow!",
+      `Inspection PIN: ${randomPin}`
+    );
     return newOrder;
   };
 
@@ -258,14 +357,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setOrders((prev) =>
       prev.map((ord) => (ord.id === orderId ? { ...ord, status: "completed" } : ord))
     );
+    showSuccessToast(
+      language === "am" ? "ግብይቱ ተጠናቋል!" : "Trade Completed!",
+      "100% payout released to the student seller"
+    );
+  };
+
+  const checkForUpdates = () => {
+    showUpdateToast(
+      language === "am" ? "አዳዲስ ዝመናዎች እየተፈተሹ ነው..." : "Checking for updates...",
+      "Connecting to Estud Release CDN"
+    );
+    setTimeout(() => {
+      setUpdateModalVisible(true);
+    }, 800);
   };
 
   return (
     <AppContext.Provider
       value={{
+        theme,
+        toggleTheme,
+        setTheme,
+        colors,
+        language,
+        setLanguage,
+        t,
         user,
         isAuthenticated: !!user,
         login,
+        loginWithGoogle,
         logout,
         isAuthModalVisible,
         setAuthModalVisible,
@@ -284,6 +405,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         orders,
         createOrder,
         completeOrder,
+        appVersion,
+        isUpdateModalVisible,
+        setUpdateModalVisible,
+        checkForUpdates,
       }}
     >
       {children}
