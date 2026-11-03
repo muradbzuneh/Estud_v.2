@@ -9,8 +9,9 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
+  ActivityIndicator,
 } from "react-native";
+import * as Animatable from "react-native-animatable";
 import {
   GraduationCap,
   Mail,
@@ -21,49 +22,77 @@ import {
   EyeOff,
   ShieldCheck,
   CheckCircle2,
-  Sparkles,
+  Phone,
+  Building2,
+  IdCard,
 } from "lucide-react-native";
 import { useApp, ETHIOPIAN_CAMPUSES } from "../context/AppContext";
+import { showErrorToast, showSuccessToast, showInfoToast } from "../utils/toast";
 
 export function MobileAuthModal() {
-  const { isAuthModalVisible, setAuthModalVisible, login } = useApp();
+  const { isAuthModalVisible, setAuthModalVisible, login, loginWithGoogle, colors, language, t } = useApp();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [studentId, setStudentId] = useState("");
   const [password, setPassword] = useState("");
   const [campus, setCampus] = useState(ETHIOPIAN_CAMPUSES[0]);
   const [showPassword, setShowPassword] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   if (!isAuthModalVisible) return null;
 
   const handleClose = () => {
-    setIsSuccess(false);
     setAuthModalVisible(false);
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await loginWithGoogle();
+    } catch {
+      showErrorToast(
+        language === "am" ? "የGoogle መግቢያ ስህተት" : "Google Sign-In Failed",
+        "Please check your network and try again"
+      );
+    } finally {
+      setIsGoogleLoading(false);
+    }
   };
 
   const handleSubmit = () => {
     if (mode === "signup" && !name.trim()) {
-      Alert.alert("Missing Name", "Please enter your full student name.");
+      showErrorToast(
+        language === "am" ? "የተማሪ ስም ይጎድላል" : "Missing Name",
+        "Please enter your full student name"
+      );
       return;
     }
-    if (!email.trim()) {
-      Alert.alert("Missing Email", "Please enter your university email or phone number.");
+    if (!email.trim() || !email.includes("@")) {
+      showErrorToast(
+        language === "am" ? "ትክክለኛ ኢሜይል ያስገቡ" : "Invalid Email",
+        "Please enter a valid university email address"
+      );
       return;
     }
-    if (!password.trim() || password.length < 4) {
-      Alert.alert("Password Too Short", "Please enter at least 4 characters.");
+    if (!password.trim() || password.length < 6) {
+      showErrorToast(
+        language === "am" ? "የይለፍ ቃል አጭር ነው" : "Weak Password",
+        "Password must be at least 6 characters"
+      );
       return;
     }
 
-    login(name || "Student Trader", email, campus);
-    setIsSuccess(true);
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      login(name || "Student Trader", email, campus);
+    }, 700);
   };
 
-  const handleQuickDemoLogin = (demoName: string, demoEmail: string, demoCampus: string) => {
-    login(demoName, demoEmail, demoCampus);
-    setIsSuccess(true);
-  };
+  const isDark = colors.mode === "dark";
 
   return (
     <Modal
@@ -76,182 +105,271 @@ export function MobileAuthModal() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.overlay}
       >
-        <View style={styles.modalCard}>
+        <Animatable.View
+          animation="fadeInUp"
+          duration={350}
+          style={[styles.modalCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+        >
           {/* Close Button */}
-          <TouchableOpacity onPress={handleClose} style={styles.closeBtn}>
-            <X size={20} color="#64748B" />
+          <TouchableOpacity
+            onPress={handleClose}
+            style={[styles.closeBtn, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "#F1F5F9" }]}
+          >
+            <X size={18} color={colors.textSecondary} />
           </TouchableOpacity>
 
-          {isSuccess ? (
-            <View style={styles.successBox}>
-              <View style={styles.successIconCircle}>
-                <CheckCircle2 size={44} color="#10B981" />
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+            {/* Brand Header */}
+            <View style={styles.header}>
+              <View style={[styles.brandIconWrapper, { backgroundColor: isDark ? "rgba(29, 107, 243, 0.2)" : "#EFF6FF" }]}>
+                <GraduationCap size={28} color={colors.primary} />
               </View>
-              <Text style={styles.successTitle}>Welcome to Estud!</Text>
-              <Text style={styles.successSubtitle}>
-                You are authenticated as a verified Ethiopian student trader. SafeTrade Escrow protection is active.
+              <Text style={[styles.brandTitle, { color: colors.textPrimary }]}>
+                {mode === "signin"
+                  ? (language === "am" ? "ወደ ኢስቱድ ይግቡ" : "Sign In to Estud")
+                  : (language === "am" ? "የተማሪ መለያ ይክፈቱ" : "Create Student Account")}
               </Text>
+              <Text style={[styles.brandSubtitle, { color: colors.textSecondary }]}>
+                {mode === "signin"
+                  ? (language === "am" ? "የካምፓስ ዕቃዎችን እና የኤስክሮው ፒኖችን ይመልከቱ" : "Access your verified campus escrow listings & pickup PINs")
+                  : (language === "am" ? "በኢትዮጵያ ዩኒቨርሲቲዎች ከሚነግዱ በሺዎች የሚቆጠሩ ተማሪዎች ጋር ይቀላቀሉ" : "Join thousands of students trading securely across Ethiopia")}
+              </Text>
+            </View>
+
+            {/* Mode Toggle (Sign In vs Sign Up) */}
+            <View style={[styles.tabToggle, { backgroundColor: isDark ? "#0B1426" : "#F1F5F9" }]}>
               <TouchableOpacity
-                onPress={handleClose}
-                style={styles.continueButton}
+                onPress={() => setMode("signin")}
+                style={[
+                  styles.toggleBtn,
+                  mode === "signin" && [styles.toggleBtnActive, { backgroundColor: colors.card }],
+                ]}
               >
-                <Text style={styles.continueButtonText}>Enter Student Marketplace</Text>
+                <Text
+                  style={[
+                    styles.toggleBtnText,
+                    { color: mode === "signin" ? colors.primary : colors.textSecondary },
+                  ]}
+                >
+                  {language === "am" ? "መግቢያ (Sign In)" : "Sign In"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setMode("signup")}
+                style={[
+                  styles.toggleBtn,
+                  mode === "signup" && [styles.toggleBtnActive, { backgroundColor: colors.card }],
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.toggleBtnText,
+                    { color: mode === "signup" ? colors.primary : colors.textSecondary },
+                  ]}
+                >
+                  {language === "am" ? "መመዝገቢያ (Sign Up)" : "Sign Up"}
+                </Text>
               </TouchableOpacity>
             </View>
-          ) : (
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-              {/* Brand Header */}
-              <View style={styles.header}>
-                <View style={styles.brandIconWrapper}>
-                  <GraduationCap size={28} color="#1D6BF3" />
-                </View>
-                <Text style={styles.brandTitle}>
-                  {mode === "signin" ? "Sign In to Estud" : "Create Student Account"}
-                </Text>
-                <Text style={styles.brandSubtitle}>
-                  {mode === "signin"
-                    ? "Access your campus escrow listings & pickup PINs"
-                    : "Join thousands of students trading securely across Ethiopia"}
-                </Text>
-              </View>
 
-              {/* Mode Toggle (Sign In vs Sign Up) */}
-              <View style={styles.tabToggle}>
-                <TouchableOpacity
-                  onPress={() => setMode("signin")}
-                  style={[styles.toggleBtn, mode === "signin" && styles.toggleBtnActive]}
-                >
-                  <Text style={[styles.toggleBtnText, mode === "signin" && styles.toggleBtnTextActive]}>
-                    Sign In
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setMode("signup")}
-                  style={[styles.toggleBtn, mode === "signup" && styles.toggleBtnActive]}
-                >
-                  <Text style={[styles.toggleBtnText, mode === "signup" && styles.toggleBtnTextActive]}>
-                    Sign Up
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Quick 1-Tap Demo Student Login for Quick Testing on Mobile */}
-              <View style={styles.quickLoginBox}>
-                <View style={styles.quickLoginHeader}>
-                  <Sparkles size={13} color="#F59E0B" />
-                  <Text style={styles.quickLoginTitle}>Quick 1-Tap Student Demo</Text>
-                </View>
-                <View style={styles.quickLoginRow}>
-                  <TouchableOpacity
-                    onPress={() => handleQuickDemoLogin("Murad Bezuneh", "murad.b@student.aau.edu.et", "AAU 4 Kilo (Science)")}
-                    style={styles.quickPill}
-                  >
-                    <Text style={styles.quickPillText}>Murad (AAU 4 Kilo)</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleQuickDemoLogin("Yohannes M.", "yohannes@student.aait.edu.et", "AAiT 5 Kilo (Technology)")}
-                    style={styles.quickPill}
-                  >
-                    <Text style={styles.quickPillText}>Yohannes (AAiT)</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              {/* Form Fields */}
-              {mode === "signup" && (
-                <View style={styles.fieldGroup}>
-                  <Text style={styles.label}>Full Student Name</Text>
-                  <View style={styles.inputWrapper}>
-                    <User size={16} color="#94A3B8" />
-                    <TextInput
-                      value={name}
-                      onChangeText={setName}
-                      placeholder="e.g. Alazar Tadesse"
-                      placeholderTextColor="#94A3B8"
-                      style={styles.input}
-                    />
+            {/* Authentic Realistic Google OAuth Button */}
+            <TouchableOpacity
+              onPress={handleGoogleSignIn}
+              disabled={isGoogleLoading}
+              activeOpacity={0.85}
+              style={[
+                styles.googleBtn,
+                {
+                  backgroundColor: isDark ? "#0F203C" : "#FFFFFF",
+                  borderColor: isDark ? "rgba(255,255,255,0.18)" : "#E2E8F0",
+                },
+              ]}
+            >
+              {isGoogleLoading ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : (
+                <>
+                  <View style={styles.googleIconCircle}>
+                    <Text style={styles.googleG}>G</Text>
                   </View>
-                </View>
+                  <Text style={[styles.googleBtnText, { color: colors.textPrimary }]}>
+                    {mode === "signin"
+                      ? (language === "am" ? "በGoogle መለያ ይቀጥሉ" : "Continue with Google")
+                      : (language === "am" ? "በGoogle ይመዝገቡ" : "Sign up with Google")}
+                  </Text>
+                </>
               )}
+            </TouchableOpacity>
 
-              {mode === "signup" && (
-                <View style={styles.fieldGroup}>
-                  <Text style={styles.label}>University Campus</Text>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.campusPickerScroll}>
-                    {ETHIOPIAN_CAMPUSES.map((c) => (
-                      <TouchableOpacity
-                        key={c}
-                        onPress={() => setCampus(c)}
-                        style={[styles.campusChip, campus === c && styles.campusChipActive]}
+            {/* Divider */}
+            <View style={styles.dividerRow}>
+              <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+              <Text style={[styles.dividerText, { color: colors.textMuted }]}>
+                {language === "am" ? "ወይም በኢሜይል" : "or continue with university credentials"}
+              </Text>
+              <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+            </View>
+
+            {/* Form Fields */}
+            {mode === "signup" && (
+              <View style={styles.fieldGroup}>
+                <Text style={[styles.label, { color: colors.textPrimary }]}>
+                  {language === "am" ? "ሙሉ የተማሪ ስም *" : "Full Student Name *"}
+                </Text>
+                <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.border }]}>
+                  <User size={16} color={colors.textMuted} />
+                  <TextInput
+                    value={name}
+                    onChangeText={setName}
+                    placeholder="e.g. Yohannes Mengistu"
+                    placeholderTextColor={colors.textMuted}
+                    style={[styles.input, { color: colors.textPrimary }]}
+                  />
+                </View>
+              </View>
+            )}
+
+            {mode === "signup" && (
+              <View style={styles.fieldGroup}>
+                <Text style={[styles.label, { color: colors.textPrimary }]}>
+                  {language === "am" ? "የተማሪ መታወቂያ ቁጥር (Student ID)" : "Student ID Number"}
+                </Text>
+                <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.border }]}>
+                  <IdCard size={16} color={colors.textMuted} />
+                  <TextInput
+                    value={studentId}
+                    onChangeText={setStudentId}
+                    placeholder="e.g. UGR/4921/14"
+                    placeholderTextColor={colors.textMuted}
+                    autoCapitalize="characters"
+                    style={[styles.input, { color: colors.textPrimary }]}
+                  />
+                </View>
+              </View>
+            )}
+
+            {mode === "signup" && (
+              <View style={styles.fieldGroup}>
+                <Text style={[styles.label, { color: colors.textPrimary }]}>
+                  {language === "am" ? "ዩኒቨርሲቲ ካምፓስ *" : "University Campus *"}
+                </Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.campusPickerScroll}>
+                  {ETHIOPIAN_CAMPUSES.map((c) => (
+                    <TouchableOpacity
+                      key={c}
+                      onPress={() => setCampus(c)}
+                      style={[
+                        styles.campusChip,
+                        {
+                          backgroundColor: campus === c ? colors.primaryLight : colors.inputBg,
+                          borderColor: campus === c ? colors.primary : colors.border,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.campusChipText,
+                          {
+                            color: campus === c ? colors.primary : colors.textSecondary,
+                            fontWeight: campus === c ? "800" : "600",
+                          },
+                        ]}
                       >
-                        <Text style={[styles.campusChipText, campus === c && styles.campusChipTextActive]}>
-                          {c}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                </View>
-              )}
-
-              <View style={styles.fieldGroup}>
-                <Text style={styles.label}>Student Email or Phone</Text>
-                <View style={styles.inputWrapper}>
-                  <Mail size={16} color="#94A3B8" />
-                  <TextInput
-                    value={email}
-                    onChangeText={setEmail}
-                    placeholder="student@aau.edu.et or 0912..."
-                    placeholderTextColor="#94A3B8"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    style={styles.input}
-                  />
-                </View>
+                        {c}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
               </View>
+            )}
 
-              <View style={styles.fieldGroup}>
-                <Text style={styles.label}>Password</Text>
-                <View style={styles.inputWrapper}>
-                  <Lock size={16} color="#94A3B8" />
-                  <TextInput
-                    value={password}
-                    onChangeText={setPassword}
-                    placeholder="Enter your password"
-                    placeholderTextColor="#94A3B8"
-                    secureTextEntry={!showPassword}
-                    style={styles.input}
-                  />
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                    {showPassword ? (
-                      <EyeOff size={16} color="#64748B" />
-                    ) : (
-                      <Eye size={16} color="#64748B" />
-                    )}
+            <View style={styles.fieldGroup}>
+              <Text style={[styles.label, { color: colors.textPrimary }]}>
+                {language === "am" ? "የዩኒቨርሲቲ ኢሜይል *" : "University Email *"}
+              </Text>
+              <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.border }]}>
+                <Mail size={16} color={colors.textMuted} />
+                <TextInput
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="student@aau.edu.et"
+                  placeholderTextColor={colors.textMuted}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  style={[styles.input, { color: colors.textPrimary }]}
+                />
+              </View>
+            </View>
+
+            <View style={styles.fieldGroup}>
+              <View style={styles.passwordHeaderRow}>
+                <Text style={[styles.label, { color: colors.textPrimary, marginBottom: 0 }]}>
+                  {language === "am" ? "የይለፍ ቃል *" : "Password *"}
+                </Text>
+                {mode === "signin" && (
+                  <TouchableOpacity
+                    onPress={() =>
+                      showInfoToast(
+                        language === "am" ? "የይለፍ ቃል መቀየሪያ" : "Password Reset",
+                        "Check your university email for the reset link"
+                      )
+                    }
+                  >
+                    <Text style={[styles.forgotText, { color: colors.primary }]}>
+                      {language === "am" ? "የይለፍ ቃል ረሱ?" : "Forgot Password?"}
+                    </Text>
                   </TouchableOpacity>
-                </View>
+                )}
               </View>
+              <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.border, marginTop: 6 }]}>
+                <Lock size={16} color={colors.textMuted} />
+                <TextInput
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="At least 6 characters"
+                  placeholderTextColor={colors.textMuted}
+                  secureTextEntry={!showPassword}
+                  style={[styles.input, { color: colors.textPrimary }]}
+                />
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                  {showPassword ? (
+                    <EyeOff size={16} color={colors.textMuted} />
+                  ) : (
+                    <Eye size={16} color={colors.textMuted} />
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
 
-              {/* Submit Button */}
-              <TouchableOpacity
-                onPress={handleSubmit}
-                activeOpacity={0.88}
-                style={styles.submitBtn}
-              >
+            {/* Submit Button */}
+            <TouchableOpacity
+              onPress={handleSubmit}
+              disabled={isLoading}
+              activeOpacity={0.88}
+              style={[styles.submitBtn, { backgroundColor: colors.primary }]}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
                 <Text style={styles.submitBtnText}>
-                  {mode === "signin" ? "Sign In to Campus Hub" : "Create Verified Account"}
+                  {mode === "signin"
+                    ? (language === "am" ? "ወደ መለያዬ ግባ" : "Sign In to Account")
+                    : (language === "am" ? "የተረጋገጠ መለያ ፍጠር" : "Create Verified Account")}
                 </Text>
-              </TouchableOpacity>
+              )}
+            </TouchableOpacity>
 
-              {/* SafeTrade Escrow Protection Guarantee */}
-              <View style={styles.securityRow}>
-                <ShieldCheck size={14} color="#10B981" />
-                <Text style={styles.securityText}>
-                  Protected by Estud SafeTrade Escrow & Campus Intermediary
-                </Text>
-              </View>
-            </ScrollView>
-          )}
-        </View>
+            {/* SafeTrade Guarantee Strip */}
+            <View style={styles.securityRow}>
+              <ShieldCheck size={14} color="#10B981" />
+              <Text style={[styles.securityText, { color: colors.textSecondary }]}>
+                {language === "am"
+                  ? "የካምፓስ ደላላ እና 100% የኤስክሮው ጥበቃ ያለው"
+                  : "Protected by Estud SafeTrade Escrow & Verified Campus ID"}
+              </Text>
+            </View>
+          </ScrollView>
+        </Animatable.View>
       </KeyboardAvoidingView>
     </Modal>
   );
@@ -264,10 +382,10 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   modalCard: {
-    backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
-    maxHeight: "88%",
+    borderWidth: 1,
+    maxHeight: "90%",
     paddingTop: 16,
     paddingBottom: 24,
     paddingHorizontal: 20,
@@ -281,22 +399,18 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     padding: 6,
     borderRadius: 16,
-    backgroundColor: "#F1F5F9",
   },
   scrollContent: {
-    paddingBottom: 20,
+    paddingBottom: 24,
   },
   header: {
     alignItems: "center",
     marginBottom: 16,
   },
   brandIconWrapper: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: "#EFF6FF",
-    borderWidth: 1,
-    borderColor: "#BFDBFE",
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 8,
@@ -304,22 +418,20 @@ const styles = StyleSheet.create({
   brandTitle: {
     fontSize: 20,
     fontWeight: "900",
-    color: "#0F172A",
     letterSpacing: -0.4,
   },
   brandSubtitle: {
     fontSize: 12,
-    color: "#64748B",
     textAlign: "center",
     marginTop: 4,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
+    lineHeight: 17,
   },
   tabToggle: {
     flexDirection: "row",
-    backgroundColor: "#F1F5F9",
     borderRadius: 14,
     padding: 4,
-    marginBottom: 14,
+    marginBottom: 16,
   },
   toggleBtn: {
     flex: 1,
@@ -328,7 +440,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   toggleBtnActive: {
-    backgroundColor: "#FFFFFF",
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -337,66 +448,76 @@ const styles = StyleSheet.create({
   },
   toggleBtnText: {
     fontSize: 13,
-    fontWeight: "600",
-    color: "#64748B",
-  },
-  toggleBtnTextActive: {
-    color: "#1D6BF3",
-    fontWeight: "800",
-  },
-  quickLoginBox: {
-    backgroundColor: "#FEF3C7",
-    borderWidth: 1,
-    borderColor: "#FDE68A",
-    borderRadius: 14,
-    padding: 10,
-    marginBottom: 14,
-  },
-  quickLoginHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    marginBottom: 6,
-  },
-  quickLoginTitle: {
-    fontSize: 11,
-    fontWeight: "800",
-    color: "#B45309",
-  },
-  quickLoginRow: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  quickPill: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#F59E0B",
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  quickPillText: {
-    fontSize: 10,
     fontWeight: "700",
-    color: "#B45309",
+  },
+  googleBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    marginBottom: 16,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  googleIconCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "#EA4335",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  googleG: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "900",
+  },
+  googleBtnText: {
+    fontSize: 13,
+    fontWeight: "800",
+  },
+  dividerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 16,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+  },
+  dividerText: {
+    fontSize: 10,
+    fontWeight: "600",
   },
   fieldGroup: {
     marginBottom: 12,
   },
   label: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "700",
-    color: "#334155",
     marginBottom: 6,
+  },
+  passwordHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  forgotText: {
+    fontSize: 11,
+    fontWeight: "700",
   },
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     borderRadius: 14,
     paddingHorizontal: 12,
     height: 46,
@@ -405,7 +526,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 13,
-    color: "#0F172A",
     fontWeight: "500",
     paddingVertical: 0,
   },
@@ -413,37 +533,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   campusChip: {
-    backgroundColor: "#F1F5F9",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 10,
     marginRight: 6,
   },
-  campusChipActive: {
-    backgroundColor: "#EFF6FF",
-    borderColor: "#1D6BF3",
-  },
   campusChipText: {
     fontSize: 11,
-    color: "#64748B",
-    fontWeight: "600",
-  },
-  campusChipTextActive: {
-    color: "#1D6BF3",
-    fontWeight: "800",
   },
   submitBtn: {
-    backgroundColor: "#1D6BF3", // Electric Cobalt Blue
-    paddingVertical: 13,
+    paddingVertical: 14,
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 8,
-    shadowColor: "#1D6BF3",
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 4,
   },
@@ -461,47 +568,6 @@ const styles = StyleSheet.create({
   },
   securityText: {
     fontSize: 10,
-    color: "#64748B",
     fontWeight: "500",
-  },
-  successBox: {
-    alignItems: "center",
-    paddingVertical: 32,
-    paddingHorizontal: 16,
-  },
-  successIconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: "#ECFDF5",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-  },
-  successTitle: {
-    fontSize: 20,
-    fontWeight: "900",
-    color: "#0F172A",
-  },
-  successSubtitle: {
-    fontSize: 12,
-    color: "#64748B",
-    textAlign: "center",
-    marginTop: 6,
-    lineHeight: 18,
-    marginBottom: 20,
-  },
-  continueButton: {
-    backgroundColor: "#1D6BF3",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 16,
-    width: "100%",
-    alignItems: "center",
-  },
-  continueButtonText: {
-    color: "#FFFFFF",
-    fontSize: 13,
-    fontWeight: "800",
   },
 });
