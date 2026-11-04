@@ -2,27 +2,13 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ShieldCheck,
-  GraduationCap,
-  Sparkles,
-  MapPin,
-  BookOpen,
-  Users,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface SlideData {
   id: string;
   image: string;
   headTitle: string;
-  tagline: string;
   description: string;
-  badge: string;
-  badgeIcon: typeof ShieldCheck;
-  campusTag: string;
-  accentColor: string;
   borderGlow: string;
 }
 
@@ -31,49 +17,29 @@ const HERO_SLIDES: SlideData[] = [
     id: "community",
     image: "/images/hero/students-group-campus.jpg",
     headTitle: "Ethiopian Campus Community",
-    tagline: "Peer-to-Peer Student Marketplace",
-    description: "Trade educational gear, books, and essentials directly with verified students across AAU, ASTU, Hawassa & Jimma.",
-    badge: "12,000+ Students",
-    badgeIcon: Users,
-    campusTag: "All Ethiopian Universities",
-    accentColor: "from-amber-400 to-yellow-500",
-    borderGlow: "rgba(245, 158, 11, 0.35)",
+    description: "Connect and trade textbooks, study gear, and essentials with verified university students.",
+    borderGlow: "rgba(245, 158, 11, 0.25)",
   },
   {
     id: "textbooks",
     image: "/images/hero/student-books-male.jpg",
     headTitle: "Course Books & Study Materials",
-    tagline: "Save up to 40% on Peer Listings",
-    description: "Engineering, medicine, calculus, and commerce textbooks handed down from senior university students.",
-    badge: "0% Seller Fee",
-    badgeIcon: BookOpen,
-    campusTag: "AAU 4-Kilo • Science Faculty",
-    accentColor: "from-blue-400 to-indigo-500",
-    borderGlow: "rgba(59, 130, 246, 0.35)",
+    description: "Engineering, medicine, calculus, and course notes passed down directly from senior students.",
+    borderGlow: "rgba(59, 130, 246, 0.25)",
   },
   {
     id: "escrow",
     image: "/images/hero/student-hijab-female.jpg",
     headTitle: "SafeTrade In-Person Escrow",
-    tagline: "Zero Fraud Risk • Safe Handover",
-    description: "Buyer funds stay locked in escrow. Physically inspect and test your item at the campus desk before releasing payment.",
-    badge: "100% Escrow Protected",
-    badgeIcon: ShieldCheck,
-    campusTag: "Campus Library Intermediary",
-    accentColor: "from-emerald-400 to-teal-500",
-    borderGlow: "rgba(16, 185, 129, 0.35)",
+    description: "Buyer funds stay secure until you physically inspect and accept your item at campus handover.",
+    borderGlow: "rgba(16, 185, 129, 0.25)",
   },
   {
     id: "gear",
     image: "/images/student-backpack-3d.jpg",
     headTitle: "Campus Tech & Dorm Essentials",
-    tagline: "Calculators, Laptops & Gear",
-    description: "Verified laptops, Casio calculators, backpacks, and dormitory living equipment ready for campus pickup.",
-    badge: "Campus Verified",
-    badgeIcon: Sparkles,
-    campusTag: "AAiT 5-Kilo & ASTU Adama",
-    accentColor: "from-yellow-400 to-amber-500",
-    borderGlow: "rgba(251, 191, 36, 0.35)",
+    description: "Calculators, laptops, backpacks, and dormitory supplies ready for convenient campus pickup.",
+    borderGlow: "rgba(251, 191, 36, 0.25)",
   },
 ];
 
@@ -110,31 +76,30 @@ export function HeroShowcase() {
   };
 
   const activeSlide = HERO_SLIDES[currentIndex];
-  const BadgeIcon = activeSlide.badgeIcon;
 
-  // Slide animation variants
+  // Professional slide transitions
   const slideVariants: Variants = {
     enter: (dir: number) => ({
-      x: dir > 0 ? 40 : -40,
+      x: dir > 0 ? 30 : -30,
       opacity: 0,
-      scale: 0.96,
+      scale: 0.98,
     }),
     center: {
       x: 0,
       opacity: 1,
       scale: 1,
       transition: {
-        x: { type: "spring" as const, stiffness: 300, damping: 30 },
-        opacity: { duration: 0.4 },
-        scale: { duration: 0.4 },
+        x: { type: "spring" as const, stiffness: 280, damping: 28 },
+        opacity: { duration: 0.45 },
+        scale: { duration: 0.45 },
       },
     },
     exit: (dir: number) => ({
-      x: dir > 0 ? -40 : 40,
+      x: dir > 0 ? -30 : 30,
       opacity: 0,
-      scale: 0.96,
+      scale: 0.98,
       transition: {
-        x: { type: "spring" as const, stiffness: 300, damping: 30 },
+        x: { type: "spring" as const, stiffness: 280, damping: 28 },
         opacity: { duration: 0.3 },
       },
     }),
@@ -146,18 +111,19 @@ export function HeroShowcase() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Outer ambient glow reacting to active slide */}
+      {/* Outer ambient glow reacting smoothly to active slide */}
       <div
-        className="absolute -inset-2 rounded-3xl opacity-40 blur-2xl transition-all duration-700 pointer-events-none"
+        className="absolute -inset-2 rounded-3xl opacity-35 blur-2xl transition-all duration-700 pointer-events-none"
         style={{
           background: `radial-gradient(circle, ${activeSlide.borderGlow} 0%, transparent 70%)`,
         }}
       />
 
-      {/* Main Showcase Container */}
-      <div className="relative rounded-3xl border border-white/20 bg-slate-900/60 backdrop-blur-xl p-3 sm:p-4 shadow-2xl overflow-hidden">
+      {/* Main Showcase Container - Clean, Frameless Luxury Aesthetic */}
+      <div className="relative rounded-3xl border border-white/15 bg-slate-900/60 backdrop-blur-xl p-3 sm:p-4 shadow-2xl overflow-hidden">
+        
         {/* Animated Slide Viewport */}
-        <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-2xl overflow-hidden bg-slate-950 flex items-center justify-center">
+        <div className="group relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-2xl overflow-hidden bg-slate-950 flex items-center justify-center">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
               key={activeSlide.id}
@@ -168,57 +134,28 @@ export function HeroShowcase() {
               exit="exit"
               className="absolute inset-0 w-full h-full"
             >
-              {/* Background Slide Image with subtle zoom */}
+              {/* Slide Image with slow Ken Burns effect */}
               <img
                 src={activeSlide.image}
                 alt={activeSlide.headTitle}
                 className="w-full h-full object-cover object-center transform transition-transform duration-7000 ease-out scale-105"
               />
 
-              {/* Gradient Vignette Overlay for Readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-slate-950/20" />
+              {/* Gradient Vignette for Crisp Text Contrast */}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-transparent" />
 
-              {/* Top Floating Badge Bar */}
-              <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between pointer-events-none z-10">
+              {/* Bottom Clean Head Title & Context Description */}
+              <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 z-10">
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
+                  key={`text-${activeSlide.id}`}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-slate-950/70 border border-white/20 px-3 py-1 backdrop-blur-md text-[11px] font-bold text-white shadow-lg"
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <BadgeIcon className="h-3.5 w-3.5 text-amber-400" />
-                  <span>{activeSlide.badge}</span>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-slate-950/70 border border-white/15 px-2.5 py-1 backdrop-blur-md text-[10px] font-semibold text-slate-300"
-                >
-                  <MapPin className="h-3 w-3 text-brand-400" />
-                  <span>{activeSlide.campusTag}</span>
-                </motion.div>
-              </div>
-
-              {/* Bottom Glassmorphism Head Title & Story Card */}
-              <div className="absolute bottom-3 left-3 right-3 z-10">
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1, duration: 0.35 }}
-                  className="rounded-xl border border-white/15 bg-slate-900/80 backdrop-blur-md p-3.5 text-left shadow-xl"
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300">
-                      {activeSlide.tagline}
-                    </span>
-                  </div>
-
-                  <h3 className="text-base sm:text-lg font-black tracking-tight text-white leading-tight">
+                  <h3 className="text-lg sm:text-xl font-bold tracking-tight text-white leading-snug">
                     {activeSlide.headTitle}
                   </h3>
-
-                  <p className="mt-1 text-xs text-slate-200/90 leading-relaxed line-clamp-2">
+                  <p className="mt-1.5 text-xs sm:text-sm text-slate-200/90 leading-relaxed max-w-md line-clamp-2">
                     {activeSlide.description}
                   </p>
                 </motion.div>
@@ -226,11 +163,11 @@ export function HeroShowcase() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Left / Right Chevron Controls */}
+          {/* Clean Subtle Chevron Arrows (Visible on hover) */}
           <button
             onClick={handlePrev}
             aria-label="Previous Slide"
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 z-20 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-slate-950/60 border border-white/20 text-white backdrop-blur-md transition-all hover:bg-slate-900 hover:scale-110 active:scale-95 cursor-pointer shadow-md"
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-slate-950/50 border border-white/20 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all hover:bg-slate-900 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -238,14 +175,14 @@ export function HeroShowcase() {
           <button
             onClick={handleNext}
             aria-label="Next Slide"
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-slate-950/60 border border-white/20 text-white backdrop-blur-md transition-all hover:bg-slate-900 hover:scale-110 active:scale-95 cursor-pointer shadow-md"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-slate-950/50 border border-white/20 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all hover:bg-slate-900 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
 
-        {/* Thumbnail Selector & Live Progress Bar */}
-        <div className="mt-3.5 grid grid-cols-4 gap-2">
+        {/* Minimalist Modern Progress Bar (Apple / Tesla style slim line segments) */}
+        <div className="mt-3.5 flex items-center gap-2 px-1">
           {HERO_SLIDES.map((slide, index) => {
             const isActive = index === currentIndex;
             return (
@@ -255,37 +192,20 @@ export function HeroShowcase() {
                   setDirection(index > currentIndex ? 1 : -1);
                   setCurrentIndex(index);
                 }}
-                className={`group relative flex flex-col rounded-xl p-1.5 transition-all cursor-pointer text-left ${
-                  isActive
-                    ? "bg-white/15 border border-amber-400/50 shadow-sm"
-                    : "bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20"
-                }`}
+                aria-label={`Go to slide ${index + 1}: ${slide.headTitle}`}
+                className="group relative flex-1 h-1.5 rounded-full bg-white/20 overflow-hidden cursor-pointer transition-all hover:bg-white/30"
               >
-                {/* Active Live Filling Progress Indicator */}
-                <div className="h-1 w-full rounded-full bg-white/20 overflow-hidden mb-1.5">
-                  {isActive && !isHovered ? (
-                    <motion.div
-                      key={currentIndex}
-                      initial={{ width: "0%" }}
-                      animate={{ width: "100%" }}
-                      transition={{ duration: AUTOPLAY_INTERVAL / 1000, ease: "linear" }}
-                      className="h-full bg-gradient-to-r from-amber-400 to-yellow-400"
-                    />
-                  ) : isActive && isHovered ? (
-                    <div className="h-full w-full bg-amber-400" />
-                  ) : null}
-                </div>
-
-                <span
-                  className={`text-[10px] sm:text-[11px] font-bold truncate transition-colors ${
-                    isActive ? "text-white" : "text-slate-300 group-hover:text-white"
-                  }`}
-                >
-                  {slide.headTitle.split(" ")[0]}
-                </span>
-                <span className="text-[9px] text-slate-400 truncate hidden sm:block">
-                  {slide.badge}
-                </span>
+                {isActive && !isHovered ? (
+                  <motion.div
+                    key={`progress-${currentIndex}`}
+                    initial={{ width: "0%" }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: AUTOPLAY_INTERVAL / 1000, ease: "linear" }}
+                    className="h-full bg-gradient-to-r from-amber-400 to-yellow-400 rounded-full"
+                  />
+                ) : isActive && isHovered ? (
+                  <div className="h-full w-full bg-amber-400 rounded-full" />
+                ) : null}
               </button>
             );
           })}
