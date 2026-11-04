@@ -56,6 +56,23 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const checkoutMutation = trpc.orders.checkoutWithEscrow.useMutation();
 
+  const cleanErrorMessage = (err: unknown): string => {
+    if (!err) return "Failed to submit payment. Please verify your connection.";
+    const rawMsg = (err as any)?.message || String(err);
+    try {
+      const parsed = JSON.parse(rawMsg);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed
+          .map((item: any) => item.message || "Invalid input")
+          .filter(Boolean)
+          .join(". ");
+      }
+    } catch {
+      // not JSON
+    }
+    return rawMsg;
+  };
+
   const handleSubmitPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!transactionRef.trim()) return;
@@ -83,7 +100,7 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
       setIsSuccess(true);
     } catch (err: any) {
       console.error("Payment submission failed:", err);
-      setErrorMsg(err?.message || "Failed to submit payment. Please verify your connection.");
+      setErrorMsg(cleanErrorMessage(err));
     } finally {
       setIsSubmitting(false);
     }
@@ -129,7 +146,7 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
                   onClose();
                   router.push("/activity" as any);
                 }}
-                className="rounded-full bg-brand-600 px-8 py-3 text-sm font-semibold text-white hover:bg-brand-700 transition-all shadow-md shadow-brand-600/20"
+                className="rounded-xl bg-gradient-to-r from-blue-600 via-brand-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 px-8 py-3 text-sm font-semibold text-white shadow-md shadow-brand-600/25 border border-white/10 transition-all cursor-pointer"
               >
                 View in My Activity
               </button>
@@ -237,8 +254,9 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => setStep(2)}
-                  className="w-full flex items-center justify-center gap-2 rounded-full bg-brand-600 py-3.5 text-sm font-semibold text-white hover:bg-brand-700 transition shadow-lg shadow-brand-600/20"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 via-brand-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 py-3.5 text-sm font-semibold text-white shadow-md shadow-brand-600/25 border border-white/10 transition cursor-pointer"
                 >
                   Proceed to Payment Info <ArrowRight className="h-4 w-4" />
                 </button>
@@ -340,16 +358,18 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
                   </span>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex items-center justify-between gap-3 pt-1">
                   <button
+                    type="button"
                     onClick={() => setStep(1)}
-                    className="flex-1 rounded-full border border-slate-200 dark:border-twilight-700 py-3 text-sm font-semibold text-slate-700 dark:text-twilight-300 hover:bg-slate-50 dark:hover:bg-twilight-750 transition"
+                    className="rounded-xl border border-slate-200 dark:border-twilight-600 bg-white dark:bg-twilight-750/70 hover:bg-slate-100 dark:hover:bg-twilight-700 text-slate-700 dark:text-twilight-200 px-6 py-3 text-sm font-medium transition cursor-pointer"
                   >
                     Back
                   </button>
                   <button
+                    type="button"
                     onClick={() => setStep(3)}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-full bg-brand-600 py-3 text-sm font-semibold text-white hover:bg-brand-700 transition shadow-lg shadow-brand-600/20"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 via-brand-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 py-3 text-sm font-semibold text-white shadow-md shadow-brand-600/25 border border-white/10 transition cursor-pointer"
                   >
                     I Have Transferred <ArrowRight className="h-4 w-4" />
                   </button>
@@ -388,31 +408,38 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
                 </div>
 
                 {errorMsg && (
-                  <div className="rounded-xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 p-3 text-xs text-rose-600 dark:text-rose-400">
-                    {errorMsg}
+                  <div className="rounded-xl bg-rose-500/10 border border-rose-500/25 p-3 flex items-start gap-2.5 text-xs text-rose-600 dark:text-rose-300">
+                    <AlertCircle className="h-4 w-4 shrink-0 text-rose-500 mt-0.5" />
+                    <div className="leading-relaxed">
+                      <span className="font-semibold block mb-0.5">Payment Verification Notice</span>
+                      {errorMsg}
+                    </div>
                   </div>
                 )}
 
-                <div className="flex gap-3 pt-2">
+                <div className="flex items-center justify-between gap-3 pt-2">
                   <button
                     type="button"
                     onClick={() => setStep(2)}
-                    className="flex-1 rounded-full border border-slate-200 dark:border-twilight-700 py-3 text-sm font-semibold text-slate-700 dark:text-twilight-300 hover:bg-slate-50 dark:hover:bg-twilight-750 transition"
+                    className="rounded-xl border border-slate-200 dark:border-twilight-600 bg-white dark:bg-twilight-750/70 hover:bg-slate-100 dark:hover:bg-twilight-700 text-slate-700 dark:text-twilight-200 px-6 py-3 text-sm font-medium transition cursor-pointer"
                   >
                     Back
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting || !transactionRef.trim()}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-full bg-brand-600 py-3 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50 transition shadow-lg shadow-brand-600/20"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 via-brand-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 py-3 text-sm font-semibold text-white shadow-md shadow-brand-600/25 border border-white/10 disabled:opacity-50 transition cursor-pointer"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center gap-2">
                         <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                        Submitting...
+                        Locking in Escrow...
                       </span>
                     ) : (
-                      "Confirm & Lock in Escrow"
+                      <span className="flex items-center gap-2">
+                        <ShieldCheck className="h-4 w-4" />
+                        Confirm & Lock in Escrow
+                      </span>
                     )}
                   </button>
                 </div>

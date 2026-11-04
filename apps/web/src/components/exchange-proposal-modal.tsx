@@ -90,7 +90,7 @@ export function ExchangeProposalModal({
 
             <button
               onClick={onClose}
-              className="rounded-full bg-brand-600 px-8 py-3 text-xs font-bold text-white hover:bg-brand-700 transition"
+              className="rounded-xl bg-gradient-to-r from-blue-600 via-brand-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 px-8 py-3 text-xs font-bold text-white shadow-md shadow-brand-600/25 border border-white/10 transition cursor-pointer"
             >
               Done & Return to Product
             </button>
@@ -258,18 +258,18 @@ export function ExchangeProposalModal({
                 />
               </div>
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex items-center justify-between gap-3 pt-2">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 rounded-full border border-slate-200 dark:border-twilight-700 py-3 text-xs font-bold text-slate-700 dark:text-twilight-300 hover:bg-slate-50 dark:hover:bg-twilight-750 transition"
+                  className="rounded-xl border border-slate-200 dark:border-twilight-600 bg-white dark:bg-twilight-750/70 hover:bg-slate-100 dark:hover:bg-twilight-700 text-slate-700 dark:text-twilight-200 px-6 py-3 text-xs font-semibold transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-full bg-brand-600 py-3 text-xs font-bold text-white shadow-md shadow-brand-600/20 hover:bg-brand-700 transition"
+                  className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 via-brand-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 py-3 text-xs font-bold text-white shadow-md shadow-brand-600/25 border border-white/10 transition cursor-pointer"
                 >
                   {isSubmitting ? "Submitting Proposal..." : "Send Exchange Offer"}
                 </button>

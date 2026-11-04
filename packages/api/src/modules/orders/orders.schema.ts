@@ -17,7 +17,7 @@ export const checkoutWithEscrowSchema = z.object({
     "BOA_TRANSFER",
     "OTHER_BANK",
   ]).default("TELEBIRR"),
-  bankTransactionReference: z.string().min(3, "Valid transaction code is required"),
+  bankTransactionReference: z.string().min(1, "Please enter your bank or mobile transaction reference code"),
   screenshotUrl: z.string().optional(),
   senderAccountOrPhone: z.string().optional(),
   notes: z.string().optional(),

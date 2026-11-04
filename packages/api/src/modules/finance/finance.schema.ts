@@ -12,7 +12,7 @@ export const paymentChannels = [
 export const submitPaymentEvidenceSchema = z.object({
   paymentId: z.string().uuid(),
   channel: z.enum(paymentChannels),
-  bankTransactionReference: z.string().min(4, "Enter valid transaction code"),
+  bankTransactionReference: z.string().min(1, "Enter valid transaction code"),
   senderAccountOrPhone: z.string().optional(),
   screenshotUrl: z.string().url("Valid screenshot URL required"),
   notes: z.string().optional(),
