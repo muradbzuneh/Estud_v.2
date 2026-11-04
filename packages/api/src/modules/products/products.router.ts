@@ -6,6 +6,9 @@ import {
   submitListingSchema,
   adminValuationSchema,
   adminApproveSchema,
+  adminListProductsFilterSchema,
+  adminUpdateProductStatusSchema,
+  adminBulkProductActionSchema,
 } from "./products.schema";
 
 export const productsRouter = router({
@@ -43,4 +46,31 @@ export const productsRouter = router({
       const service = new ProductsService(ctx.db);
       return service.adminApprove(ctx.user.id, input);
     }),
+
+  adminList: adminProcedure
+    .input(adminListProductsFilterSchema)
+    .query(async ({ ctx, input }) => {
+      const service = new ProductsService(ctx.db);
+      return service.adminList(input);
+    }),
+
+  adminGetStats: adminProcedure.query(async ({ ctx }) => {
+    const service = new ProductsService(ctx.db);
+    return service.adminGetStats();
+  }),
+
+  adminUpdateStatus: adminProcedure
+    .input(adminUpdateProductStatusSchema)
+    .mutation(async ({ ctx, input }) => {
+      const service = new ProductsService(ctx.db);
+      return service.adminUpdateStatus(ctx.user.id, input);
+    }),
+
+  adminBulkAction: adminProcedure
+    .input(adminBulkProductActionSchema)
+    .mutation(async ({ ctx, input }) => {
+      const service = new ProductsService(ctx.db);
+      return service.adminBulkAction(ctx.user.id, input);
+    }),
 });
+

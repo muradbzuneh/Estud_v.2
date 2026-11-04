@@ -4,7 +4,7 @@ export interface LogAuditOptions {
   db: EstudDatabase;
   actorId?: string;
   action: string;
-  targetType: "product" | "order" | "payment" | "payout" | "dispute" | "user";
+  targetType: "product" | "order" | "payment" | "payout" | "dispute" | "user" | "category" | "institution" | "system";
   targetId: string;
   metadata?: Record<string, unknown>;
 }

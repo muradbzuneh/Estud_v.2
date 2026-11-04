@@ -51,3 +51,47 @@ export const adminApproveSchema = z.object({
   productId: z.string().uuid(),
   feedbackMessage: z.string().optional(),
 });
+
+export const adminListProductsFilterSchema = z.object({
+  tab: z.enum(["ALL", "PENDING_REVIEW", "ARCHIVED", "PUBLISHED"]).default("ALL"),
+  status: z
+    .enum([
+      "DRAFT",
+      "PENDING_VALUATION",
+      "VALUED",
+      "APPROVED",
+      "REJECTED",
+      "SOLD",
+      "PAUSED",
+      "ARCHIVED",
+    ])
+    .optional(),
+  categoryId: z.string().uuid().optional(),
+  condition: z.enum(["NEW", "LIKE_NEW", "GOOD", "FAIR"]).optional(),
+  search: z.string().optional(),
+  sortBy: z.enum(["newest", "oldest", "price_asc", "price_desc"]).default("newest"),
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(10),
+});
+
+export const adminUpdateProductStatusSchema = z.object({
+  productId: z.string().uuid(),
+  status: z.enum([
+    "DRAFT",
+    "PENDING_VALUATION",
+    "VALUED",
+    "APPROVED",
+    "REJECTED",
+    "SOLD",
+    "PAUSED",
+    "ARCHIVED",
+  ]),
+  notes: z.string().optional(),
+});
+
+export const adminBulkProductActionSchema = z.object({
+  productIds: z.array(z.string().uuid()).min(1),
+  action: z.enum(["APPROVE", "REJECT", "ARCHIVE", "DELETE"]),
+  reason: z.string().optional(),
+});
+

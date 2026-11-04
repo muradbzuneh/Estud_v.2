@@ -9,7 +9,12 @@ import {
   educationalMaterials,
   eq,
   and,
+  or,
+  ilike,
   desc,
+  asc,
+  sql,
+  inArray,
   type EstudDatabase,
 } from "@estud/db";
 import { recordAuditLog } from "../../core/audit";
@@ -19,6 +24,9 @@ import type {
   submitListingSchema,
   adminValuationSchema,
   adminApproveSchema,
+  adminListProductsFilterSchema,
+  adminUpdateProductStatusSchema,
+  adminBulkProductActionSchema,
 } from "./products.schema";
 
 export class ProductsService {
@@ -228,5 +236,186 @@ export class ProductsService {
     });
 
     return { success: true };
+  }
+
+  /**
+   * Admin: List products for Listings & Products dashboard view
+   */
+  async adminList(input: z.infer<typeof adminListProductsFilterSchema>) {
+    const conditions = [];
+
+    // Tab filter
+    if (input.tab === "PENDING_REVIEW") {
+      conditions.push(
+        or(
+          eq(products.status, "PENDING_VALUATION"),
+          eq(products.status, "VALUED"),
+          eq(products.status, "DRAFT")
+        )
+      );
+    } else if (input.tab === "ARCHIVED") {
+      conditions.push(or(eq(products.status, "ARCHIVED"), eq(products.status, "REJECTED")));
+    } else if (input.tab === "PUBLISHED") {
+      conditions.push(eq(products.status, "APPROVED"));
+    }
+
+    if (input.status) {
+      conditions.push(eq(products.status, input.status));
+    }
+    if (input.categoryId) {
+      conditions.push(eq(products.categoryId, input.categoryId));
+    }
+    if (input.condition) {
+      conditions.push(eq(products.condition, input.condition));
+    }
+    if (input.search && input.search.trim().length > 0) {
+      const q = `%${input.search.trim()}%`;
+      conditions.push(or(ilike(products.title, q), ilike(products.description, q)));
+    }
+
+    let orderByClause = [desc(products.createdAt)];
+    if (input.sortBy === "oldest") {
+      orderByClause = [asc(products.createdAt)];
+    } else if (input.sortBy === "price_asc") {
+      orderByClause = [asc(products.proposedPrice)];
+    } else if (input.sortBy === "price_desc") {
+      orderByClause = [desc(products.proposedPrice)];
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const offset = (input.page - 1) * input.pageSize;
+
+    const [items, totalResult] = await Promise.all([
+      this.db.query.products.findMany({
+        where: whereClause,
+        limit: input.pageSize,
+        offset,
+        orderBy: orderByClause,
+        with: {
+          images: true,
+          category: true,
+          seller: {
+            with: {
+              profile: true,
+            },
+          },
+          institution: true,
+          campus: true,
+        },
+      }),
+      this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(products)
+        .where(whereClause),
+    ]);
+
+    const total = totalResult[0]?.count ?? 0;
+
+    return {
+      items,
+      total,
+      page: input.page,
+      pageSize: input.pageSize,
+      totalPages: Math.ceil(total / input.pageSize),
+    };
+  }
+
+  /**
+   * Admin: Get metrics cards for Listings dashboard
+   */
+  async adminGetStats() {
+    const [totalRes, publishedRes, pendingRes, removedRes] = await Promise.all([
+      this.db.select({ count: sql<number>`count(*)::int` }).from(products),
+      this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(products)
+        .where(eq(products.status, "APPROVED")),
+      this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(products)
+        .where(
+          or(
+            eq(products.status, "PENDING_VALUATION"),
+            eq(products.status, "VALUED"),
+            eq(products.status, "DRAFT")
+          )
+        ),
+      this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(products)
+        .where(or(eq(products.status, "REJECTED"), eq(products.status, "ARCHIVED"))),
+    ]);
+
+    return {
+      totalItems: totalRes[0]?.count ?? 0,
+      publishedItems: publishedRes[0]?.count ?? 0,
+      pendingReviewItems: pendingRes[0]?.count ?? 0,
+      removedItems: removedRes[0]?.count ?? 0,
+    };
+  }
+
+  /**
+   * Admin: Update status of a product (pause, archive, approve, reject)
+   */
+  async adminUpdateStatus(adminId: string, input: z.infer<typeof adminUpdateProductStatusSchema>) {
+    const product = await this.db.query.products.findFirst({
+      where: eq(products.id, input.productId),
+    });
+
+    if (!product) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Product not found." });
+    }
+
+    await this.db
+      .update(products)
+      .set({
+        status: input.status,
+        updatedAt: new Date(),
+      })
+      .where(eq(products.id, input.productId));
+
+    await recordAuditLog({
+      db: this.db,
+      actorId: adminId,
+      action: `PRODUCT_STATUS_${input.status}`,
+      targetType: "product",
+      targetId: input.productId,
+      metadata: { previousStatus: product.status, newStatus: input.status, notes: input.notes },
+    });
+
+    return { success: true, status: input.status };
+  }
+
+  /**
+   * Admin: Bulk action on products
+   */
+  async adminBulkAction(adminId: string, input: z.infer<typeof adminBulkProductActionSchema>) {
+    if (input.action === "ARCHIVE") {
+      await this.db
+        .update(products)
+        .set({ status: "ARCHIVED", updatedAt: new Date() })
+        .where(inArray(products.id, input.productIds));
+    } else if (input.action === "APPROVE") {
+      await this.db
+        .update(products)
+        .set({ status: "APPROVED", updatedAt: new Date() })
+        .where(inArray(products.id, input.productIds));
+    } else if (input.action === "REJECT") {
+      await this.db
+        .update(products)
+        .set({ status: "REJECTED", updatedAt: new Date() })
+        .where(inArray(products.id, input.productIds));
+    }
+
+    await recordAuditLog({
+      db: this.db,
+      actorId: adminId,
+      action: `PRODUCT_BULK_${input.action}`,
+      targetType: "product",
+      targetId: input.productIds.join(","),
+      metadata: { count: input.productIds.length, reason: input.reason },
+    });
+
+    return { success: true, count: input.productIds.length };
   }
 }
