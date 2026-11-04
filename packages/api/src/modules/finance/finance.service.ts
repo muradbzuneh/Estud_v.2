@@ -20,6 +20,7 @@ import type {
   adminVerifyPaymentSchema,
   adminExecutePayoutSchema,
   adminListPaymentsFilterSchema,
+  adminListPayoutsFilterSchema,
 } from "./finance.schema";
 
 export class FinanceService {
@@ -292,6 +293,49 @@ export class FinanceService {
       this.db
         .select({ count: sql<number>`count(*)::int` })
         .from(payments)
+        .where(whereClause),
+    ]);
+
+    const total = totalRes[0]?.count ?? 0;
+
+    return {
+      items,
+      total,
+      page: input.page,
+      pageSize: input.pageSize,
+      totalPages: Math.ceil(total / input.pageSize),
+    };
+  }
+
+  async adminListPayouts(input: z.infer<typeof adminListPayoutsFilterSchema>) {
+    const conditions = [];
+
+    if (input.status !== "ALL") {
+      conditions.push(eq(sellerPayouts.status, input.status as any));
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const offset = (input.page - 1) * input.pageSize;
+
+    const [items, totalRes] = await Promise.all([
+      this.db.query.sellerPayouts.findMany({
+        where: whereClause,
+        limit: input.pageSize,
+        offset,
+        orderBy: [desc(sellerPayouts.createdAt)],
+        with: {
+          seller: { with: { profile: true } },
+          order: {
+            with: {
+              product: true,
+              buyer: { with: { profile: true } },
+            },
+          },
+        },
+      }),
+      this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(sellerPayouts)
         .where(whereClause),
     ]);
 

@@ -41,3 +41,10 @@ export const adminListPaymentsFilterSchema = z.object({
   pageSize: z.number().int().min(1).max(100).default(10),
 });
 
+export const adminListPayoutsFilterSchema = z.object({
+  status: z.enum(["ALL", "PENDING", "PROCESSING", "COMPLETED", "FAILED", "PAUSED_DISPUTE"]).default("ALL"),
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(10),
+});
+
+
