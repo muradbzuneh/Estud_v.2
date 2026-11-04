@@ -21,6 +21,7 @@
     "db:studio": "bun --filter @estud/db db:studio"
   },
   "devDependencies": {
+    "tailwindcss-animate": "^1.0.7",
     "turbo": "^2.4.4",
     "typescript": "^5.8.2"
   }
