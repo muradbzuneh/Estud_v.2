@@ -43,3 +43,22 @@ export const adminCreateCampusSchema = z.object({
   details: z.string().optional(),
 });
 
+export const adminListUsersFilterSchema = z.object({
+  role: z.enum(["ALL", "student", "campus_rep", "admin", "guest"]).default("ALL"),
+  search: z.string().optional(),
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(10),
+});
+
+export const adminUpdateUserRoleSchema = z.object({
+  userId: z.string(),
+  role: z.enum(["student", "campus_rep", "admin", "guest"]),
+});
+
+export const adminToggleUserActiveSchema = z.object({
+  userId: z.string(),
+  isActive: z.boolean(),
+  reason: z.string().optional(),
+});
+
+

@@ -1,10 +1,14 @@
 import { z } from "zod";
 import { router, publicProcedure, protectedProcedure, adminProcedure } from "../../core/trpc";
-import { users, profiles, institutions, campuses, eq } from "@estud/db";
+import { users, profiles, institutions, campuses, eq, and, or, ilike, desc, sql } from "@estud/db";
 import { TRPCError } from "@trpc/server";
+import { recordAuditLog } from "../../core/audit";
 import {
   adminCreateInstitutionSchema,
   adminCreateCampusSchema,
+  adminListUsersFilterSchema,
+  adminUpdateUserRoleSchema,
+  adminToggleUserActiveSchema,
 } from "./auth.schema";
 
 export const authRouter = router({
@@ -151,5 +155,101 @@ export const authRouter = router({
         })
         .returning();
       return camp;
+    }),
+
+  adminListUsers: adminProcedure
+    .input(adminListUsersFilterSchema)
+    .query(async ({ ctx, input }) => {
+      const conditions = [];
+
+      if (input.role !== "ALL") {
+        conditions.push(eq(users.role, input.role as any));
+      }
+      if (input.search && input.search.trim().length > 0) {
+        const q = `%${input.search.trim()}%`;
+        conditions.push(or(ilike(users.name, q), ilike(users.email, q)));
+      }
+
+      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+      const offset = (input.page - 1) * input.pageSize;
+
+      const [items, totalRes] = await Promise.all([
+        ctx.db.query.users.findMany({
+          where: whereClause,
+          limit: input.pageSize,
+          offset,
+          orderBy: [desc(users.createdAt)],
+          with: {
+            profile: {
+              with: {
+                institution: true,
+                campus: true,
+              },
+            },
+          },
+        }),
+        ctx.db
+          .select({ count: sql<number>`count(*)::int` })
+          .from(users)
+          .where(whereClause),
+      ]);
+
+      const total = totalRes[0]?.count ?? 0;
+
+      return {
+        items,
+        total,
+        page: input.page,
+        pageSize: input.pageSize,
+        totalPages: Math.ceil(total / input.pageSize),
+      };
+    }),
+
+  adminUpdateUserRole: adminProcedure
+    .input(adminUpdateUserRoleSchema)
+    .mutation(async ({ ctx, input }) => {
+      const [updated] = await ctx.db
+        .update(users)
+        .set({
+          role: input.role,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, input.userId))
+        .returning();
+
+      await recordAuditLog({
+        db: ctx.db,
+        actorId: ctx.user.id,
+        action: `USER_ROLE_UPDATED_TO_${input.role.toUpperCase()}`,
+        targetType: "user",
+        targetId: input.userId,
+        metadata: { newRole: input.role },
+      });
+
+      return updated;
+    }),
+
+  adminToggleUserActive: adminProcedure
+    .input(adminToggleUserActiveSchema)
+    .mutation(async ({ ctx, input }) => {
+      const [updated] = await ctx.db
+        .update(users)
+        .set({
+          isActive: input.isActive,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, input.userId))
+        .returning();
+
+      await recordAuditLog({
+        db: ctx.db,
+        actorId: ctx.user.id,
+        action: input.isActive ? "USER_ACCOUNT_ACTIVATED" : "USER_ACCOUNT_SUSPENDED",
+        targetType: "user",
+        targetId: input.userId,
+        metadata: { reason: input.reason },
+      });
+
+      return updated;
     }),
 });
