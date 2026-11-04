@@ -7,6 +7,7 @@ import {
   valuations,
   listingApprovals,
   educationalMaterials,
+  categories,
   eq,
   and,
   or,
@@ -27,6 +28,8 @@ import type {
   adminListProductsFilterSchema,
   adminUpdateProductStatusSchema,
   adminBulkProductActionSchema,
+  adminCreateCategorySchema,
+  adminUpdateCategorySchema,
 } from "./products.schema";
 
 export class ProductsService {
@@ -417,5 +420,75 @@ export class ProductsService {
     });
 
     return { success: true, count: input.productIds.length };
+  }
+
+  /**
+   * Admin: List categories with subcategory hierarchy and product counts
+   */
+  async adminListCategories() {
+    return this.db.query.categories.findMany({
+      orderBy: [asc(categories.displayOrder), asc(categories.name)],
+      with: {
+        subcategories: true,
+        products: true,
+      },
+    });
+  }
+
+  /**
+   * Admin: Create a product category
+   */
+  async adminCreateCategory(adminId: string, input: z.infer<typeof adminCreateCategorySchema>) {
+    const [created] = await this.db
+      .insert(categories)
+      .values({
+        name: input.name,
+        slug: input.slug,
+        description: input.description,
+        iconName: input.iconName,
+        parentId: input.parentId,
+        displayOrder: input.displayOrder,
+      })
+      .returning();
+
+    await recordAuditLog({
+      db: this.db,
+      actorId: adminId,
+      action: "CATEGORY_CREATED",
+      targetType: "category",
+      targetId: created.id,
+      metadata: { name: input.name, slug: input.slug },
+    });
+
+    return created;
+  }
+
+  /**
+   * Admin: Update category details
+   */
+  async adminUpdateCategory(adminId: string, input: z.infer<typeof adminUpdateCategorySchema>) {
+    const [updated] = await this.db
+      .update(categories)
+      .set({
+        name: input.name,
+        description: input.description,
+        iconName: input.iconName,
+        isActive: input.isActive,
+        displayOrder: input.displayOrder,
+        updatedAt: new Date(),
+      })
+      .where(eq(categories.id, input.categoryId))
+      .returning();
+
+    await recordAuditLog({
+      db: this.db,
+      actorId: adminId,
+      action: "CATEGORY_UPDATED",
+      targetType: "category",
+      targetId: input.categoryId,
+      metadata: input,
+    });
+
+    return updated;
   }
 }

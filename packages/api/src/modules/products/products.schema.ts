@@ -95,3 +95,22 @@ export const adminBulkProductActionSchema = z.object({
   reason: z.string().optional(),
 });
 
+export const adminCreateCategorySchema = z.object({
+  name: z.string().min(2),
+  slug: z.string().min(2),
+  description: z.string().optional(),
+  iconName: z.string().optional(),
+  parentId: z.string().uuid().optional(),
+  displayOrder: z.number().int().default(0),
+});
+
+export const adminUpdateCategorySchema = z.object({
+  categoryId: z.string().uuid(),
+  name: z.string().min(2).optional(),
+  description: z.string().optional(),
+  iconName: z.string().optional(),
+  isActive: z.boolean().optional(),
+  displayOrder: z.number().int().optional(),
+});
+
+

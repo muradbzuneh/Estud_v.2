@@ -9,6 +9,8 @@ import {
   adminListProductsFilterSchema,
   adminUpdateProductStatusSchema,
   adminBulkProductActionSchema,
+  adminCreateCategorySchema,
+  adminUpdateCategorySchema,
 } from "./products.schema";
 
 export const productsRouter = router({
@@ -71,6 +73,25 @@ export const productsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const service = new ProductsService(ctx.db);
       return service.adminBulkAction(ctx.user.id, input);
+    }),
+
+  adminListCategories: adminProcedure.query(async ({ ctx }) => {
+    const service = new ProductsService(ctx.db);
+    return service.adminListCategories();
+  }),
+
+  adminCreateCategory: adminProcedure
+    .input(adminCreateCategorySchema)
+    .mutation(async ({ ctx, input }) => {
+      const service = new ProductsService(ctx.db);
+      return service.adminCreateCategory(ctx.user.id, input);
+    }),
+
+  adminUpdateCategory: adminProcedure
+    .input(adminUpdateCategorySchema)
+    .mutation(async ({ ctx, input }) => {
+      const service = new ProductsService(ctx.db);
+      return service.adminUpdateCategory(ctx.user.id, input);
     }),
 });
 
