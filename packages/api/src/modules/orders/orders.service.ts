@@ -6,12 +6,19 @@ import {
   products,
   payments,
   eq,
+  and,
   desc,
+  sql,
   type EstudDatabase,
 } from "@estud/db";
 import { recordAuditLog } from "../../core/audit";
 import type { z } from "zod";
-import type { createPurchaseRequestSchema, sellerRespondOrderSchema } from "./orders.schema";
+import type {
+  createPurchaseRequestSchema,
+  sellerRespondOrderSchema,
+  adminListOrdersFilterSchema,
+  adminUpdateOrderStatusSchema,
+} from "./orders.schema";
 
 export class OrdersService {
   constructor(private db: EstudDatabase) {}
@@ -209,5 +216,88 @@ export class OrdersService {
     }
 
     return order;
+  }
+
+  /**
+   * Admin: List all marketplace orders with filters & pagination
+   */
+  async adminListOrders(input: z.infer<typeof adminListOrdersFilterSchema>) {
+    const conditions = [];
+
+    if (input.status !== "ALL") {
+      conditions.push(eq(orders.status, input.status as any));
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const offset = (input.page - 1) * input.pageSize;
+
+    const [items, totalRes] = await Promise.all([
+      this.db.query.orders.findMany({
+        where: whereClause,
+        limit: input.pageSize,
+        offset,
+        orderBy: [desc(orders.createdAt)],
+        with: {
+          product: { with: { images: true } },
+          buyer: { with: { profile: true } },
+          seller: { with: { profile: true } },
+          payments: true,
+          delivery: true,
+        },
+      }),
+      this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(orders)
+        .where(whereClause),
+    ]);
+
+    const total = totalRes[0]?.count ?? 0;
+
+    return {
+      items,
+      total,
+      page: input.page,
+      pageSize: input.pageSize,
+      totalPages: Math.ceil(total / input.pageSize),
+    };
+  }
+
+  /**
+   * Admin: Override or update order state
+   */
+  async adminUpdateOrderStatus(adminId: string, input: z.infer<typeof adminUpdateOrderStatusSchema>) {
+    const order = await this.db.query.orders.findFirst({
+      where: eq(orders.id, input.orderId),
+    });
+
+    if (!order) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Order not found." });
+    }
+
+    await this.db
+      .update(orders)
+      .set({
+        status: input.status,
+        updatedAt: new Date(),
+      })
+      .where(eq(orders.id, input.orderId));
+
+    await this.db.insert(orderTimeline).values({
+      orderId: input.orderId,
+      status: input.status,
+      actorId: adminId,
+      notes: input.notes || `Order status updated by admin to ${input.status}`,
+    });
+
+    await recordAuditLog({
+      db: this.db,
+      actorId: adminId,
+      action: `ORDER_STATUS_${input.status}`,
+      targetType: "order",
+      targetId: input.orderId,
+      metadata: { previousStatus: order.status, newStatus: input.status, notes: input.notes },
+    });
+
+    return { success: true, status: input.status };
   }
 }

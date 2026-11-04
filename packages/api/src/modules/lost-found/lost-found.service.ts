@@ -4,7 +4,9 @@ import {
   lostFoundImages,
   recoveryClaims,
   eq,
+  and,
   desc,
+  sql,
   type EstudDatabase,
 } from "@estud/db";
 import { recordAuditLog } from "../../core/audit";
@@ -14,6 +16,7 @@ import type {
   createLostFoundReportSchema,
   submitRecoveryClaimSchema,
   adminReviewClaimSchema,
+  adminListLostFoundFilterSchema,
 } from "./lost-found.schema";
 
 export class LostFoundService {
@@ -132,5 +135,52 @@ export class LostFoundService {
     });
 
     return { status };
+  }
+
+  /**
+   * Admin: List all campus Lost & Found items and submitted recovery claims
+   */
+  async adminList(input: z.infer<typeof adminListLostFoundFilterSchema>) {
+    const conditions = [];
+
+    if (input.type !== "ALL") {
+      conditions.push(eq(lostFoundReports.type, input.type as any));
+    }
+    if (input.status !== "ALL") {
+      conditions.push(eq(lostFoundReports.status, input.status as any));
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const offset = (input.page - 1) * input.pageSize;
+
+    const [items, totalRes] = await Promise.all([
+      this.db.query.lostFoundReports.findMany({
+        where: whereClause,
+        limit: input.pageSize,
+        offset,
+        orderBy: [desc(lostFoundReports.createdAt)],
+        with: {
+          reporter: { with: { profile: true } },
+          images: true,
+          claims: { with: { claimant: { with: { profile: true } } } },
+          institution: true,
+          campus: true,
+        },
+      }),
+      this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(lostFoundReports)
+        .where(whereClause),
+    ]);
+
+    const total = totalRes[0]?.count ?? 0;
+
+    return {
+      items,
+      total,
+      page: input.page,
+      pageSize: input.pageSize,
+      totalPages: Math.ceil(total / input.pageSize),
+    };
   }
 }

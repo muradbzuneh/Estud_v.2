@@ -31,3 +31,12 @@ export const adminReviewClaimSchema = z.object({
   accept: z.boolean(),
   reviewNotes: z.string().optional(),
 });
+
+export const adminListLostFoundFilterSchema = z.object({
+  type: z.enum(["ALL", "LOST", "FOUND"]).default("ALL"),
+  status: z.enum(["ALL", "OPEN", "CLAIM_SUBMITTED", "VERIFIED_RECOVERED", "CLOSED"]).default("ALL"),
+  search: z.string().optional(),
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(10),
+});
+

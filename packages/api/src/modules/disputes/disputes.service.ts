@@ -5,12 +5,18 @@ import {
   orders,
   orderTimeline,
   eq,
+  and,
   desc,
+  sql,
   type EstudDatabase,
 } from "@estud/db";
 import { recordAuditLog } from "../../core/audit";
 import type { z } from "zod";
-import type { raiseDisputeSchema, adminResolveDisputeSchema } from "./disputes.schema";
+import type {
+  raiseDisputeSchema,
+  adminResolveDisputeSchema,
+  adminListDisputesFilterSchema,
+} from "./disputes.schema";
 
 export class DisputesService {
   constructor(private db: EstudDatabase) {}
@@ -126,5 +132,53 @@ export class DisputesService {
     });
 
     return { success: true };
+  }
+
+  /**
+   * Admin: List all transaction disputes with evidence
+   */
+  async adminListDisputes(input: z.infer<typeof adminListDisputesFilterSchema>) {
+    const conditions = [];
+
+    if (input.status !== "ALL") {
+      conditions.push(eq(transactionDisputes.status, input.status as any));
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const offset = (input.page - 1) * input.pageSize;
+
+    const [items, totalRes] = await Promise.all([
+      this.db.query.transactionDisputes.findMany({
+        where: whereClause,
+        limit: input.pageSize,
+        offset,
+        orderBy: [desc(transactionDisputes.createdAt)],
+        with: {
+          raisedBy: { with: { profile: true } },
+          evidence: true,
+          order: {
+            with: {
+              product: true,
+              seller: { with: { profile: true } },
+              buyer: { with: { profile: true } },
+            },
+          },
+        },
+      }),
+      this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(transactionDisputes)
+        .where(whereClause),
+    ]);
+
+    const total = totalRes[0]?.count ?? 0;
+
+    return {
+      items,
+      total,
+      page: input.page,
+      pageSize: input.pageSize,
+      totalPages: Math.ceil(total / input.pageSize),
+    };
   }
 }

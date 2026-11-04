@@ -27,3 +27,21 @@ export const adminResolveDisputeSchema = z.object({
   ]),
   summary: z.string().min(5),
 });
+
+export const adminListDisputesFilterSchema = z.object({
+  status: z
+    .enum([
+      "ALL",
+      "OPEN",
+      "UNDER_REVIEW",
+      "RESOLVED_REFUND",
+      "RESOLVED_REPLACEMENT",
+      "RESOLVED_SELLER_FAVOR",
+      "CLOSED",
+    ])
+    .default("ALL"),
+  search: z.string().optional(),
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(10),
+});
+

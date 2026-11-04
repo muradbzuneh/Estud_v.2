@@ -4,6 +4,7 @@ import {
   assignRepSchema,
   updateProgressSchema,
   confirmHandoverSchema,
+  adminListDeliveriesFilterSchema,
 } from "./logistics.schema";
 
 export const logisticsRouter = router({
@@ -32,4 +33,12 @@ export const logisticsRouter = router({
     const service = new LogisticsService(ctx.db);
     return service.getMyAssignedDeliveries(ctx.user.id);
   }),
+
+  adminListDeliveries: adminProcedure
+    .input(adminListDeliveriesFilterSchema)
+    .query(async ({ ctx, input }) => {
+      const service = new LogisticsService(ctx.db);
+      return service.adminListDeliveries(input);
+    }),
 });
+

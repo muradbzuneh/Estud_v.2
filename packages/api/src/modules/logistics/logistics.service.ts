@@ -5,7 +5,9 @@ import {
   orders,
   orderTimeline,
   eq,
+  and,
   desc,
+  sql,
   type EstudDatabase,
 } from "@estud/db";
 import { recordAuditLog } from "../../core/audit";
@@ -14,6 +16,7 @@ import type {
   assignRepSchema,
   updateProgressSchema,
   confirmHandoverSchema,
+  adminListDeliveriesFilterSchema,
 } from "./logistics.schema";
 
 export class LogisticsService {
@@ -138,5 +141,54 @@ export class LogisticsService {
         dropoffLocation: true,
       },
     });
+  }
+
+  /**
+   * Admin: List all campus deliveries and handover milestones
+   */
+  async adminListDeliveries(input: z.infer<typeof adminListDeliveriesFilterSchema>) {
+    const conditions = [];
+
+    if (input.status !== "ALL") {
+      conditions.push(eq(deliveries.status, input.status as any));
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const offset = (input.page - 1) * input.pageSize;
+
+    const [items, totalRes] = await Promise.all([
+      this.db.query.deliveries.findMany({
+        where: whereClause,
+        limit: input.pageSize,
+        offset,
+        orderBy: [desc(deliveries.createdAt)],
+        with: {
+          assignedRep: { with: { profile: true } },
+          order: {
+            with: {
+              product: true,
+              buyer: { with: { profile: true } },
+              seller: { with: { profile: true } },
+            },
+          },
+          pickupLocation: true,
+          dropoffLocation: true,
+        },
+      }),
+      this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(deliveries)
+        .where(whereClause),
+    ]);
+
+    const total = totalRes[0]?.count ?? 0;
+
+    return {
+      items,
+      total,
+      page: input.page,
+      pageSize: input.pageSize,
+      totalPages: Math.ceil(total / input.pageSize),
+    };
   }
 }

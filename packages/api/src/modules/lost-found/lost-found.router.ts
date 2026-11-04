@@ -5,6 +5,7 @@ import {
   createLostFoundReportSchema,
   submitRecoveryClaimSchema,
   adminReviewClaimSchema,
+  adminListLostFoundFilterSchema,
 } from "./lost-found.schema";
 
 export const lostFoundRouter = router({
@@ -35,4 +36,12 @@ export const lostFoundRouter = router({
       const service = new LostFoundService(ctx.db);
       return service.adminReviewClaim(ctx.user.id, input);
     }),
+
+  adminList: adminProcedure
+    .input(adminListLostFoundFilterSchema)
+    .query(async ({ ctx, input }) => {
+      const service = new LostFoundService(ctx.db);
+      return service.adminList(input);
+    }),
 });
+

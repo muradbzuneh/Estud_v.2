@@ -1,7 +1,12 @@
 import { z } from "zod";
-import { router, protectedProcedure } from "../../core/trpc";
+import { router, protectedProcedure, adminProcedure } from "../../core/trpc";
 import { OrdersService } from "./orders.service";
-import { createPurchaseRequestSchema, sellerRespondOrderSchema } from "./orders.schema";
+import {
+  createPurchaseRequestSchema,
+  sellerRespondOrderSchema,
+  adminListOrdersFilterSchema,
+  adminUpdateOrderStatusSchema,
+} from "./orders.schema";
 
 export const ordersRouter = router({
   createPurchaseRequest: protectedProcedure
@@ -34,4 +39,19 @@ export const ordersRouter = router({
       const service = new OrdersService(ctx.db);
       return service.getById(ctx.user.id, ctx.user.role, input.orderId);
     }),
+
+  adminListOrders: adminProcedure
+    .input(adminListOrdersFilterSchema)
+    .query(async ({ ctx, input }) => {
+      const service = new OrdersService(ctx.db);
+      return service.adminListOrders(input);
+    }),
+
+  adminUpdateOrderStatus: adminProcedure
+    .input(adminUpdateOrderStatusSchema)
+    .mutation(async ({ ctx, input }) => {
+      const service = new OrdersService(ctx.db);
+      return service.adminUpdateOrderStatus(ctx.user.id, input);
+    }),
 });
+
