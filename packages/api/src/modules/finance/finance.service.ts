@@ -8,7 +8,9 @@ import {
   deliveries,
   orderTimeline,
   eq,
+  and,
   desc,
+  sql,
   type EstudDatabase,
 } from "@estud/db";
 import { recordAuditLog } from "../../core/audit";
@@ -17,6 +19,7 @@ import type {
   submitPaymentEvidenceSchema,
   adminVerifyPaymentSchema,
   adminExecutePayoutSchema,
+  adminListPaymentsFilterSchema,
 } from "./finance.schema";
 
 export class FinanceService {
@@ -254,5 +257,52 @@ export class FinanceService {
     });
 
     return { pendingPayments, pendingPayouts };
+  }
+
+  async adminListPayments(input: z.infer<typeof adminListPaymentsFilterSchema>) {
+    const conditions = [];
+
+    if (input.status !== "ALL") {
+      conditions.push(eq(payments.status, input.status as any));
+    }
+    if (input.channel) {
+      conditions.push(eq(payments.channel, input.channel));
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const offset = (input.page - 1) * input.pageSize;
+
+    const [items, totalRes] = await Promise.all([
+      this.db.query.payments.findMany({
+        where: whereClause,
+        limit: input.pageSize,
+        offset,
+        orderBy: [desc(payments.createdAt)],
+        with: {
+          evidence: true,
+          order: {
+            with: {
+              buyer: { with: { profile: true } },
+              seller: { with: { profile: true } },
+              product: true,
+            },
+          },
+        },
+      }),
+      this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(payments)
+        .where(whereClause),
+    ]);
+
+    const total = totalRes[0]?.count ?? 0;
+
+    return {
+      items,
+      total,
+      page: input.page,
+      pageSize: input.pageSize,
+      totalPages: Math.ceil(total / input.pageSize),
+    };
   }
 }

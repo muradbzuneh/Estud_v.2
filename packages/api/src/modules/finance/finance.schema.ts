@@ -32,3 +32,12 @@ export const adminExecutePayoutSchema = z.object({
   payoutProofUrl: z.string().url().optional(),
   notes: z.string().optional(),
 });
+
+export const adminListPaymentsFilterSchema = z.object({
+  status: z.enum(["ALL", "PENDING", "SUBMITTED", "VERIFIED", "REJECTED", "REFUNDED"]).default("ALL"),
+  channel: z.enum(paymentChannels).optional(),
+  search: z.string().optional(),
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(10),
+});
+

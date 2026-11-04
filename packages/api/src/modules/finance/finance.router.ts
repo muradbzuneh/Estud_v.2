@@ -4,6 +4,7 @@ import {
   submitPaymentEvidenceSchema,
   adminVerifyPaymentSchema,
   adminExecutePayoutSchema,
+  adminListPaymentsFilterSchema,
 } from "./finance.schema";
 
 export const financeRouter = router({
@@ -32,4 +33,12 @@ export const financeRouter = router({
     const service = new FinanceService(ctx.db);
     return service.getFinancialSummary();
   }),
+
+  adminListPayments: adminProcedure
+    .input(adminListPaymentsFilterSchema)
+    .query(async ({ ctx, input }) => {
+      const service = new FinanceService(ctx.db);
+      return service.adminListPayments(input);
+    }),
 });
+
