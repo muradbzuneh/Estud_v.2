@@ -31,12 +31,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/trpc/client";
+import {
+  ProductValuationModal,
+  type ValuationModalProduct,
+} from "@/components/admin/product-valuation-modal";
 
 export default function AdminListingsPage() {
   const [activeTab, setActiveTab] = React.useState<"ALL" | "PENDING_REVIEW" | "ARCHIVED" | "PUBLISHED">("ALL");
   const [searchQuery, setSearchQuery] = React.useState("");
   const [page, setPage] = React.useState(1);
   const pageSize = 10;
+
+  // Selected product for Valuation / Moderation Modal
+  const [selectedProduct, setSelectedProduct] = React.useState<ValuationModalProduct | null>(null);
+  const [isValuationModalOpen, setIsValuationModalOpen] = React.useState(false);
 
   // Fetch real aggregated stats from the tRPC API
   const statsQuery = trpc.products.adminGetStats.useQuery();
@@ -57,7 +65,7 @@ export default function AdminListingsPage() {
   };
 
   // Mock initial rows for instant demonstration if database has 0 products
-  const mockFallbackItems = [
+  const mockFallbackItems: ValuationModalProduct[] = [
     {
       id: "itm-00123",
       title: "HP Laptop 15",
@@ -65,10 +73,10 @@ export default function AdminListingsPage() {
       category: { name: "Electronics", color: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
       seller: { name: "Abel Kassa", handle: "@abelkassa" },
       price: "ETB 18,000",
+      proposedPriceNum: 18000,
       status: "Published",
       statusVariant: "success" as const,
       posted: "Oct 28, 2026 2:30 PM",
-      image: "💻",
     },
     {
       id: "itm-00124",
@@ -77,10 +85,10 @@ export default function AdminListingsPage() {
       category: { name: "Books", color: "bg-purple-500/10 text-purple-600 border-purple-500/20" },
       seller: { name: "Hana Mengistu", handle: "@hana_m" },
       price: "ETB 600",
+      proposedPriceNum: 600,
       status: "Pending",
       statusVariant: "warning" as const,
       posted: "Oct 28, 2026 1:15 PM",
-      image: "📚",
     },
     {
       id: "itm-00125",
@@ -89,10 +97,10 @@ export default function AdminListingsPage() {
       category: { name: "Accessories", color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
       seller: { name: "Sami Desta", handle: "@sami_d" },
       price: "ETB 1,200",
+      proposedPriceNum: 1200,
       status: "Archived",
       statusVariant: "neutral" as const,
       posted: "Oct 27, 2026 6:45 PM",
-      image: "🎒",
     },
     {
       id: "itm-00126",
@@ -101,10 +109,10 @@ export default function AdminListingsPage() {
       category: { name: "Audio", color: "bg-sky-500/10 text-sky-600 border-sky-500/20" },
       seller: { name: "Marta Tadesse", handle: "@marta_t" },
       price: "ETB 2,500",
+      proposedPriceNum: 2500,
       status: "Published",
       statusVariant: "success" as const,
       posted: "Oct 27, 2026 4:20 PM",
-      image: "🎧",
     },
     {
       id: "itm-00127",
@@ -113,14 +121,14 @@ export default function AdminListingsPage() {
       category: { name: "Fashion", color: "bg-rose-500/10 text-rose-600 border-rose-500/20" },
       seller: { name: "Daniel Abebe", handle: "@daniel_a" },
       price: "ETB 3,000",
+      proposedPriceNum: 3000,
       status: "Published",
       statusVariant: "success" as const,
       posted: "Oct 26, 2026 9:10 PM",
-      image: "👟",
     },
   ];
 
-  const displayItems =
+  const displayItems: (ValuationModalProduct & { image: string })[] =
     productsQuery.data && productsQuery.data.items.length > 0
       ? productsQuery.data.items.map((prod) => ({
           id: prod.id,
@@ -135,6 +143,7 @@ export default function AdminListingsPage() {
             handle: `@${prod.seller?.email?.split("@")[0] || "user"}`,
           },
           price: `ETB ${Number(prod.proposedPrice).toLocaleString()}`,
+          proposedPriceNum: Number(prod.proposedPrice),
           status:
             prod.status === "APPROVED"
               ? "Published"
@@ -153,7 +162,7 @@ export default function AdminListingsPage() {
           }),
           image: "📦",
         }))
-      : mockFallbackItems;
+      : mockFallbackItems.map((item) => ({ ...item, image: "📦" }));
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
@@ -406,10 +415,28 @@ export default function AdminListingsPage() {
                 <TableCell className="text-xs text-muted-foreground">{item.posted}</TableCell>
                 <TableCell className="text-right pr-6">
                   <div className="flex items-center justify-end gap-1">
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setSelectedProduct(item);
+                        setIsValuationModalOpen(true);
+                      }}
+                      title="Valuate & Review"
+                      className="h-7 w-7 text-primary hover:text-primary hover:bg-primary/10"
+                    >
                       <Eye className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setSelectedProduct(item);
+                        setIsValuationModalOpen(true);
+                      }}
+                      title="Edit Valuation"
+                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                    >
                       <Edit className="h-3.5 w-3.5" />
                     </Button>
                     <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive">
@@ -472,6 +499,20 @@ export default function AdminListingsPage() {
           </div>
         </div>
       </Card>
+
+      {/* Product Valuation & Moderation Modal */}
+      <ProductValuationModal
+        product={selectedProduct}
+        isOpen={isValuationModalOpen}
+        onClose={() => {
+          setIsValuationModalOpen(false);
+          setSelectedProduct(null);
+        }}
+        onSuccess={() => {
+          productsQuery.refetch();
+          statsQuery.refetch();
+        }}
+      />
     </div>
   );
 }
