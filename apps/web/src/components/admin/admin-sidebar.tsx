@@ -87,18 +87,38 @@ const navSections: NavSection[] = [
   },
 ];
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 shrink-0 border-r border-border bg-card/50 backdrop-blur-sm flex flex-col justify-between h-screen sticky top-0">
+    <aside
+      className={cn(
+        "w-64 shrink-0 border-r border-border bg-card/95 backdrop-blur-md flex flex-col justify-between h-screen fixed md:sticky top-0 z-50 md:z-auto transition-transform duration-200 ease-in-out",
+        isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
+      )}
+    >
       <div className="flex flex-col h-full overflow-hidden">
         {/* Brand Header */}
-        <div className="h-16 flex items-center gap-3 px-6 border-b border-border">
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-black text-lg shadow-sm">
-            E
+        <div className="h-16 flex items-center justify-between px-6 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-black text-lg shadow-sm">
+              E
+            </div>
+            <span className="font-bold text-lg tracking-tight">Estud</span>
           </div>
-          <span className="font-bold text-lg tracking-tight">Estud</span>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="md:hidden p-1.5 rounded-lg text-muted-foreground hover:bg-muted"
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         {/* Admin Switcher Card */}
