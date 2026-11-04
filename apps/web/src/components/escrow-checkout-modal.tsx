@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { ImageUploader } from "./image-uploader";
+import { trpc } from "@/trpc/client";
 
 interface EscrowCheckoutModalProps {
   isOpen: boolean;
@@ -52,15 +53,40 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
     setTimeout(() => setCopiedAccount(null), 2500);
   };
 
-  const handleSubmitPayment = (e: React.FormEvent) => {
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const checkoutMutation = trpc.orders.checkoutWithEscrow.useMutation();
+
+  const handleSubmitPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!transactionRef.trim()) return;
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setErrorMsg(null);
+
+    const channelMap: Record<string, "TELEBIRR" | "CBE_TRANSFER" | "AWASH_BIRR"> = {
+      telebirr: "TELEBIRR",
+      cbe: "CBE_TRANSFER",
+      awash: "AWASH_BIRR",
+    };
+
+    try {
+      await checkoutMutation.mutateAsync({
+        productId: product.id,
+        deliveryMethod,
+        deliveryFee,
+        channel: channelMap[paymentProvider] || "TELEBIRR",
+        bankTransactionReference: transactionRef.trim(),
+        screenshotUrl: evidenceUrls[0] || "",
+        senderAccountOrPhone: `Student (${deliveryMethod === "runner" ? "Runner" : "Hub"})`,
+        notes: `SafeTrade Escrow order for ${product.title}`,
+      });
       setIsSuccess(true);
-    }, 1200);
+    } catch (err: any) {
+      console.error("Payment submission failed:", err);
+      setErrorMsg(err?.message || "Failed to submit payment. Please verify your connection.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -360,6 +386,12 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
                     onChange={(urls) => setEvidenceUrls(urls)}
                   />
                 </div>
+
+                {errorMsg && (
+                  <div className="rounded-xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 p-3 text-xs text-rose-600 dark:text-rose-400">
+                    {errorMsg}
+                  </div>
+                )}
 
                 <div className="flex gap-3 pt-2">
                   <button

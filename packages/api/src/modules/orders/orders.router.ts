@@ -3,12 +3,20 @@ import { router, protectedProcedure, adminProcedure } from "../../core/trpc";
 import { OrdersService } from "./orders.service";
 import {
   createPurchaseRequestSchema,
+  checkoutWithEscrowSchema,
   sellerRespondOrderSchema,
   adminListOrdersFilterSchema,
   adminUpdateOrderStatusSchema,
 } from "./orders.schema";
 
 export const ordersRouter = router({
+  checkoutWithEscrow: protectedProcedure
+    .input(checkoutWithEscrowSchema)
+    .mutation(async ({ ctx, input }) => {
+      const service = new OrdersService(ctx.db);
+      return service.checkoutWithEscrow(ctx.user.id, input);
+    }),
+
   createPurchaseRequest: protectedProcedure
     .input(createPurchaseRequestSchema)
     .mutation(async ({ ctx, input }) => {

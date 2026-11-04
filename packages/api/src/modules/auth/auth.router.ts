@@ -131,16 +131,29 @@ export const authRouter = router({
   adminCreateInstitution: adminProcedure
     .input(adminCreateInstitutionSchema)
     .mutation(async ({ ctx, input }) => {
-      const [inst] = await ctx.db
-        .insert(institutions)
-        .values({
-          name: input.name,
-          shortCode: input.shortCode.toUpperCase(),
-          city: input.city,
-          region: input.region,
-        })
-        .returning();
-      return inst;
+      try {
+        const [inst] = await ctx.db
+          .insert(institutions)
+          .values({
+            name: input.name,
+            shortCode: input.shortCode.toUpperCase(),
+            city: input.city,
+            region: input.region,
+          })
+          .returning();
+        return inst;
+      } catch (err: any) {
+        if (err?.code === "23505" || err?.message?.includes("unique")) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: `Institution with code "${input.shortCode.toUpperCase()}" already exists.`,
+          });
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: err?.message || "Failed to create institution.",
+        });
+      }
     }),
 
   adminCreateCampus: adminProcedure

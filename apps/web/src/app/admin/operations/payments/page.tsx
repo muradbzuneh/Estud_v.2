@@ -98,31 +98,33 @@ export default function AdminPaymentsPage() {
     },
   ];
 
-  const displayList =
-    paymentsQuery.data && paymentsQuery.data.items.length > 0
-      ? paymentsQuery.data.items.map((p) => ({
-          id: p.id,
-          paymentReference: p.paymentReference,
-          amount: Number(p.amount).toLocaleString(),
-          channel: p.channel,
-          status: p.status,
-          receivingAccount: p.receivingAccountNumber,
-          createdAt: new Date(p.createdAt).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          buyer: {
-            name: p.order?.buyer?.profile?.fullName || p.order?.buyer?.name || "Student Buyer",
-            handle: `@${p.order?.buyer?.email?.split("@")[0] || "student"}`,
-          },
-          bankRef: p.evidence?.[0]?.bankTransactionReference || "N/A",
-          screenshotUrl: p.evidence?.[0]?.screenshotUrl || "",
-          itemTitle: p.order?.product?.title || "Marketplace Item",
-        }))
-      : fallbackPayments;
+  const isLoaded = !paymentsQuery.isLoading && !!paymentsQuery.data;
+  const items = paymentsQuery.data?.items ?? [];
+
+  const displayList = isLoaded
+    ? items.map((p) => ({
+        id: p.id,
+        paymentReference: p.paymentReference,
+        amount: Number(p.amount).toLocaleString(),
+        channel: p.channel,
+        status: p.status,
+        receivingAccount: p.receivingAccountNumber,
+        createdAt: new Date(p.createdAt).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        buyer: {
+          name: p.order?.buyer?.profile?.fullName || p.order?.buyer?.name || "Student Buyer",
+          handle: `@${p.order?.buyer?.email?.split("@")[0] || "student"}`,
+        },
+        bankRef: p.evidence?.[0]?.bankTransactionReference || "N/A",
+        screenshotUrl: p.evidence?.[0]?.screenshotUrl || "",
+        itemTitle: p.order?.product?.title || "Marketplace Item",
+      }))
+    : fallbackPayments;
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
@@ -158,7 +160,7 @@ export default function AdminPaymentsPage() {
                   <Clock className="h-4 w-4" />
                 </div>
                 <span className="text-2xl font-bold tracking-tight">
-                  {summaryQuery.data?.pendingPayments.length ?? 2}
+                  {summaryQuery.data?.pendingPayments?.length ?? 0}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground font-medium pl-10">
@@ -243,6 +245,16 @@ export default function AdminPaymentsPage() {
         >
           Verified
         </button>
+        <button
+          onClick={() => setActiveTab("REJECTED")}
+          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            activeTab === "REJECTED"
+              ? "bg-card text-foreground shadow-sm font-semibold"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Rejected
+        </button>
       </div>
 
       {/* Payments Table */}
@@ -261,7 +273,14 @@ export default function AdminPaymentsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {displayList.map((payment) => (
+            {displayList.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-10 text-muted-foreground text-xs">
+                  No payment records found in this view.
+                </TableCell>
+              </TableRow>
+            ) : (
+              displayList.map((payment) => (
               <TableRow key={payment.id} className="hover:bg-muted/30">
                 <TableCell className="font-mono text-xs font-semibold text-foreground">
                   {payment.paymentReference}
@@ -310,7 +329,7 @@ export default function AdminPaymentsPage() {
                   </Button>
                 </TableCell>
               </TableRow>
-            ))}
+            )))}
           </TableBody>
         </Table>
       </Card>

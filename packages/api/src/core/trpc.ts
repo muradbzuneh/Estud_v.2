@@ -15,6 +15,8 @@ export interface TRPCContext {
   user: ContextUser | null;
 }
 
+let cachedAdminUser: ContextUser | null = null;
+
 /**
  * Creates context from incoming Request via Better Auth session resolution.
  * Automatically handles Cookies (Web) and Bearer tokens (Mobile Expo).
@@ -31,54 +33,70 @@ export async function createTRPCContext(opts: {
   let user: ContextUser | null = null;
 
   if (opts.req) {
-    try {
-      const session = await auth.api.getSession({
-        headers: opts.req.headers,
-      });
+    const cookieHeader = opts.req.headers.get("cookie") || "";
+    const authHeader = opts.req.headers.get("authorization") || "";
+    const hasAuthToken =
+      cookieHeader.includes("session") ||
+      cookieHeader.includes("better-auth") ||
+      authHeader.startsWith("Bearer ");
 
-      if (session?.user) {
-        user = {
-          id: session.user.id,
-          phoneNumber: ((session.user as Record<string, unknown>).phoneNumber as string) || "",
-          role: (((session.user as Record<string, unknown>).role as string) || "student") as ContextUser["role"],
-        };
+    if (hasAuthToken) {
+      try {
+        const session = await auth.api.getSession({
+          headers: opts.req.headers,
+        });
+
+        if (session?.user) {
+          user = {
+            id: session.user.id,
+            phoneNumber: ((session.user as Record<string, unknown>).phoneNumber as string) || "",
+            role: (((session.user as Record<string, unknown>).role as string) || "student") as ContextUser["role"],
+          };
+        }
+      } catch {
+        // Unauthenticated request or network timeout
       }
-    } catch {
-      // Unauthenticated request
     }
   }
 
   // Fallback to seeded superadmin for local testing and direct admin access
   if (!user || user.role !== "admin") {
-    try {
-      const adminUser = await opts.db.query.users.findFirst({
-        where: (u, { eq }) => eq(u.email, "murad@gmail.com"),
-      });
-      if (adminUser) {
-        user = {
-          id: adminUser.id,
-          phoneNumber: adminUser.phoneNumber || "",
+    if (cachedAdminUser) {
+      user = cachedAdminUser;
+    } else {
+      try {
+        const adminUser = await opts.db.query.users.findFirst({
+          where: (u, { eq }) => eq(u.email, "murad@gmail.com"),
+        });
+        if (adminUser) {
+          cachedAdminUser = {
+            id: adminUser.id,
+            phoneNumber: adminUser.phoneNumber || "",
+            role: "admin",
+          };
+          user = cachedAdminUser;
+        } else {
+          cachedAdminUser = {
+            id: "admin-murad-seed",
+            phoneNumber: "+251911223344",
+            role: "admin",
+          };
+          user = cachedAdminUser;
+        }
+      } catch {
+        cachedAdminUser = {
+          id: "admin-murad-seed",
+          phoneNumber: "+251911223344",
           role: "admin",
         };
-      } else {
-        user = {
-          id: user?.id || "admin-murad-seed",
-          phoneNumber: user?.phoneNumber || "+251911223344",
-          role: "admin",
-        };
+        user = cachedAdminUser;
       }
-    } catch {
-      user = {
-        id: user?.id || "admin-murad-seed",
-        phoneNumber: user?.phoneNumber || "+251911223344",
-        role: "admin",
-      };
     }
   }
 
   return {
     db: opts.db,
-    user,
+    user: user!,
   };
 }
 

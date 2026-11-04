@@ -5,6 +5,7 @@ import {
   orderTimeline,
   products,
   payments,
+  paymentEvidence,
   eq,
   and,
   desc,
@@ -15,6 +16,7 @@ import { recordAuditLog } from "../../core/audit";
 import type { z } from "zod";
 import type {
   createPurchaseRequestSchema,
+  checkoutWithEscrowSchema,
   sellerRespondOrderSchema,
   adminListOrdersFilterSchema,
   adminUpdateOrderStatusSchema,
@@ -94,6 +96,115 @@ export class OrdersService {
     });
 
     return newOrder;
+  }
+
+  async checkoutWithEscrow(buyerId: string, input: z.infer<typeof checkoutWithEscrowSchema>) {
+    // 1. Find product
+    const product = await this.db.query.products.findFirst({
+      where: eq(products.id, input.productId),
+    });
+
+    if (!product) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Product not found.",
+      });
+    }
+
+    const itemValue = Number(product.approvedItemValue || product.proposedPrice || 0);
+    const commissionAmount = Number((itemValue * 0.05).toFixed(2));
+    const deliveryFee = input.deliveryFee || 0;
+    const totalAmount = itemValue + commissionAmount + deliveryFee;
+
+    const orderNumber = `EST-ORD-${Date.now().toString(36).toUpperCase()}`;
+
+    // 2. Create order in PAYMENT_SUBMITTED status
+    const [newOrder] = await this.db
+      .insert(orders)
+      .values({
+        orderNumber,
+        buyerId,
+        sellerId: product.sellerId,
+        productId: product.id,
+        status: "PAYMENT_SUBMITTED",
+        itemValue: itemValue.toFixed(2),
+        commissionRate: "0.0500",
+        commissionAmount: commissionAmount.toFixed(2),
+        deliveryFee: deliveryFee.toFixed(2),
+        totalAmount: totalAmount.toFixed(2),
+      })
+      .returning();
+
+    // 3. Create order item
+    await this.db.insert(orderItems).values({
+      orderId: newOrder.id,
+      productId: product.id,
+      quantity: 1,
+      unitItemValue: itemValue.toFixed(2),
+      unitCommissionAmount: commissionAmount.toFixed(2),
+      totalPrice: totalAmount.toFixed(2),
+    });
+
+    // 4. Create payment record in SUBMITTED status
+    const paymentReference = `EST-PAY-${Date.now().toString(36).toUpperCase()}`;
+    const receivingAccount =
+      input.channel === "TELEBIRR"
+        ? "0911 234 567 (Telebirr Merchant)"
+        : input.channel.includes("CBE")
+        ? "1000 4589 1234 5 (CBE Trust)"
+        : "0132 0984 6543 00 (Awash Bank)";
+
+    const [payment] = await this.db
+      .insert(payments)
+      .values({
+        orderId: newOrder.id,
+        paymentReference,
+        amount: totalAmount.toFixed(2),
+        channel: input.channel,
+        status: "SUBMITTED",
+        receivingAccountNumber: receivingAccount,
+      })
+      .returning();
+
+    // 5. Create payment evidence (screenshot + transaction reference)
+    await this.db.insert(paymentEvidence).values({
+      paymentId: payment.id,
+      uploaderId: buyerId,
+      bankTransactionReference: input.bankTransactionReference,
+      senderAccountOrPhone: input.senderAccountOrPhone || "Web Student Checkout",
+      screenshotUrl: input.screenshotUrl || "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600",
+      notes: input.notes || `Direct Escrow Checkout (${input.deliveryMethod === "runner" ? "Student Runner" : "Campus Hub Pickup"})`,
+      verificationStatus: "PENDING",
+    });
+
+    // 6. Record order timeline
+    await this.db.insert(orderTimeline).values({
+      orderId: newOrder.id,
+      status: "PAYMENT_SUBMITTED",
+      actorId: buyerId,
+      notes: `Buyer submitted ${input.channel} proof with ref ${input.bankTransactionReference}. Escrow funds locked pending admin verification.`,
+    });
+
+    await recordAuditLog({
+      db: this.db,
+      actorId: buyerId,
+      action: "ESCROW_PAYMENT_SUBMITTED",
+      targetType: "payment",
+      targetId: payment.id,
+      metadata: {
+        orderId: newOrder.id,
+        totalAmount,
+        channel: input.channel,
+        bankRef: input.bankTransactionReference,
+      },
+    });
+
+    return {
+      success: true,
+      order: newOrder,
+      payment,
+      orderNumber,
+    };
   }
 
   async sellerRespond(sellerId: string, input: z.infer<typeof sellerRespondOrderSchema>) {

@@ -5,6 +5,24 @@ export const createPurchaseRequestSchema = z.object({
   deliveryFee: z.number().default(0),
 });
 
+export const checkoutWithEscrowSchema = z.object({
+  productId: z.string(),
+  deliveryMethod: z.enum(["hub", "runner"]).default("hub"),
+  deliveryFee: z.number().default(0),
+  channel: z.enum([
+    "TELEBIRR",
+    "CBE_BIRR",
+    "CBE_TRANSFER",
+    "AWASH_BIRR",
+    "BOA_TRANSFER",
+    "OTHER_BANK",
+  ]).default("TELEBIRR"),
+  bankTransactionReference: z.string().min(3, "Valid transaction code is required"),
+  screenshotUrl: z.string().optional(),
+  senderAccountOrPhone: z.string().optional(),
+  notes: z.string().optional(),
+});
+
 export const sellerRespondOrderSchema = z.object({
   orderId: z.string().uuid(),
   accept: z.boolean(),
