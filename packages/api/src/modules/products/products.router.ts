@@ -61,6 +61,11 @@ export const productsRouter = router({
     return service.adminGetStats();
   }),
 
+  adminGetDashboardMetrics: adminProcedure.query(async ({ ctx }) => {
+    const service = new ProductsService(ctx.db);
+    return service.adminGetDashboardMetrics();
+  }),
+
   adminUpdateStatus: adminProcedure
     .input(adminUpdateProductStatusSchema)
     .mutation(async ({ ctx, input }) => {
