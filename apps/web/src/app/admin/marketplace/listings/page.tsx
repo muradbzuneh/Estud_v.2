@@ -19,6 +19,9 @@ import {
   TrendingDown,
   X,
   Sparkles,
+  Upload,
+  Image as ImageIcon,
+  Star,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -55,9 +58,47 @@ export default function AdminListingsPage() {
   const [addCondition, setAddCondition] = React.useState<"NEW" | "LIKE_NEW" | "GOOD" | "FAIR">("LIKE_NEW");
   const [addPrice, setAddPrice] = React.useState("");
   const [addDescription, setAddDescription] = React.useState("");
-  const [addImageUrl, setAddImageUrl] = React.useState("");
+  const [addImages, setAddImages] = React.useState<string[]>([]);
+  const [addUrlInput, setAddUrlInput] = React.useState("");
   const [addStatus, setAddStatus] = React.useState<"APPROVED" | "PENDING_VALUATION">("APPROVED");
   const [addIsExchange, setAddIsExchange] = React.useState(true);
+
+  // File upload and image ordering handler
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result && typeof event.target.result === "string") {
+          setAddImages((prev) => [...prev, event.target!.result as string]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    // Reset input
+    e.target.value = "";
+  };
+
+  const handleAddUrl = () => {
+    if (addUrlInput.trim()) {
+      setAddImages((prev) => [...prev, addUrlInput.trim()]);
+      setAddUrlInput("");
+    }
+  };
+
+  const handleSetPrimaryImage = (index: number) => {
+    setAddImages((prev) => {
+      const copy = [...prev];
+      const [chosen] = copy.splice(index, 1);
+      return [chosen, ...copy];
+    });
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setAddImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   // Edit Item Modal state
   const [editProduct, setEditProduct] = React.useState<any | null>(null);
@@ -90,7 +131,8 @@ export default function AdminListingsPage() {
       setAddTitle("");
       setAddPrice("");
       setAddDescription("");
-      setAddImageUrl("");
+      setAddImages([]);
+      setAddUrlInput("");
       productsQuery.refetch();
       statsQuery.refetch();
     },
@@ -561,11 +603,11 @@ export default function AdminListingsPage() {
                   condition: addCondition,
                   price: parseFloat(addPrice) || 0,
                   status: addStatus,
-                  images: addImageUrl ? [addImageUrl] : ["https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800"],
+                  images: addImages.length > 0 ? addImages : ["https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800"],
                   isExchangeEligible: addIsExchange,
                 });
               }}
-              className="mt-4 space-y-4"
+              className="mt-4 space-y-4 max-h-[75vh] overflow-y-auto pr-1"
             >
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-muted-foreground">Item Title</label>
@@ -640,13 +682,94 @@ export default function AdminListingsPage() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-muted-foreground">Image URL</label>
-                <Input
-                  placeholder="https://images.unsplash.com/photo-..."
-                  value={addImageUrl}
-                  onChange={(e) => setAddImageUrl(e.target.value)}
-                />
+              {/* Product Photos Upload & Main 1st Image Selector */}
+              <div className="space-y-2 border border-border/80 rounded-xl p-3 bg-muted/20">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-primary" /> Product Photos & Cover Image
+                  </label>
+                  <span className="text-[11px] text-muted-foreground">
+                    {addImages.length} {addImages.length === 1 ? "photo" : "photos"} selected
+                  </span>
+                </div>
+
+                {/* Upload Options: File or URL */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <label className="flex items-center justify-center gap-2 p-2.5 rounded-lg border border-dashed border-primary/50 bg-primary/5 hover:bg-primary/10 transition cursor-pointer text-xs font-medium text-primary">
+                    <Upload className="w-4 h-4" />
+                    <span>Upload from device</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+
+                  <div className="flex gap-1.5">
+                    <Input
+                      placeholder="Paste image URL..."
+                      value={addUrlInput}
+                      onChange={(e) => setAddUrlInput(e.target.value)}
+                      className="h-9 text-xs"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddUrl}
+                      className="h-9 px-3 text-xs"
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Image Gallery Preview with 1st Main Cover Selection */}
+                {addImages.length > 0 && (
+                  <div className="mt-2 space-y-1.5">
+                    <p className="text-[11px] text-muted-foreground">
+                      Click <span className="font-semibold text-foreground">"Set as Main"</span> on any image to make it the primary visible cover photo:
+                    </p>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 pt-1">
+                      {addImages.map((img, idx) => (
+                        <div
+                          key={idx}
+                          className={`group relative rounded-lg border overflow-hidden aspect-square bg-muted flex items-center justify-center ${
+                            idx === 0 ? "border-primary ring-2 ring-primary/40 shadow-sm" : "border-border"
+                          }`}
+                        >
+                          <img src={img} alt={`Upload ${idx + 1}`} className="w-full h-full object-cover" />
+
+                          {/* Cover badge on 1st item */}
+                          {idx === 0 ? (
+                            <div className="absolute top-1 left-1 bg-primary text-primary-foreground text-[9px] font-bold px-1.5 py-0.5 rounded shadow flex items-center gap-0.5">
+                              <Star className="w-2.5 h-2.5 fill-current" /> Cover
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleSetPrimaryImage(idx)}
+                              className="absolute bottom-1 inset-x-1 bg-black/75 hover:bg-primary text-white text-[9px] font-semibold py-0.5 rounded text-center transition"
+                            >
+                              Set as Main
+                            </button>
+                          )}
+
+                          {/* Delete button */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(idx)}
+                            className="absolute top-1 right-1 h-5 w-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center text-[10px] shadow hover:scale-110 transition"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-1.5">

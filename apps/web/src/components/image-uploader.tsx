@@ -143,10 +143,21 @@ export function ImageUploader({
               >
                 <X className="h-3.5 w-3.5" />
               </button>
-              {idx === 0 && (
-                <span className="absolute bottom-1.5 left-1.5 rounded-md bg-brand-600/90 px-1.5 py-0.5 text-[9px] font-bold text-white">
-                  Cover
+              {idx === 0 ? (
+                <span className="absolute bottom-1.5 left-1.5 rounded-md bg-brand-600/90 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-xs">
+                  ★ Cover
                 </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const reordered = [url, ...value.filter((_, i) => i !== idx)];
+                    onChange(reordered);
+                  }}
+                  className="absolute bottom-1.5 left-1.5 opacity-90 group-hover:opacity-100 transition rounded-md bg-black/70 hover:bg-brand-600 px-1.5 py-0.5 text-[9px] font-medium text-white shadow-xs cursor-pointer"
+                >
+                  Set Cover
+                </button>
               )}
             </div>
           ))}

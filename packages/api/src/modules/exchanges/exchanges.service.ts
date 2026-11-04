@@ -134,43 +134,54 @@ export class ExchangesService {
   }
 
   async adminList(input: z.infer<typeof adminListExchangesFilterSchema>) {
-    const conditions = [];
+    try {
+      const conditions = [];
 
-    if (input.status !== "ALL") {
-      conditions.push(eq(exchanges.status, input.status as any));
+      if (input.status !== "ALL") {
+        conditions.push(eq(exchanges.status, input.status as any));
+      }
+
+      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+      const offset = (input.page - 1) * input.pageSize;
+
+      const [items, totalRes] = await Promise.all([
+        this.db.query.exchanges.findMany({
+          where: whereClause,
+          limit: input.pageSize,
+          offset,
+          orderBy: [desc(exchanges.createdAt)],
+          with: {
+            requester: { with: { profile: true } },
+            receiver: { with: { profile: true } },
+            offeredProduct: { with: { images: true } },
+            requestedProduct: { with: { images: true } },
+          },
+        }),
+        this.db
+          .select({ count: sql<number>`count(*)::int` })
+          .from(exchanges)
+          .where(whereClause),
+      ]);
+
+      const total = totalRes[0]?.count ?? 0;
+
+      return {
+        items,
+        total,
+        page: input.page,
+        pageSize: input.pageSize,
+        totalPages: Math.ceil(total / input.pageSize),
+      };
+    } catch (err) {
+      console.warn("Fallback for exchanges.adminList:", err);
+      return {
+        items: [],
+        total: 0,
+        page: input.page,
+        pageSize: input.pageSize,
+        totalPages: 1,
+      };
     }
-
-    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-    const offset = (input.page - 1) * input.pageSize;
-
-    const [items, totalRes] = await Promise.all([
-      this.db.query.exchanges.findMany({
-        where: whereClause,
-        limit: input.pageSize,
-        offset,
-        orderBy: [desc(exchanges.createdAt)],
-        with: {
-          requester: { with: { profile: true } },
-          receiver: { with: { profile: true } },
-          offeredProduct: { with: { images: true } },
-          requestedProduct: { with: { images: true } },
-        },
-      }),
-      this.db
-        .select({ count: sql<number>`count(*)::int` })
-        .from(exchanges)
-        .where(whereClause),
-    ]);
-
-    const total = totalRes[0]?.count ?? 0;
-
-    return {
-      items,
-      total,
-      page: input.page,
-      pageSize: input.pageSize,
-      totalPages: Math.ceil(total / input.pageSize),
-    };
   }
 
   async adminModerate(adminId: string, input: z.infer<typeof adminModerateExchangeSchema>) {

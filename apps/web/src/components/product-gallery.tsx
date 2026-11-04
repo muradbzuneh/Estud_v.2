@@ -18,7 +18,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
 
   if (!images || images.length === 0) {
     return (
-      <div className="flex aspect-square w-full items-center justify-center rounded-3xl bg-slate-100 dark:bg-twilight-800 text-slate-400 dark:text-twilight-400">
+      <div className="flex aspect-[4/3] max-h-[380px] md:max-h-[420px] w-full items-center justify-center rounded-2xl bg-slate-100 dark:bg-twilight-800 text-slate-400 dark:text-twilight-400">
         <span className="text-xs font-semibold">No images available</span>
       </div>
     );
@@ -35,13 +35,13 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Main Showcase Image */}
-      <div className="group relative aspect-square w-full overflow-hidden rounded-3xl border border-slate-200/80 dark:border-twilight-700 bg-slate-100 dark:bg-twilight-800 shadow-sm">
+      <div className="group relative aspect-[4/3] max-h-[380px] md:max-h-[420px] w-full overflow-hidden rounded-2xl border border-slate-200/80 dark:border-twilight-700 bg-slate-100 dark:bg-twilight-800 shadow-sm flex items-center justify-center">
         <img
           src={currentImage}
           alt={`${title} - view ${selectedIndex + 1}`}
-          className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+          className="h-full w-full object-contain md:object-cover transition duration-300 group-hover:scale-105"
         />
 
         {/* Lightbox Trigger */}
