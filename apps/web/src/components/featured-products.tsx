@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { EscrowCheckoutModal } from "./escrow-checkout-modal";
 import { useLanguage } from "./language-context";
+import { trpc } from "@/trpc/client";
 
 export interface DisplayProduct {
   id: string;
@@ -184,8 +185,38 @@ export function FeaturedProducts({
     }
   };
 
+  const dbProductsQuery = trpc.products.list.useQuery({
+    search: searchQuery || undefined,
+  });
+
+  const liveDbProducts: DisplayProduct[] = (dbProductsQuery.data?.items ?? []).map((prod: any) => ({
+    id: prod.id,
+    title: prod.title,
+    category: prod.category?.slug || "electronics",
+    condition:
+      prod.condition === "NEW"
+        ? "Brand New • Sealed"
+        : prod.condition === "LIKE_NEW"
+        ? "Used • Like New"
+        : "Used • Good",
+    price: parseFloat(prod.approvedItemValue || prod.proposedPrice),
+    originalPrice: Math.round(parseFloat(prod.approvedItemValue || prod.proposedPrice) * 1.15),
+    rating: 4.9,
+    reviewCount: 42,
+    badge: "Best Seller" as const,
+    location: "Addis Ababa (4 Kilo)",
+    imageUrl:
+      prod.images?.[0]?.imageUrl ||
+      "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&auto=format&fit=crop&q=80",
+  }));
+
+  const allProductPool =
+    liveDbProducts.length > 0
+      ? [...liveDbProducts, ...SAMPLE_FEATURED_PRODUCTS.filter((s) => !liveDbProducts.some((d) => d.title === s.title))]
+      : SAMPLE_FEATURED_PRODUCTS;
+
   // Filter products by active category and search
-  const filteredProducts = SAMPLE_FEATURED_PRODUCTS.filter((item) => {
+  const filteredProducts = allProductPool.filter((item) => {
     const matchesCategory =
       selectedCategory === "all" ||
       selectedCategory === "more" ||

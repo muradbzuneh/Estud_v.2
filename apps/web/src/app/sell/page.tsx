@@ -15,6 +15,7 @@ import {
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ImageUploader } from "@/components/image-uploader";
+import { trpc } from "@/trpc/client";
 
 const CATEGORIES = [
   { id: "electronics", name: "Electronics & Computing" },
@@ -58,6 +59,9 @@ export default function SellPage() {
   const [allowExchange, setAllowExchange] = useState(true);
   const [exchangePreferences, setExchangePreferences] = useState("");
 
+  const categoriesQuery = trpc.products.adminListCategories.useQuery();
+  const submitListingMutation = trpc.products.submitListing.useMutation();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -82,10 +86,33 @@ export default function SellPage() {
     setIsSubmitting(true);
 
     try {
-      setTimeout(() => {
-        setIsSubmitting(false);
-        setIsSuccess(true);
-      }, 1200);
+      const activeCatId =
+        categoriesQuery.data?.find((c) => c.slug === categoryId || c.id === categoryId)?.id ||
+        categoriesQuery.data?.[0]?.id;
+
+      if (!activeCatId) {
+        throw new Error("Category not found. Please refresh.");
+      }
+
+      const conditionMap: Record<string, "NEW" | "LIKE_NEW" | "GOOD" | "FAIR"> = {
+        brand_new: "NEW",
+        like_new: "LIKE_NEW",
+        good: "GOOD",
+        fair: "FAIR",
+      };
+
+      await submitListingMutation.mutateAsync({
+        title,
+        description: description || `Pre-owned ${title} on ${campus}.`,
+        categoryId: activeCatId,
+        condition: conditionMap[condition] || "LIKE_NEW",
+        proposedPrice: numericPrice,
+        isExchangeEligible: allowExchange,
+        images: images.length > 0 ? images : ["https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800"],
+      });
+
+      setIsSubmitting(false);
+      setIsSuccess(true);
     } catch (err: any) {
       setIsSubmitting(false);
       setErrorMessage(err?.message || "Failed to submit listing. Please try again.");

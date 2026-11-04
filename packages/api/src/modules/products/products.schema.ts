@@ -126,4 +126,49 @@ export const adminModerateEducationalSchema = z.object({
   notes: z.string().optional(),
 });
 
+export const adminCreateProductSchema = z.object({
+  title: z.string().min(3),
+  description: z.string().min(5),
+  categoryId: z.string().uuid(),
+  condition: z.enum(["NEW", "LIKE_NEW", "GOOD", "FAIR"]).default("LIKE_NEW"),
+  price: z.number().positive(),
+  status: z.enum([
+    "DRAFT",
+    "PENDING_VALUATION",
+    "VALUED",
+    "APPROVED",
+    "REJECTED",
+    "SOLD",
+    "PAUSED",
+    "ARCHIVED",
+  ]).default("APPROVED"),
+  images: z.array(z.string()).default([]),
+  institutionId: z.string().uuid().optional(),
+  campusId: z.string().uuid().optional(),
+  isExchangeEligible: z.boolean().default(false),
+});
+
+export const adminUpdateProductDetailsSchema = z.object({
+  productId: z.string().uuid(),
+  title: z.string().min(3).optional(),
+  description: z.string().optional(),
+  categoryId: z.string().uuid().optional(),
+  condition: z.enum(["NEW", "LIKE_NEW", "GOOD", "FAIR"]).optional(),
+  price: z.number().positive().optional(),
+  status: z.enum([
+    "DRAFT",
+    "PENDING_VALUATION",
+    "VALUED",
+    "APPROVED",
+    "REJECTED",
+    "SOLD",
+    "PAUSED",
+    "ARCHIVED",
+  ]).optional(),
+});
+
+export const adminDeleteProductSchema = z.object({
+  productId: z.string().uuid(),
+});
+
 

@@ -37,6 +37,9 @@ import type {
   adminUpdateCategorySchema,
   adminListEducationalFilterSchema,
   adminModerateEducationalSchema,
+  adminCreateProductSchema,
+  adminUpdateProductDetailsSchema,
+  adminDeleteProductSchema,
 } from "./products.schema";
 
 export class ProductsService {
@@ -669,5 +672,131 @@ export class ProductsService {
     });
 
     return updatedProduct;
+  }
+
+  /**
+   * Admin: Add new product item directly (Complete CRUD)
+   */
+  async adminCreateProduct(adminId: string, input: z.infer<typeof adminCreateProductSchema>) {
+    const [newProduct] = await this.db
+      .insert(products)
+      .values({
+        sellerId: adminId,
+        categoryId: input.categoryId,
+        title: input.title,
+        description: input.description,
+        condition: input.condition,
+        proposedPrice: input.price.toFixed(2),
+        approvedItemValue: input.price.toFixed(2),
+        status: input.status,
+        institutionId: input.institutionId,
+        campusId: input.campusId,
+        isExchangeEligible: input.isExchangeEligible,
+      })
+      .returning();
+
+    if (input.images && input.images.length > 0) {
+      await this.db.insert(productImages).values(
+        input.images.map((url, index) => ({
+          productId: newProduct.id,
+          imageUrl: url,
+          isPrimary: index === 0,
+          displayOrder: index,
+        }))
+      );
+    }
+
+    await recordAuditLog({
+      db: this.db,
+      actorId: adminId,
+      action: "PRODUCT_CREATED_BY_ADMIN",
+      targetType: "product",
+      targetId: newProduct.id,
+      metadata: { title: input.title, price: input.price, status: input.status },
+    });
+
+    return newProduct;
+  }
+
+  /**
+   * Admin: Update product details (Complete CRUD)
+   */
+  async adminUpdateProductDetails(adminId: string, input: z.infer<typeof adminUpdateProductDetailsSchema>) {
+    const updateData: Record<string, any> = { updatedAt: new Date() };
+
+    if (input.title !== undefined) updateData.title = input.title;
+    if (input.description !== undefined) updateData.description = input.description;
+    if (input.categoryId !== undefined) updateData.categoryId = input.categoryId;
+    if (input.condition !== undefined) updateData.condition = input.condition;
+    if (input.price !== undefined) {
+      updateData.proposedPrice = input.price.toFixed(2);
+      updateData.approvedItemValue = input.price.toFixed(2);
+    }
+    if (input.status !== undefined) updateData.status = input.status;
+
+    const [updated] = await this.db
+      .update(products)
+      .set(updateData)
+      .where(eq(products.id, input.productId))
+      .returning();
+
+    if (!updated) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Product not found" });
+    }
+
+    await recordAuditLog({
+      db: this.db,
+      actorId: adminId,
+      action: "PRODUCT_UPDATED_BY_ADMIN",
+      targetType: "product",
+      targetId: input.productId,
+      metadata: updateData,
+    });
+
+    return updated;
+  }
+
+  /**
+   * Admin: Delete or archive product (Complete CRUD)
+   */
+  async adminDeleteProduct(adminId: string, input: z.infer<typeof adminDeleteProductSchema>) {
+    try {
+      // Delete images first
+      await this.db.delete(productImages).where(eq(productImages.productId, input.productId));
+      // Delete product attributes
+      await this.db.delete(productAttributes).where(eq(productAttributes.productId, input.productId));
+      // Delete product
+      const [deleted] = await this.db
+        .delete(products)
+        .where(eq(products.id, input.productId))
+        .returning();
+
+      await recordAuditLog({
+        db: this.db,
+        actorId: adminId,
+        action: "PRODUCT_DELETED_BY_ADMIN",
+        targetType: "product",
+        targetId: input.productId,
+      });
+
+      return deleted || { id: input.productId };
+    } catch {
+      // In case of foreign key relations (e.g. orders, disputes), archive instead
+      const [archived] = await this.db
+        .update(products)
+        .set({ status: "ARCHIVED", updatedAt: new Date() })
+        .where(eq(products.id, input.productId))
+        .returning();
+
+      await recordAuditLog({
+        db: this.db,
+        actorId: adminId,
+        action: "PRODUCT_ARCHIVED_BY_ADMIN",
+        targetType: "product",
+        targetId: input.productId,
+      });
+
+      return archived;
+    }
   }
 }
