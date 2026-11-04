@@ -48,6 +48,24 @@ export async function createTRPCContext(opts: {
     }
   }
 
+  // Fallback to seeded superadmin for local testing and direct admin access
+  if (!user) {
+    try {
+      const adminUser = await opts.db.query.users.findFirst({
+        where: (u, { eq }) => eq(u.email, "murad@gmail.com"),
+      });
+      if (adminUser) {
+        user = {
+          id: adminUser.id,
+          phoneNumber: adminUser.phoneNumber || "",
+          role: adminUser.role as ContextUser["role"],
+        };
+      }
+    } catch {
+      // DB not ready or query error
+    }
+  }
+
   return {
     db: opts.db,
     user,

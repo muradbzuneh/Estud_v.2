@@ -3,14 +3,22 @@ import {
   exchanges,
   exchangeItems,
   products,
+  users,
   eq,
   or,
+  and,
   desc,
+  sql,
   type EstudDatabase,
 } from "@estud/db";
 import { recordAuditLog } from "../../core/audit";
 import type { z } from "zod";
-import type { proposeExchangeSchema, respondExchangeSchema } from "./exchanges.schema";
+import type {
+  proposeExchangeSchema,
+  respondExchangeSchema,
+  adminListExchangesFilterSchema,
+  adminModerateExchangeSchema,
+} from "./exchanges.schema";
 
 export class ExchangesService {
   constructor(private db: EstudDatabase) {}
@@ -123,5 +131,75 @@ export class ExchangesService {
         requestedProduct: { with: { images: true } },
       },
     });
+  }
+
+  async adminList(input: z.infer<typeof adminListExchangesFilterSchema>) {
+    const conditions = [];
+
+    if (input.status !== "ALL") {
+      conditions.push(eq(exchanges.status, input.status as any));
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const offset = (input.page - 1) * input.pageSize;
+
+    const [items, totalRes] = await Promise.all([
+      this.db.query.exchanges.findMany({
+        where: whereClause,
+        limit: input.pageSize,
+        offset,
+        orderBy: [desc(exchanges.createdAt)],
+        with: {
+          requester: { with: { profile: true } },
+          receiver: { with: { profile: true } },
+          offeredProduct: { with: { images: true } },
+          requestedProduct: { with: { images: true } },
+        },
+      }),
+      this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(exchanges)
+        .where(whereClause),
+    ]);
+
+    const total = totalRes[0]?.count ?? 0;
+
+    return {
+      items,
+      total,
+      page: input.page,
+      pageSize: input.pageSize,
+      totalPages: Math.ceil(total / input.pageSize),
+    };
+  }
+
+  async adminModerate(adminId: string, input: z.infer<typeof adminModerateExchangeSchema>) {
+    const exchange = await this.db.query.exchanges.findFirst({
+      where: eq(exchanges.id, input.exchangeId),
+    });
+
+    if (!exchange) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Exchange proposal not found." });
+    }
+
+    const [updated] = await this.db
+      .update(exchanges)
+      .set({
+        status: input.status,
+        updatedAt: new Date(),
+      })
+      .where(eq(exchanges.id, input.exchangeId))
+      .returning();
+
+    await recordAuditLog({
+      db: this.db,
+      actorId: adminId,
+      action: `EXCHANGE_MODERATED_${input.status}`,
+      targetType: "order",
+      targetId: input.exchangeId,
+      metadata: { newStatus: input.status, notes: input.notes },
+    });
+
+    return updated;
   }
 }

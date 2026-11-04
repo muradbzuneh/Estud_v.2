@@ -113,4 +113,17 @@ export const adminUpdateCategorySchema = z.object({
   displayOrder: z.number().int().optional(),
 });
 
+export const adminListEducationalFilterSchema = z.object({
+  search: z.string().optional(),
+  fieldOfStudy: z.string().optional(),
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(10),
+});
+
+export const adminModerateEducationalSchema = z.object({
+  materialId: z.string().uuid(),
+  status: z.enum(["APPROVED", "REJECTED"]),
+  notes: z.string().optional(),
+});
+
 

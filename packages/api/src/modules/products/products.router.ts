@@ -11,6 +11,8 @@ import {
   adminBulkProductActionSchema,
   adminCreateCategorySchema,
   adminUpdateCategorySchema,
+  adminListEducationalFilterSchema,
+  adminModerateEducationalSchema,
 } from "./products.schema";
 
 export const productsRouter = router({
@@ -97,6 +99,20 @@ export const productsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const service = new ProductsService(ctx.db);
       return service.adminUpdateCategory(ctx.user.id, input);
+    }),
+
+  adminListEducationalMaterials: adminProcedure
+    .input(adminListEducationalFilterSchema)
+    .query(async ({ ctx, input }) => {
+      const service = new ProductsService(ctx.db);
+      return service.adminListEducationalMaterials(input);
+    }),
+
+  adminModerateEducationalMaterial: adminProcedure
+    .input(adminModerateEducationalSchema)
+    .mutation(async ({ ctx, input }) => {
+      const service = new ProductsService(ctx.db);
+      return service.adminModerateEducationalMaterial(ctx.user.id, input);
     }),
 });
 

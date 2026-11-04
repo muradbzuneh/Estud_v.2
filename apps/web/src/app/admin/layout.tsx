@@ -11,17 +11,12 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isLoginPage = pathname === "/admin/login";
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
   // Auto-close sidebar on route change on mobile
   React.useEffect(() => {
     setIsSidebarOpen(false);
   }, [pathname]);
-
-  if (isLoginPage) {
-    return <main className="min-h-screen bg-background">{children}</main>;
-  }
 
   return (
     <div className="min-h-screen flex bg-background text-foreground relative">

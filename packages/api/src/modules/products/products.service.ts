@@ -35,6 +35,8 @@ import type {
   adminBulkProductActionSchema,
   adminCreateCategorySchema,
   adminUpdateCategorySchema,
+  adminListEducationalFilterSchema,
+  adminModerateEducationalSchema,
 } from "./products.schema";
 
 export class ProductsService {
@@ -567,5 +569,105 @@ export class ProductsService {
     });
 
     return updated;
+  }
+
+  /**
+   * Admin: List educational materials and courseware
+   */
+  async adminListEducationalMaterials(input: z.infer<typeof adminListEducationalFilterSchema>) {
+    const conditions = [];
+
+    if (input.fieldOfStudy && input.fieldOfStudy !== "ALL") {
+      conditions.push(eq(educationalMaterials.fieldOfStudy, input.fieldOfStudy));
+    }
+    if (input.search && input.search.trim().length > 0) {
+      const q = `%${input.search.trim()}%`;
+      conditions.push(
+        or(
+          ilike(educationalMaterials.materialTitle, q),
+          ilike(educationalMaterials.author, q),
+          ilike(educationalMaterials.fieldOfStudy, q)
+        )
+      );
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const offset = (input.page - 1) * input.pageSize;
+
+    const [items, totalRes] = await Promise.all([
+      this.db.query.educationalMaterials.findMany({
+        where: whereClause,
+        limit: input.pageSize,
+        offset,
+        orderBy: [desc(educationalMaterials.createdAt)],
+        with: {
+          product: {
+            with: {
+              seller: {
+                with: {
+                  profile: {
+                    with: {
+                      institution: true,
+                      campus: true,
+                    },
+                  },
+                },
+              },
+              images: true,
+            },
+          },
+        },
+      }),
+      this.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(educationalMaterials)
+        .where(whereClause),
+    ]);
+
+    const total = totalRes[0]?.count ?? 0;
+
+    return {
+      items,
+      total,
+      page: input.page,
+      pageSize: input.pageSize,
+      totalPages: Math.ceil(total / input.pageSize),
+    };
+  }
+
+  /**
+   * Admin: Moderate educational material listing
+   */
+  async adminModerateEducationalMaterial(
+    adminId: string,
+    input: z.infer<typeof adminModerateEducationalSchema>
+  ) {
+    const mat = await this.db.query.educationalMaterials.findFirst({
+      where: eq(educationalMaterials.id, input.materialId),
+    });
+
+    if (!mat) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Educational material not found." });
+    }
+
+    const [updatedProduct] = await this.db
+      .update(products)
+      .set({
+        status: input.status,
+        updatedAt: new Date(),
+      })
+      .where(eq(products.id, mat.productId))
+      .returning();
+
+    await recordAuditLog({
+      db: this.db,
+      actorId: adminId,
+      action: `EDUCATIONAL_MATERIAL_${input.status}`,
+      targetType: "product",
+      targetId: mat.productId,
+      metadata: { materialId: mat.id, status: input.status, notes: input.notes },
+    });
+
+    return updatedProduct;
   }
 }

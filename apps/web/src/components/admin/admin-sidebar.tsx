@@ -80,7 +80,6 @@ const navSections: NavSection[] = [
     title: "Communication & System",
     items: [
       { title: "Notifications", href: "/admin/system/notifications", icon: Bell },
-      { title: "Reports & Analytics", href: "/admin/system/reports", icon: LineChart },
       { title: "Roles & Permissions", href: "/admin/system/roles", icon: Lock },
       { title: "Settings", href: "/admin/system/settings", icon: Settings },
     ],

@@ -1,6 +1,11 @@
-import { router, protectedProcedure } from "../../core/trpc";
+import { router, protectedProcedure, adminProcedure } from "../../core/trpc";
 import { ExchangesService } from "./exchanges.service";
-import { proposeExchangeSchema, respondExchangeSchema } from "./exchanges.schema";
+import {
+  proposeExchangeSchema,
+  respondExchangeSchema,
+  adminListExchangesFilterSchema,
+  adminModerateExchangeSchema,
+} from "./exchanges.schema";
 
 export const exchangesRouter = router({
   propose: protectedProcedure
@@ -21,4 +26,18 @@ export const exchangesRouter = router({
     const service = new ExchangesService(ctx.db);
     return service.listMyExchanges(ctx.user.id);
   }),
+
+  adminList: adminProcedure
+    .input(adminListExchangesFilterSchema)
+    .query(async ({ ctx, input }) => {
+      const service = new ExchangesService(ctx.db);
+      return service.adminList(input);
+    }),
+
+  adminModerate: adminProcedure
+    .input(adminModerateExchangeSchema)
+    .mutation(async ({ ctx, input }) => {
+      const service = new ExchangesService(ctx.db);
+      return service.adminModerate(ctx.user.id, input);
+    }),
 });
