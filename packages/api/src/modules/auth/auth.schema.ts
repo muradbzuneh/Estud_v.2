@@ -29,3 +29,17 @@ export const updateProfileSchema = z.object({
   campusId: z.string().uuid().optional(),
   defaultLocationId: z.string().uuid().optional(),
 });
+
+export const adminCreateInstitutionSchema = z.object({
+  name: z.string().min(3),
+  shortCode: z.string().min(2).max(10),
+  city: z.string().min(2),
+  region: z.string().optional(),
+});
+
+export const adminCreateCampusSchema = z.object({
+  institutionId: z.string().uuid(),
+  name: z.string().min(2),
+  details: z.string().optional(),
+});
+

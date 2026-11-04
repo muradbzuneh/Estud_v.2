@@ -1,7 +1,11 @@
 import { z } from "zod";
-import { router, publicProcedure, protectedProcedure } from "../../core/trpc";
+import { router, publicProcedure, protectedProcedure, adminProcedure } from "../../core/trpc";
 import { users, profiles, institutions, campuses, eq } from "@estud/db";
 import { TRPCError } from "@trpc/server";
+import {
+  adminCreateInstitutionSchema,
+  adminCreateCampusSchema,
+} from "./auth.schema";
 
 export const authRouter = router({
   /**
@@ -118,5 +122,34 @@ export const authRouter = router({
       return ctx.db.query.campuses.findMany({
         where: eq(campuses.institutionId, input.institutionId),
       });
+    }),
+
+  adminCreateInstitution: adminProcedure
+    .input(adminCreateInstitutionSchema)
+    .mutation(async ({ ctx, input }) => {
+      const [inst] = await ctx.db
+        .insert(institutions)
+        .values({
+          name: input.name,
+          shortCode: input.shortCode.toUpperCase(),
+          city: input.city,
+          region: input.region,
+        })
+        .returning();
+      return inst;
+    }),
+
+  adminCreateCampus: adminProcedure
+    .input(adminCreateCampusSchema)
+    .mutation(async ({ ctx, input }) => {
+      const [camp] = await ctx.db
+        .insert(campuses)
+        .values({
+          institutionId: input.institutionId,
+          name: input.name,
+          details: input.details,
+        })
+        .returning();
+      return camp;
     }),
 });
