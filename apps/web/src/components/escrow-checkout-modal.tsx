@@ -146,7 +146,7 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
                   onClose();
                   router.push(`/auth?callbackUrl=/products/${product.id}` as any);
                 }}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-500 py-3 text-xs font-semibold text-white shadow-md shadow-brand-600/25 transition cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#FF8738] via-[#FE9901] to-[#FFA05F] hover:from-[#FE9901] hover:to-[#FF8738] py-3 text-xs font-bold text-[#07152B] shadow-md shadow-[#FF8738]/25 hover:shadow-lg hover:shadow-[#FF8738]/35 transition cursor-pointer"
               >
                 <UserCheck className="h-4 w-4" /> Sign In to Continue
               </button>
@@ -193,7 +193,7 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
                   onClose();
                   router.push("/activity" as any);
                 }}
-                className="w-full rounded-xl bg-brand-600 hover:bg-brand-500 py-3 text-xs font-semibold text-white shadow-md shadow-brand-600/25 transition cursor-pointer"
+                className="w-full rounded-xl bg-gradient-to-r from-[#FF8738] via-[#FE9901] to-[#FFA05F] hover:from-[#FE9901] hover:to-[#FF8738] py-3 text-xs font-bold text-[#07152B] shadow-md shadow-[#FF8738]/25 hover:shadow-lg hover:shadow-[#FF8738]/35 transition cursor-pointer"
               >
                 View Order in My Activity
               </button>
@@ -345,7 +345,7 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-500 py-3 text-xs font-semibold text-white shadow-md shadow-brand-600/25 transition cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#FF8738] via-[#FE9901] to-[#FFA05F] hover:from-[#FE9901] hover:to-[#FF8738] py-3 text-xs font-bold text-[#07152B] shadow-md shadow-[#FF8738]/25 hover:shadow-lg hover:shadow-[#FF8738]/35 transition cursor-pointer"
                 >
                   I Have Transferred ETB {totalAmount.toLocaleString()} <ArrowRight className="h-4 w-4" />
                 </button>
@@ -376,7 +376,7 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
                     value={transactionRef}
                     onChange={(e) => setTransactionRef(e.target.value)}
                     placeholder={paymentProvider === "telebirr" ? "e.g. 7GA829104 or FT260948" : "e.g. CBE-84920194"}
-                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-white dark:bg-twilight-800 px-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-white dark:bg-twilight-800 px-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#FF8738] focus:ring-2 focus:ring-[#FF8738]/20 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   />
                   <p className="text-[10px] text-slate-500 dark:text-twilight-400 mt-1">
                     Enter the code from the confirmation SMS received from {paymentProvider === "telebirr" ? "Telebirr" : "CBE"}.
@@ -408,7 +408,7 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-500 py-3 text-xs font-semibold text-white shadow-md shadow-brand-600/25 transition disabled:opacity-50 cursor-pointer"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#FF8738] via-[#FE9901] to-[#FFA05F] hover:from-[#FE9901] hover:to-[#FF8738] py-3 text-xs font-bold text-[#07152B] shadow-md shadow-[#FF8738]/25 hover:shadow-lg hover:shadow-[#FF8738]/35 transition disabled:opacity-50 cursor-pointer"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center gap-2">

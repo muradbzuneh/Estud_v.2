@@ -142,7 +142,7 @@ export default function SellPage() {
               <button
                 type="button"
                 onClick={() => router.push("/auth?callbackUrl=/sell")}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-500 py-3.5 text-xs font-semibold text-white shadow-md shadow-brand-600/25 transition cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#FF8738] via-[#FE9901] to-[#FFA05F] hover:from-[#FE9901] hover:to-[#FF8738] py-3.5 text-xs font-bold text-[#07152B] shadow-md shadow-[#FF8738]/25 hover:shadow-lg hover:shadow-[#FF8738]/35 transition-all cursor-pointer"
               >
                 <UserCheck className="h-4 w-4" /> Sign In to List Items
               </button>
@@ -261,7 +261,7 @@ export default function SellPage() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. Casio fx-991EX Calculator or Dell Latitude 5420"
-                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-750 focus:outline-none"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#FF8738] focus:ring-2 focus:ring-[#FF8738]/20 focus:bg-white dark:focus:bg-twilight-750 focus:outline-none"
                   />
                 </div>
 
@@ -273,7 +273,7 @@ export default function SellPage() {
                     <select
                       value={categoryId}
                       onChange={(e) => setCategoryId(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-twilight-750 text-slate-900 dark:text-white focus:border-brand-500 focus:outline-none"
+                      className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-twilight-750 text-slate-900 dark:text-white focus:border-[#FF8738] focus:ring-2 focus:ring-[#FF8738]/20 focus:outline-none"
                     >
                       {categoriesQuery.data?.map((cat) => (
                         <option key={cat.id} value={cat.slug || cat.id}>
@@ -296,7 +296,7 @@ export default function SellPage() {
                     <select
                       value={condition}
                       onChange={(e) => setCondition(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-twilight-750 text-slate-900 dark:text-white focus:border-brand-500 focus:outline-none"
+                      className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-twilight-750 text-slate-900 dark:text-white focus:border-[#FF8738] focus:ring-2 focus:ring-[#FF8738]/20 focus:outline-none"
                     >
                       <option value="like_new">Used - Like New</option>
                       <option value="brand_new">Brand New / Sealed</option>
@@ -313,7 +313,7 @@ export default function SellPage() {
                   <select
                     value={campus}
                     onChange={(e) => setCampus(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-twilight-750 text-slate-900 dark:text-white focus:border-brand-500 focus:outline-none"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-twilight-750 text-slate-900 dark:text-white focus:border-[#FF8738] focus:ring-2 focus:ring-[#FF8738]/20 focus:outline-none"
                   >
                     {CAMPUSES.map((c) => (
                       <option key={c} value={c}>
@@ -332,7 +332,7 @@ export default function SellPage() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Briefly state specs, includes (charger, case), or handover notes..."
-                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:outline-none"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#FF8738] focus:ring-2 focus:ring-[#FF8738]/20 focus:outline-none"
                   />
                 </div>
               </div>
@@ -361,7 +361,7 @@ export default function SellPage() {
                       value={price}
                       onChange={(e) => setPrice(e.target.value ? Number(e.target.value) : "")}
                       placeholder="e.g. 2500"
-                      className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 pl-14 pr-3.5 py-2.5 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:outline-none"
+                      className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 pl-14 pr-3.5 py-2.5 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#FF8738] focus:ring-2 focus:ring-[#FF8738]/20 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -386,7 +386,7 @@ export default function SellPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-500 py-3.5 text-xs font-semibold text-white shadow-md shadow-brand-600/25 transition disabled:opacity-50 cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#FF8738] via-[#FE9901] to-[#FFA05F] hover:from-[#FE9901] hover:to-[#FF8738] py-3.5 text-xs font-bold text-[#07152B] shadow-md shadow-[#FF8738]/25 hover:shadow-lg hover:shadow-[#FF8738]/35 transition-all disabled:opacity-50 cursor-pointer"
               >
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">

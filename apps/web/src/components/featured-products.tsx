@@ -173,7 +173,7 @@ export function FeaturedProducts({
   const getBadgeStyle = (badge?: string) => {
     switch (badge) {
       case "Best Seller":
-        return "bg-brand-600 text-white shadow-xs";
+        return "bg-gradient-to-r from-[#FF8738] to-[#FE9901] text-[#07152B] font-black shadow-xs";
       case "Popular":
         return "bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black shadow-xs";
       case "New":
@@ -395,7 +395,7 @@ export function FeaturedProducts({
                     whileTap={{ scale: 0.92 }}
                     onClick={() => setCheckoutProduct(item)}
                     aria-label="Order with SafeTrade Escrow"
-                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 dark:bg-twilight-750 text-brand-600 dark:text-brand-300 transition hover:bg-brand-600 hover:text-white dark:hover:bg-brand-600 cursor-pointer"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-[#FF8738] dark:text-[#FFA05F] transition hover:bg-[#FF8738] hover:text-[#07152B] cursor-pointer"
                   >
                     <ShoppingBag className="h-4 w-4" />
                   </motion.button>
