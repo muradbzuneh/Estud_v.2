@@ -218,17 +218,6 @@ export function Navbar({
                 </span>
               )}
             </button>
-
-            {/* Direct Admin Link for Authenticated Admins */}
-            {isAdmin && (
-              <Link
-                href="/admin"
-                className="inline-flex items-center gap-1.5 rounded-full bg-red-500/10 border border-red-500/25 px-2.5 py-0.5 text-[11px] font-bold text-red-500 hover:bg-red-500/20 transition"
-              >
-                <ShieldAlert className="h-3 w-3" />
-                <span>Admin</span>
-              </Link>
-            )}
           </nav>
 
           {/* Global Search Bar */}

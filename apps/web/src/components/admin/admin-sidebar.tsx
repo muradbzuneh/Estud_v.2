@@ -23,6 +23,7 @@ import {
   ChevronDown,
   CheckCircle2,
 } from "lucide-react";
+import { EstudLogo } from "@/components/estud-logo";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -102,14 +103,11 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
       )}
     >
       <div className="flex flex-col h-full overflow-hidden">
-        {/* Brand Header */}
+        {/* Brand Header with Official Estud Logo */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-border">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-black text-lg shadow-sm">
-              E
-            </div>
-            <span className="font-bold text-lg tracking-tight">Estud</span>
-          </div>
+          <Link href="/" className="flex items-center gap-2 group">
+            <EstudLogo size={28} showText={true} />
+          </Link>
           {onClose && (
             <button
               onClick={onClose}

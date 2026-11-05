@@ -4,6 +4,7 @@ import * as React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ShieldAlert, ArrowLeft, Lock, Loader2 } from "lucide-react";
+import { EstudLogo } from "@/components/estud-logo";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { useSession } from "@/lib/auth-client";
@@ -46,6 +47,10 @@ export default function AdminLayout({
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 text-white">
         <div className="max-w-md w-full rounded-2xl bg-slate-900 border border-red-500/30 p-8 text-center shadow-2xl space-y-5">
+          <div className="flex justify-center mb-1">
+            <EstudLogo size={36} showText={true} />
+          </div>
+
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400">
             <ShieldAlert className="h-7 w-7" />
           </div>
