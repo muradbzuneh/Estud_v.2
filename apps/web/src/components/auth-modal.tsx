@@ -105,14 +105,24 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
 
     try {
       const targetUrl = callbackUrl || window.location.origin;
-      await signIn.social({
+      const res = await signIn.social({
         provider: "google",
         callbackURL: targetUrl,
       });
+
+      if (res?.error) {
+        setError(
+          res.error.message ||
+            "Google Sign-In is not configured yet in this environment. Please sign in or register with your email or phone below."
+        );
+        setIsLoading(false);
+        return;
+      }
     } catch (err: any) {
       setError(
-        "Google Sign-In is unavailable or was cancelled. Please sign in or register with email/phone below."
+        "Google Sign-In is temporarily unavailable. Please sign in or register with email/phone below."
       );
+    } finally {
       setIsLoading(false);
     }
   };
@@ -186,23 +196,55 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
       normalizedEmail === "murad@gmail.com" ||
       normalizedEmail === "admin@estud.et";
 
+    const handleAuthError = (errObj: any) => {
+      const rawMessage = errObj?.message || "Authentication failed. Please check your credentials.";
+      const isUnregistered =
+        errObj?.status === 404 ||
+        rawMessage.toLowerCase().includes("not found") ||
+        rawMessage.toLowerCase().includes("invalid email or password") ||
+        rawMessage.toLowerCase().includes("invalid credentials") ||
+        rawMessage.toLowerCase().includes("user does not exist") ||
+        rawMessage.toLowerCase().includes("no user");
+
+      if (isUnregistered && mode === "signin") {
+        setUnregisteredPrompt(true);
+        setError("Account not found with these credentials. Don't have an Estud account yet?");
+      } else {
+        setError(rawMessage);
+      }
+    };
+
     try {
       if (mode === "signup") {
-        await signUp.email({
+        const res = await signUp.email({
           email: normalizedEmail,
           password,
           name: name.trim(),
           callbackURL: window.location.origin,
         });
+
+        if (res?.error) {
+          handleAuthError(res.error);
+          setIsLoading(false);
+          return;
+        }
+
         setIsSuccess(true);
       } else {
         // Sign-in mode
         if (isAdminEmail || callbackUrl.startsWith("/admin")) {
-          await signIn.email({
+          const res = await signIn.email({
             email: normalizedEmail,
             password,
             callbackURL: `${window.location.origin}/admin`,
           });
+
+          if (res?.error) {
+            handleAuthError(res.error);
+            setIsLoading(false);
+            return;
+          }
+
           onClose();
           router.push("/admin");
           return;
@@ -212,11 +254,17 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
           ? `${window.location.origin}${callbackUrl.startsWith("/") ? callbackUrl : `/${callbackUrl}`}`
           : window.location.origin;
 
-        await signIn.email({
+        const res = await signIn.email({
           email: normalizedEmail,
           password,
           callbackURL: destination,
         });
+
+        if (res?.error) {
+          handleAuthError(res.error);
+          setIsLoading(false);
+          return;
+        }
 
         onClose();
         if (callbackUrl && !callbackUrl.startsWith("/admin")) {
@@ -226,19 +274,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
         }
       }
     } catch (err: any) {
-      const rawMessage = err?.message || String(err);
-      const isUnregistered =
-        rawMessage.toLowerCase().includes("not found") ||
-        rawMessage.toLowerCase().includes("invalid email or password") ||
-        rawMessage.toLowerCase().includes("invalid credentials") ||
-        rawMessage.toLowerCase().includes("user does not exist");
-
-      if (isUnregistered && mode === "signin") {
-        setUnregisteredPrompt(true);
-        setError("Account not found with these credentials. Don't have an Estud account yet?");
-      } else {
-        setError(rawMessage || "Authentication error. Please check your credentials.");
-      }
+      handleAuthError(err);
     } finally {
       setIsLoading(false);
     }
@@ -277,7 +313,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                 onClose();
                 if (callbackUrl) router.push(callbackUrl as any);
               }}
-              className="mt-6 w-full rounded-xl bg-brand-600 hover:bg-brand-500 py-3 text-xs font-semibold text-white shadow-md shadow-brand-600/25 transition cursor-pointer"
+              className="mt-6 w-full rounded-xl bg-gradient-to-r from-[#FF8738] via-[#FE9901] to-[#FFA05F] hover:from-[#FE9901] hover:to-[#FF8738] py-3 text-xs font-bold text-[#07152B] shadow-md shadow-[#FF8738]/25 hover:shadow-lg hover:shadow-[#FF8738]/35 transition cursor-pointer"
             >
               Continue to Marketplace
             </button>
@@ -387,7 +423,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                       if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: "" }));
                     }}
                     placeholder="e.g. Alazar Tadesse"
-                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-800 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-800 focus:outline-none"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-800 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#FF8738] focus:ring-2 focus:ring-[#FF8738]/20 focus:bg-white dark:focus:bg-twilight-800 focus:outline-none"
                   />
                   {fieldErrors.name && (
                     <p className="text-[11px] text-rose-500 font-medium mt-1">{fieldErrors.name}</p>
@@ -407,7 +443,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                     setFieldErrors({});
                     setError(null);
                   }}
-                  className="text-brand-600 dark:text-brand-400 font-semibold hover:underline cursor-pointer"
+                  className="text-[#FF8738] dark:text-[#FFA05F] font-semibold hover:underline cursor-pointer"
                 >
                   Use {authMethod === "email" ? "Phone (+251)" : "Email"} instead
                 </button>
@@ -426,7 +462,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                         if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: "" }));
                       }}
                       placeholder="name@aau.edu.et or murad@gmail.com"
-                      className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-800 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-800 focus:outline-none"
+                      className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-800 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#FF8738] focus:ring-2 focus:ring-[#FF8738]/20 focus:bg-white dark:focus:bg-twilight-800 focus:outline-none"
                     />
                   </div>
                   {fieldErrors.email && (
@@ -449,7 +485,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                           setFieldErrors((prev) => ({ ...prev, phoneNumber: "" }));
                       }}
                       placeholder="911 234 567"
-                      className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-800 pl-14 pr-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-800 focus:outline-none"
+                      className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-800 pl-14 pr-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#FF8738] focus:ring-2 focus:ring-[#FF8738]/20 focus:bg-white dark:focus:bg-twilight-800 focus:outline-none"
                     />
                   </div>
                   {fieldErrors.phoneNumber && (
@@ -468,7 +504,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                   <select
                     value={university}
                     onChange={(e) => setUniversity(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-twilight-800 text-slate-900 dark:text-white focus:border-brand-500 focus:outline-none cursor-pointer"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-twilight-800 text-slate-900 dark:text-white focus:border-[#FF8738] focus:ring-2 focus:ring-[#FF8738]/20 focus:outline-none cursor-pointer"
                   >
                     {UNIVERSITIES.map((u) => (
                       <option key={u} value={u} className="bg-white dark:bg-twilight-900 text-slate-900 dark:text-white">
@@ -500,7 +536,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                         setFieldErrors((prev) => ({ ...prev, password: "" }));
                     }}
                     placeholder="At least 8 characters"
-                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-800 pl-10 pr-10 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-800 focus:outline-none"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-800 pl-10 pr-10 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-[#FF8738] focus:ring-2 focus:ring-[#FF8738]/20 focus:bg-white dark:focus:bg-twilight-800 focus:outline-none"
                   />
                   <button
                     type="button"
@@ -523,7 +559,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#07152B] border-t-transparent" />
                     Validating & Signing In...
                   </span>
                 ) : mode === "signin" ? (
@@ -542,7 +578,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                   <button
                     type="button"
                     onClick={handleSwitchToSignup}
-                    className="font-bold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer"
+                    className="font-bold text-[#FF8738] dark:text-[#FFA05F] hover:underline cursor-pointer"
                   >
                     Sign up free
                   </button>
@@ -558,7 +594,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                       setFieldErrors({});
                       setUnregisteredPrompt(false);
                     }}
-                    className="font-bold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer"
+                    className="font-bold text-[#FF8738] dark:text-[#FFA05F] hover:underline cursor-pointer"
                   >
                     Log in
                   </button>
@@ -568,7 +604,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
 
             {/* Security Trust Badge */}
             <div className="mt-5 flex items-center justify-center gap-1.5 text-[11px] text-slate-400 dark:text-twilight-400 border-t border-slate-100 dark:border-twilight-800 pt-3">
-              <ShieldCheck className="h-3.5 w-3.5 text-brand-600 dark:text-brand-400" />
+              <ShieldCheck className="h-3.5 w-3.5 text-[#FF8738] dark:text-[#FFA05F]" />
               <span>Protected by Estud Campus SafeTrade & Better Auth</span>
             </div>
           </div>
