@@ -1,9 +1,16 @@
+
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
-import { ArrowRight, Sparkles, GraduationCap } from "lucide-react";
+import {
+  ArrowRight,
+  GraduationCap,
+  ShoppingBag,
+} from "lucide-react";
+
 import { useLanguage } from "./language-context";
 import { HeroShowcase } from "./hero-showcase";
 
@@ -11,183 +18,199 @@ interface HeroSectionProps {
   onSelectCategory?: (category: string) => void;
 }
 
-export function HeroSection({ onSelectCategory }: HeroSectionProps = {}) {
+const containerVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 18,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.65,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+export function HeroSection({
+  onSelectCategory,
+}: HeroSectionProps) {
   const { t } = useLanguage();
-  const [isDesktop, setIsDesktop] = useState(false);
 
-  useEffect(() => {
-    const check = () => setIsDesktop(window.innerWidth >= 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
+  const scrollToProducts = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    category?: string
+  ) => {
+    e.preventDefault();
 
-  const scrollToProducts = (e?: React.MouseEvent, category?: string) => {
-    if (e) e.preventDefault();
     if (category && onSelectCategory) {
       onSelectCategory(category);
     }
-    const el = document.getElementById("products");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
-  // Professional masked text animation variants
-  const lineVariants: Variants = {
-    hidden: { y: "115%", opacity: 0 },
-    visible: (custom: number) => ({
-      y: "0%",
-      opacity: 1,
-      transition: {
-        duration: 0.75,
-        ease: [0.16, 1, 0.3, 1],
-        delay: 0.12 * custom,
-      },
-    }),
-  };
-
-  const fadeUpVariants: Variants = {
-    hidden: { opacity: 0, y: 16 },
-    visible: (custom: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: [0.16, 1, 0.3, 1],
-        delay: 0.15 * custom,
-      },
-    }),
+    document.getElementById("products")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
   return (
-    <section
-      className="relative overflow-hidden py-14 sm:py-20 lg:py-24 text-white"
-      style={{
-        backgroundImage: `url('${
-          isDesktop
-            ? "/images/school-supplies-bg-desktop.jpg"
-            : "/images/school-supplies-bg.jpg"
-        }')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundColor: "#072448",
-      }}
-    >
-      {/* Cinematic dark depth overlays for high-contrast legibility */}
-      <div className="absolute inset-0 bg-[#071E3D]/80 backdrop-blur-[2px] pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#07152B]/95 via-[#071E3D]/85 to-[#07152B]/80 pointer-events-none" />
+    <section className="relative isolate min-h-[590px] overflow-hidden bg-[#091D3A] text-white sm:min-h-[640px] lg:min-h-[660px]">
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-10 lg:gap-14">
-          
-          {/* Left Column: Clean, uncluttered, animated typography */}
-          <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
-            
-            {/* Minimalist verification pill */}
+      {/* Visible School Supplies Imagery across all devices (as requested) */}
+      <div className="absolute inset-0 -z-20 overflow-hidden">
+        {/* Desktop stationery background */}
+        <Image
+          src="/images/school-supplies-bg-desktop.jpg"
+          alt="Estud Student Marketplace Campus Background"
+          fill
+          priority
+          sizes="100vw"
+          className="hidden md:block object-cover object-top"
+        />
+
+        {/* Mobile stationery background */}
+        <Image
+          src="/images/school-supplies-bg.jpg"
+          alt="Estud Student Marketplace Campus Background"
+          fill
+          priority
+          sizes="100vw"
+          className="block md:hidden object-cover object-top"
+        />
+      </div>
+
+      {/* Translucent depth overlay preserving edge stationery while making center text crisp and transparent */}
+      <div className="absolute inset-0 -z-10 bg-[#072448]/45 pointer-events-none" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#071E3D]/30 via-[#072448]/60 to-[#07152B]/90 pointer-events-none" />
+
+      {/* Subtle brand accent matching logo ribbon fold */}
+      <div className="pointer-events-none absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-[#FE9901] via-[#FF8738] to-transparent opacity-80" />
+
+      {/* Main content */}
+      <div className="mx-auto flex min-h-[590px] max-w-7xl items-center px-5 py-16 sm:min-h-[640px] sm:px-8 lg:min-h-[660px] lg:px-10">
+
+        <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8">
+
+          {/* Text content */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="relative z-10 mx-auto w-full max-w-2xl text-center lg:col-span-6 lg:mx-0 lg:text-left"
+          >
+            {/* Eyebrow */}
             <motion.div
-              custom={0}
-              variants={fadeUpVariants}
-              initial="hidden"
-              animate="visible"
-              className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-3.5 py-1 text-xs text-white/90 font-medium backdrop-blur-md shadow-xs"
+              variants={itemVariants}
+              className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur-sm"
             >
-              <GraduationCap className="h-3.5 w-3.5 text-amber-400" />
+              <GraduationCap className="h-4 w-4 text-[#FF963F]" />
               <span>{t("hero.badge")}</span>
             </motion.div>
 
-            {/* Professional Masked Staggered Headline */}
-            <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black tracking-tight text-white leading-[1.12]">
-              <div className="overflow-hidden">
-                <motion.span
-                  custom={1}
-                  variants={lineVariants}
-                  initial="hidden"
-                  animate="visible"
-                  className="block text-white"
-                >
-                  {t("hero.title1")}
-                </motion.span>
-              </div>
+            {/* Heading */}
+            <motion.h1
+              variants={itemVariants}
+              className="text-[2.65rem] font-bold leading-[1.12] tracking-[-0.045em] sm:text-5xl lg:text-[3.65rem] xl:text-[4rem]"
+            >
+              <span className="block">
+                {t("hero.title1")}
+              </span>
 
-              <div className="overflow-hidden">
-                <motion.span
-                  custom={2}
-                  variants={lineVariants}
-                  initial="hidden"
-                  animate="visible"
-                  className="block text-white/95"
-                >
-                  {t("hero.title2")}
-                </motion.span>
-              </div>
+              <span className="block">
+                {t("hero.title2")}
+              </span>
 
-              <div className="overflow-hidden">
-                <motion.span
-                  custom={3}
-                  variants={lineVariants}
-                  initial="hidden"
-                  animate="visible"
-                  className="block bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-300 bg-clip-text text-transparent font-black"
-                >
-                  {t("hero.title3")}
-                </motion.span>
-              </div>
-            </h1>
+              <span className="block text-[#FF963F]">
+                {t("hero.title3")}
+              </span>
+            </motion.h1>
 
-            {/* Clean Subtitle */}
+            {/* Description */}
             <motion.p
-              custom={4}
-              variants={fadeUpVariants}
-              initial="hidden"
-              animate="visible"
-              className="text-base sm:text-lg text-slate-200/90 max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal"
+              variants={itemVariants}
+              className="mx-auto mt-6 max-w-xl text-base leading-7 text-slate-200 sm:text-lg sm:leading-8 lg:mx-0"
             >
               {t("hero.subtitle")}
             </motion.p>
 
-            {/* Clean, Focused Dual Action Buttons (Zero unwanted tags) */}
+            {/* Actions */}
             <motion.div
-              custom={5}
-              variants={fadeUpVariants}
-              initial="hidden"
-              animate="visible"
-              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2"
+              variants={itemVariants}
+              className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start"
             >
               <a
                 href="#products"
                 onClick={scrollToProducts}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-full bg-brand-600 hover:bg-brand-500 text-white font-semibold px-8 py-3.5 text-sm transition-all duration-200 cursor-pointer shadow-lg shadow-brand-600/30 hover:scale-[1.02] active:scale-[0.98]"
+                className="group inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-lg bg-[#FF8738] px-7 py-3.5 text-sm font-semibold text-[#10213B] shadow-lg shadow-black/15 transition-colors hover:bg-[#FFA05F] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FF963F] sm:w-auto"
               >
                 {t("hero.btnExplore")}
-                <ArrowRight className="h-4 w-4" />
+
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </a>
 
               <Link
                 href="/sell"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 hover:bg-white/15 text-white font-semibold px-8 py-3.5 text-sm transition-all duration-200 backdrop-blur-md hover:scale-[1.02] active:scale-[0.98]"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-lg border border-white/30 bg-white/10 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:w-auto"
               >
-                <Sparkles className="h-4 w-4 text-amber-400" />
-                <span>{t("hero.btnSell")}</span>
+                <ShoppingBag className="h-4 w-4 text-[#FF963F]" />
+                {t("hero.btnSell")}
               </Link>
             </motion.div>
-          </div>
 
-          {/* Right Column: Pure Quality Modern Hero Showcase */}
+            {/* Trust indicators */}
+            <motion.div
+              variants={itemVariants}
+              className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs font-medium text-white/85 sm:text-sm lg:justify-start"
+            >
+              <span className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-[#FF963F]" />
+                Student marketplace
+              </span>
+
+              <span className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-[#4C91FF]" />
+                Buy & sell
+              </span>
+
+              <span className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                Exchange items
+              </span>
+            </motion.div>
+          </motion.div>
+
+          {/* Product showcase */}
           <motion.div
-            custom={2}
-            variants={fadeUpVariants}
-            initial="hidden"
-            animate="visible"
-            className="lg:col-span-6 relative flex items-center justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.3,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="relative z-10 mx-auto flex w-full max-w-xl items-center justify-center lg:col-span-6 lg:max-w-none"
           >
             <HeroShowcase />
           </motion.div>
+
         </div>
       </div>
 
-      {/* Subtle bottom fade transition into the page content */}
-      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#F8FAFC] dark:from-twilight-900 to-transparent pointer-events-none" />
+      {/* Bottom transition */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#F8FAFC]/20 to-transparent"
+      />
     </section>
   );
 }
