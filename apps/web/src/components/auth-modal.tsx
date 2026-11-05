@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { z } from "zod";
 import {
-  GraduationCap,
   Mail,
   Lock,
   CheckCircle2,
@@ -13,8 +13,12 @@ import {
   EyeOff,
   ShieldCheck,
   ShieldAlert,
+  UserPlus,
+  ArrowRight,
+  Phone,
 } from "lucide-react";
 import { signIn, signUp } from "@/lib/auth-client";
+import { EstudLogo } from "./estud-logo";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -32,6 +36,35 @@ const UNIVERSITIES = [
   "Wollo University (KIOT)",
   "Arba Minch University",
 ];
+
+// Zod Validation Schemas
+const signInEmailSchema = z.object({
+  email: z.string().email("Please enter a valid email address (e.g. student@aau.edu.et)"),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
+});
+
+const signInPhoneSchema = z.object({
+  phoneNumber: z
+    .string()
+    .regex(/^(\+251|0)?[97]\d{8}$/, "Enter a valid Ethiopian phone number (e.g. 0911234567)"),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
+});
+
+const signUpEmailSchema = z.object({
+  name: z.string().min(2, "Full name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  university: z.string().min(1, "Please select your university"),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
+});
+
+const signUpPhoneSchema = z.object({
+  name: z.string().min(2, "Full name must be at least 2 characters"),
+  phoneNumber: z
+    .string()
+    .regex(/^(\+251|0)?[97]\d{8}$/, "Enter a valid Ethiopian phone number (e.g. 0911234567)"),
+  university: z.string().min(1, "Please select your university"),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
+});
 
 export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModalProps) {
   const router = useRouter();
@@ -58,13 +91,18 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSuccess, setIsSuccess] = useState(false);
+  const [unregisteredPrompt, setUnregisteredPrompt] = useState(false);
 
   if (!isOpen) return null;
 
   const handleGoogleSignIn = async () => {
+    if (isLoading) return;
     setIsLoading(true);
     setError(null);
+    setFieldErrors({});
+
     try {
       const targetUrl = callbackUrl || window.location.origin;
       await signIn.social({
@@ -72,23 +110,77 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
         callbackURL: targetUrl,
       });
     } catch (err: any) {
-      setError(err?.message || "Google Sign-In failed. Please try again.");
+      setError(
+        "Google Sign-In is unavailable or was cancelled. Please sign in or register with email/phone below."
+      );
       setIsLoading(false);
+    }
+  };
+
+  const validateForm = (): boolean => {
+    setFieldErrors({});
+    setError(null);
+
+    try {
+      if (mode === "signin") {
+        if (authMethod === "email") {
+          signInEmailSchema.parse({ email: email.trim(), password });
+        } else {
+          signInPhoneSchema.parse({ phoneNumber: phoneNumber.trim(), password });
+        }
+      } else {
+        if (authMethod === "email") {
+          signUpEmailSchema.parse({
+            name: name.trim(),
+            email: email.trim(),
+            university,
+            password,
+          });
+        } else {
+          signUpPhoneSchema.parse({
+            name: name.trim(),
+            phoneNumber: phoneNumber.trim(),
+            university,
+            password,
+          });
+        }
+      }
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const errors: Record<string, string> = {};
+        err.errors.forEach((issue) => {
+          const field = issue.path[0] as string;
+          if (field && !errors[field]) {
+            errors[field] = issue.message;
+          }
+        });
+        setFieldErrors(errors);
+      }
+      return false;
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Prevent rapid duplicate requests
+    if (isLoading) return;
+
+    // Run strict client-side Zod validation before any network request
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
+    setUnregisteredPrompt(false);
 
     const normalizedEmail = (
       authMethod === "email"
-        ? email
+        ? email.trim()
         : `${phoneNumber.replace(/\s+/g, "")}@student.estud.et`
-    )
-      .toLowerCase()
-      .trim();
+    ).toLowerCase();
 
     const isAdminEmail =
       normalizedEmail === "murad@gmail.com" ||
@@ -99,7 +191,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
         await signUp.email({
           email: normalizedEmail,
           password,
-          name,
+          name: name.trim(),
           callbackURL: window.location.origin,
         });
         setIsSuccess(true);
@@ -134,69 +226,89 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
         }
       }
     } catch (err: any) {
-      setError(err?.message || "Authentication error. Please check credentials.");
+      const rawMessage = err?.message || String(err);
+      const isUnregistered =
+        rawMessage.toLowerCase().includes("not found") ||
+        rawMessage.toLowerCase().includes("invalid email or password") ||
+        rawMessage.toLowerCase().includes("invalid credentials") ||
+        rawMessage.toLowerCase().includes("user does not exist");
+
+      if (isUnregistered && mode === "signin") {
+        setUnregisteredPrompt(true);
+        setError("Account not found with these credentials. Don't have an Estud account yet?");
+      } else {
+        setError(rawMessage || "Authentication error. Please check your credentials.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleSwitchToSignup = () => {
+    setMode("signup");
+    setError(null);
+    setFieldErrors({});
+    setUnregisteredPrompt(false);
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 dark:bg-black/70 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md rounded-2xl bg-white dark:bg-twilight-800 p-6 sm:p-8 shadow-2xl border border-slate-100 dark:border-twilight-700 text-slate-900 dark:text-twilight-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/65 dark:bg-black/75 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="relative w-full max-w-md rounded-3xl bg-white dark:bg-twilight-900 p-6 sm:p-8 shadow-2xl border border-slate-100 dark:border-twilight-700 text-slate-900 dark:text-twilight-100">
+        
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute right-5 top-5 p-2 rounded-full text-slate-400 dark:text-twilight-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-twilight-750 transition-colors cursor-pointer"
+          className="absolute right-5 top-5 p-2 rounded-full text-slate-400 dark:text-twilight-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-twilight-800 transition cursor-pointer"
         >
           <X className="h-5 w-5" />
         </button>
 
         {isSuccess ? (
           <div className="text-center py-6">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-50 dark:bg-twilight-750 text-brand-600 dark:text-brand-400 mb-4 animate-in zoom-in-75">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 mb-4 animate-in zoom-in-75">
               <CheckCircle2 className="h-8 w-8" />
             </div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">Welcome to Estud!</h3>
-            <p className="mt-2 text-xs text-slate-600 dark:text-twilight-300 max-w-xs mx-auto">
-              Your student account has been created. A confirmation link has been sent to verify your student status.
+            <p className="mt-2 text-xs text-slate-600 dark:text-twilight-300 max-w-xs mx-auto leading-relaxed">
+              Your student account has been created. A verification email has been sent. You can now explore verified campus listings.
             </p>
             <button
               onClick={() => {
                 onClose();
                 if (callbackUrl) router.push(callbackUrl as any);
               }}
-              className="mt-6 w-full rounded-xl bg-brand-600 py-3 text-sm font-semibold text-white hover:bg-brand-700 transition cursor-pointer"
+              className="mt-6 w-full rounded-xl bg-brand-600 hover:bg-brand-500 py-3 text-xs font-semibold text-white shadow-md shadow-brand-600/25 transition cursor-pointer"
             >
               Continue to Marketplace
             </button>
           </div>
         ) : (
           <div>
-            {/* Admin Notice if redirected from /admin */}
+            {/* Admin Notice */}
             {adminRequired && (
               <div className="mb-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 p-3 flex items-start gap-2.5 text-xs text-amber-900 dark:text-amber-200">
                 <ShieldAlert className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
                 <div>
                   <p className="font-bold">Staff Access Required</p>
                   <p className="text-[11px] text-amber-800 dark:text-amber-300 mt-0.5">
-                    Please sign in with your admin credentials to access the Estud Operations Portal.
+                    Sign in with verified administrator credentials to access the Estud Operations Portal.
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Header */}
-            <div className="text-center mb-6">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 dark:bg-twilight-750 text-brand-600 dark:text-brand-400 mb-3 shadow-inner">
-                <GraduationCap className="h-6 w-6" />
+            {/* Official Estud Brand Header */}
+            <div className="text-center mb-5">
+              <div className="flex justify-center mb-3">
+                <EstudLogo size={40} showText={true} />
               </div>
-              <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                {mode === "signin" ? "Sign in to Estud" : "Create an account"}
+              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                {mode === "signin" ? "Sign in to your account" : "Create your student account"}
               </h2>
               <p className="text-xs text-slate-500 dark:text-twilight-400 mt-1">
                 {mode === "signin"
-                  ? "Welcome back! Enter your details to continue."
-                  : "Join thousands of students trading securely across Ethiopia"}
+                  ? "Enter your credentials to access your listings and orders."
+                  : "Join verified students trading safely across Ethiopian campuses."}
               </p>
             </div>
 
@@ -205,7 +317,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
               type="button"
               onClick={handleGoogleSignIn}
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-3 rounded-xl border border-slate-200 dark:border-twilight-700 bg-white dark:bg-twilight-750 py-2.5 px-4 text-xs font-semibold text-slate-700 dark:text-twilight-100 hover:bg-slate-50 dark:hover:bg-twilight-700 transition shadow-xs cursor-pointer"
+              className="w-full flex items-center justify-center gap-3 rounded-xl border border-slate-200 dark:border-twilight-700 bg-white dark:bg-twilight-800 py-2.5 px-4 text-xs font-semibold text-slate-700 dark:text-twilight-100 hover:bg-slate-50 dark:hover:bg-twilight-750 transition shadow-xs cursor-pointer disabled:opacity-50"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24">
                 <path
@@ -229,47 +341,72 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
             </button>
 
             {/* Separator */}
-            <div className="relative my-5 text-center">
+            <div className="relative my-4 text-center">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-200 dark:border-twilight-700" />
               </div>
-              <span className="relative bg-white dark:bg-twilight-800 px-3 text-[11px] uppercase tracking-wider text-slate-400 dark:text-twilight-400 font-medium">
+              <span className="relative bg-white dark:bg-twilight-900 px-3 text-[10px] uppercase tracking-wider text-slate-400 dark:text-twilight-400 font-semibold">
                 Or with {authMethod === "email" ? "Email" : "Phone"}
               </span>
             </div>
 
+            {/* Smart Error Box with 1-Click "Create Account" Prompt */}
             {error && (
-              <div className="mb-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 p-3 flex items-center gap-2 text-xs text-rose-800 dark:text-rose-200">
-                <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
-                <span>{error}</span>
+              <div className="mb-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 p-3.5 text-xs text-rose-800 dark:text-rose-200 space-y-2">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                  <span className="font-medium leading-tight">{error}</span>
+                </div>
+
+                {unregisteredPrompt && (
+                  <button
+                    type="button"
+                    onClick={handleSwitchToSignup}
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-500 py-2 px-3 text-[11px] font-bold text-white transition cursor-pointer"
+                  >
+                    <UserPlus className="h-3.5 w-3.5" />
+                    <span>Create Account as {authMethod === "email" ? email || "Student" : phoneNumber}</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-3.5">
+            <form onSubmit={handleSubmit} className="space-y-3">
               {mode === "signup" && (
                 <div>
-                  <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-twilight-300 mb-1">
-                    Full Name
+                  <label className="block text-[11px] font-semibold text-slate-700 dark:text-twilight-200 mb-1">
+                    Full Name *
                   </label>
                   <input
                     type="text"
                     required
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: "" }));
+                    }}
                     placeholder="e.g. Alazar Tadesse"
-                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-twilight-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-750 focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-800 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-800 focus:outline-none"
                   />
+                  {fieldErrors.name && (
+                    <p className="text-[11px] text-rose-500 font-medium mt-1">{fieldErrors.name}</p>
+                  )}
                 </div>
               )}
 
               {/* Mode switch: Email vs Phone */}
               <div className="flex justify-between items-center text-[11px]">
-                <span className="font-medium uppercase tracking-wider text-slate-600 dark:text-twilight-300">
-                  {authMethod === "email" ? "Student or Admin Email" : "Ethiopian Mobile Phone"}
+                <span className="font-semibold text-slate-700 dark:text-twilight-200">
+                  {authMethod === "email" ? "Student or Admin Email *" : "Ethiopian Mobile Phone *"}
                 </span>
                 <button
                   type="button"
-                  onClick={() => setAuthMethod(authMethod === "email" ? "phone" : "email")}
+                  onClick={() => {
+                    setAuthMethod(authMethod === "email" ? "phone" : "email");
+                    setFieldErrors({});
+                    setError(null);
+                  }}
                   className="text-brand-600 dark:text-brand-400 font-semibold hover:underline cursor-pointer"
                 >
                   Use {authMethod === "email" ? "Phone (+251)" : "Email"} instead
@@ -277,45 +414,64 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
               </div>
 
               {authMethod === "email" ? (
-                <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-twilight-400" />
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@aau.edu.et or murad@gmail.com"
-                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-twilight-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-750 focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
-                  />
+                <div>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: "" }));
+                      }}
+                      placeholder="name@aau.edu.et or murad@gmail.com"
+                      className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-800 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-800 focus:outline-none"
+                    />
+                  </div>
+                  {fieldErrors.email && (
+                    <p className="text-[11px] text-rose-500 font-medium mt-1">{fieldErrors.email}</p>
+                  )}
                 </div>
               ) : (
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500 dark:text-twilight-400">
-                    +251
-                  </span>
-                  <input
-                    type="tel"
-                    required
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder="911 234 567"
-                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 pl-14 pr-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-twilight-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-750 focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
-                  />
+                <div>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">
+                      +251
+                    </span>
+                    <input
+                      type="tel"
+                      required
+                      value={phoneNumber}
+                      onChange={(e) => {
+                        setPhoneNumber(e.target.value);
+                        if (fieldErrors.phoneNumber)
+                          setFieldErrors((prev) => ({ ...prev, phoneNumber: "" }));
+                      }}
+                      placeholder="911 234 567"
+                      className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-800 pl-14 pr-3.5 py-2.5 text-xs font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-800 focus:outline-none"
+                    />
+                  </div>
+                  {fieldErrors.phoneNumber && (
+                    <p className="text-[11px] text-rose-500 font-medium mt-1">
+                      {fieldErrors.phoneNumber}
+                    </p>
+                  )}
                 </div>
               )}
 
               {mode === "signup" && (
                 <div>
-                  <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-twilight-300 mb-1">
-                    Your University
+                  <label className="block text-[11px] font-semibold text-slate-700 dark:text-twilight-200 mb-1">
+                    Your University *
                   </label>
                   <select
                     value={university}
                     onChange={(e) => setUniversity(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-twilight-750 text-slate-900 dark:text-white focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-750 focus:outline-none focus:ring-1 focus:ring-brand-500 transition cursor-pointer"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-twilight-800 text-slate-900 dark:text-white focus:border-brand-500 focus:outline-none cursor-pointer"
                   >
                     {UNIVERSITIES.map((u) => (
-                      <option key={u} value={u} className="bg-white dark:bg-twilight-800 text-slate-900 dark:text-white">
+                      <option key={u} value={u} className="bg-white dark:bg-twilight-900 text-slate-900 dark:text-white">
                         {u}
                       </option>
                     ))}
@@ -323,59 +479,70 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                 </div>
               )}
 
-              {/* Password */}
+              {/* Password - Enforcing minimum 8 characters via Zod */}
               <div>
-                <label className="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-twilight-300 mb-1">
-                  Password
-                </label>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-[11px] font-semibold text-slate-700 dark:text-twilight-200">
+                    Password *
+                  </label>
+                  <span className="text-[10px] text-slate-400">Min. 8 characters</span>
+                </div>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-twilight-400" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <input
                     type={showPassword ? "text" : "password"}
                     required
+                    minLength={8}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (fieldErrors.password)
+                        setFieldErrors((prev) => ({ ...prev, password: "" }));
+                    }}
                     placeholder="At least 8 characters"
-                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 pl-10 pr-10 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-twilight-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-750 focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
+                    className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-800 pl-10 pr-10 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-800 focus:outline-none"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-twilight-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {fieldErrors.password && (
+                  <p className="text-[11px] text-rose-500 font-medium mt-1">{fieldErrors.password}</p>
+                )}
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full rounded-xl bg-brand-600 hover:bg-brand-700 py-3 text-xs font-semibold text-white shadow-xs disabled:opacity-50 transition cursor-pointer mt-2"
+                className="w-full rounded-xl bg-brand-600 hover:bg-brand-500 py-3 text-xs font-semibold text-white shadow-md shadow-brand-600/25 disabled:opacity-50 transition cursor-pointer mt-1"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
                     <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    Processing...
+                    Validating & Signing In...
                   </span>
                 ) : mode === "signin" ? (
                   adminRequired ? "Sign In to Admin Portal" : "Sign In"
                 ) : (
-                  "Create account"
+                  "Create Student Account"
                 )}
               </button>
             </form>
 
             {/* Toggle sign in / sign up */}
-            <div className="mt-5 text-center text-xs text-slate-500 dark:text-twilight-400">
+            <div className="mt-4 text-center text-xs text-slate-500 dark:text-twilight-400">
               {mode === "signin" ? (
                 <span>
                   Don't have an account yet?{" "}
                   <button
                     type="button"
-                    onClick={() => setMode("signup")}
-                    className="font-semibold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer"
+                    onClick={handleSwitchToSignup}
+                    className="font-bold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer"
                   >
                     Sign up free
                   </button>
@@ -385,8 +552,13 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                   Already have an account?{" "}
                   <button
                     type="button"
-                    onClick={() => setMode("signin")}
-                    className="font-semibold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer"
+                    onClick={() => {
+                      setMode("signin");
+                      setError(null);
+                      setFieldErrors({});
+                      setUnregisteredPrompt(false);
+                    }}
+                    className="font-bold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer"
                   >
                     Log in
                   </button>
@@ -394,10 +566,10 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
               )}
             </div>
 
-            {/* Trust badge */}
-            <div className="mt-6 flex items-center justify-center gap-1.5 text-[11px] text-slate-400 dark:text-twilight-400 border-t border-slate-100 dark:border-twilight-700 pt-4">
+            {/* Security Trust Badge */}
+            <div className="mt-5 flex items-center justify-center gap-1.5 text-[11px] text-slate-400 dark:text-twilight-400 border-t border-slate-100 dark:border-twilight-800 pt-3">
               <ShieldCheck className="h-3.5 w-3.5 text-brand-600 dark:text-brand-400" />
-              <span>Protected by Better Auth & Estud SafeTrade Escrow</span>
+              <span>Protected by Estud Campus SafeTrade & Better Auth</span>
             </div>
           </div>
         )}
