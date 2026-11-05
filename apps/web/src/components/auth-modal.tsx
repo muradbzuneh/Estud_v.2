@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   GraduationCap,
   Mail,
@@ -11,6 +12,7 @@ import {
   Eye,
   EyeOff,
   ShieldCheck,
+  ShieldAlert,
 } from "lucide-react";
 import { signIn, signUp } from "@/lib/auth-client";
 
@@ -32,6 +34,17 @@ const UNIVERSITIES = [
 ];
 
 export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModalProps) {
+  const router = useRouter();
+  let searchParams: URLSearchParams | null = null;
+  try {
+    searchParams = useSearchParams();
+  } catch {
+    // If rendered outside Suspense
+  }
+
+  const callbackUrl = searchParams?.get("callbackUrl") || "";
+  const adminRequired = searchParams?.get("adminRequired") === "true";
+
   const [mode, setMode] = useState<"signin" | "signup">(initialMode);
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [showPassword, setShowPassword] = useState(false);
@@ -53,9 +66,10 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
     setIsLoading(true);
     setError(null);
     try {
+      const targetUrl = callbackUrl || window.location.origin;
       await signIn.social({
         provider: "google",
-        callbackURL: window.location.origin,
+        callbackURL: targetUrl,
       });
     } catch (err: any) {
       setError(err?.message || "Google Sign-In failed. Please try again.");
@@ -68,22 +82,56 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
     setIsLoading(true);
     setError(null);
 
+    const normalizedEmail = (
+      authMethod === "email"
+        ? email
+        : `${phoneNumber.replace(/\s+/g, "")}@student.estud.et`
+    )
+      .toLowerCase()
+      .trim();
+
+    const isAdminEmail =
+      normalizedEmail === "murad@gmail.com" ||
+      normalizedEmail === "admin@estud.et";
+
     try {
       if (mode === "signup") {
         await signUp.email({
-          email: authMethod === "email" ? email : `${phoneNumber.replace(/\s+/g, "")}@student.estud.et`,
+          email: normalizedEmail,
           password,
           name,
           callbackURL: window.location.origin,
         });
         setIsSuccess(true);
       } else {
+        // Sign-in mode
+        if (isAdminEmail || callbackUrl.startsWith("/admin")) {
+          await signIn.email({
+            email: normalizedEmail,
+            password,
+            callbackURL: `${window.location.origin}/admin`,
+          });
+          onClose();
+          router.push("/admin");
+          return;
+        }
+
+        const destination = callbackUrl
+          ? `${window.location.origin}${callbackUrl.startsWith("/") ? callbackUrl : `/${callbackUrl}`}`
+          : window.location.origin;
+
         await signIn.email({
-          email: authMethod === "email" ? email : `${phoneNumber.replace(/\s+/g, "")}@student.estud.et`,
+          email: normalizedEmail,
           password,
-          callbackURL: window.location.origin,
+          callbackURL: destination,
         });
+
         onClose();
+        if (callbackUrl && !callbackUrl.startsWith("/admin")) {
+          router.push(callbackUrl as any);
+        } else {
+          router.refresh();
+        }
       }
     } catch (err: any) {
       setError(err?.message || "Authentication error. Please check credentials.");
@@ -113,7 +161,10 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
               Your student account has been created. A confirmation link has been sent to verify your student status.
             </p>
             <button
-              onClick={onClose}
+              onClick={() => {
+                onClose();
+                if (callbackUrl) router.push(callbackUrl as any);
+              }}
               className="mt-6 w-full rounded-xl bg-brand-600 py-3 text-sm font-semibold text-white hover:bg-brand-700 transition cursor-pointer"
             >
               Continue to Marketplace
@@ -121,7 +172,20 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
           </div>
         ) : (
           <div>
-            {/* Header matching Image 2 */}
+            {/* Admin Notice if redirected from /admin */}
+            {adminRequired && (
+              <div className="mb-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 p-3 flex items-start gap-2.5 text-xs text-amber-900 dark:text-amber-200">
+                <ShieldAlert className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+                <div>
+                  <p className="font-bold">Staff Access Required</p>
+                  <p className="text-[11px] text-amber-800 dark:text-amber-300 mt-0.5">
+                    Please sign in with your admin credentials to access the Estud Operations Portal.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Header */}
             <div className="text-center mb-6">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 dark:bg-twilight-750 text-brand-600 dark:text-brand-400 mb-3 shadow-inner">
                 <GraduationCap className="h-6 w-6" />
@@ -130,7 +194,9 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                 {mode === "signin" ? "Sign in to Estud" : "Create an account"}
               </h2>
               <p className="text-xs text-slate-500 dark:text-twilight-400 mt-1">
-                {mode === "signin" ? "Welcome back! Please enter your details." : "Join thousands of students trading securely across Ethiopia"}
+                {mode === "signin"
+                  ? "Welcome back! Enter your details to continue."
+                  : "Join thousands of students trading securely across Ethiopia"}
               </p>
             </div>
 
@@ -199,7 +265,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
               {/* Mode switch: Email vs Phone */}
               <div className="flex justify-between items-center text-[11px]">
                 <span className="font-medium uppercase tracking-wider text-slate-600 dark:text-twilight-300">
-                  {authMethod === "email" ? "Student Email" : "Ethiopian Mobile Phone"}
+                  {authMethod === "email" ? "Student or Admin Email" : "Ethiopian Mobile Phone"}
                 </span>
                 <button
                   type="button"
@@ -218,7 +284,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@aau.edu.et or personal@gmail.com"
+                    placeholder="name@aau.edu.et or murad@gmail.com"
                     className="w-full rounded-xl border border-slate-200 dark:border-twilight-700 bg-slate-50 dark:bg-twilight-750 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-twilight-400 focus:border-brand-500 focus:bg-white dark:focus:bg-twilight-750 focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
                   />
                 </div>
@@ -282,7 +348,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                 </div>
               </div>
 
-              {/* Submit Button - Royal Violet-Indigo from Image 2 */}
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading}
@@ -294,14 +360,14 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                     Processing...
                   </span>
                 ) : mode === "signin" ? (
-                  "Sign In"
+                  adminRequired ? "Sign In to Admin Portal" : "Sign In"
                 ) : (
                   "Create account"
                 )}
               </button>
             </form>
 
-            {/* Toggle sign in / sign up matching Image 2 */}
+            {/* Toggle sign in / sign up */}
             <div className="mt-5 text-center text-xs text-slate-500 dark:text-twilight-400">
               {mode === "signin" ? (
                 <span>
@@ -331,7 +397,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
             {/* Trust badge */}
             <div className="mt-6 flex items-center justify-center gap-1.5 text-[11px] text-slate-400 dark:text-twilight-400 border-t border-slate-100 dark:border-twilight-700 pt-4">
               <ShieldCheck className="h-3.5 w-3.5 text-brand-600 dark:text-brand-400" />
-              <span>Protected by Better Auth & Estud Student Escrow</span>
+              <span>Protected by Better Auth & Estud SafeTrade Escrow</span>
             </div>
           </div>
         )}

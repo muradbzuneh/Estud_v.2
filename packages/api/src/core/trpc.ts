@@ -15,8 +15,6 @@ export interface TRPCContext {
   user: ContextUser | null;
 }
 
-let cachedAdminUser: ContextUser | null = null;
-
 /**
  * Creates context from incoming Request via Better Auth session resolution.
  * Automatically handles Cookies (Web) and Bearer tokens (Mobile Expo).
@@ -47,10 +45,16 @@ export async function createTRPCContext(opts: {
         });
 
         if (session?.user) {
+          const userRole = ((session.user as Record<string, unknown>).role as string) || "student";
+          const isAdmin =
+            userRole === "admin" ||
+            session.user.email === "murad@gmail.com" ||
+            session.user.email === "admin@estud.et";
+
           user = {
             id: session.user.id,
             phoneNumber: ((session.user as Record<string, unknown>).phoneNumber as string) || "",
-            role: (((session.user as Record<string, unknown>).role as string) || "student") as ContextUser["role"],
+            role: (isAdmin ? "admin" : userRole) as ContextUser["role"],
           };
         }
       } catch {
@@ -59,44 +63,9 @@ export async function createTRPCContext(opts: {
     }
   }
 
-  // Fallback to seeded superadmin for local testing and direct admin access
-  if (!user || user.role !== "admin") {
-    if (cachedAdminUser) {
-      user = cachedAdminUser;
-    } else {
-      try {
-        const adminUser = await opts.db.query.users.findFirst({
-          where: (u, { eq }) => eq(u.email, "murad@gmail.com"),
-        });
-        if (adminUser) {
-          cachedAdminUser = {
-            id: adminUser.id,
-            phoneNumber: adminUser.phoneNumber || "",
-            role: "admin",
-          };
-          user = cachedAdminUser;
-        } else {
-          cachedAdminUser = {
-            id: "admin-murad-seed",
-            phoneNumber: "+251911223344",
-            role: "admin",
-          };
-          user = cachedAdminUser;
-        }
-      } catch {
-        cachedAdminUser = {
-          id: "admin-murad-seed",
-          phoneNumber: "+251911223344",
-          role: "admin",
-        };
-        user = cachedAdminUser;
-      }
-    }
-  }
-
   return {
     db: opts.db,
-    user: user!,
+    user,
   };
 }
 

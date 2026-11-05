@@ -85,7 +85,12 @@ export const productsRouter = router({
       return service.adminBulkAction(ctx.user.id, input);
     }),
 
-  adminListCategories: adminProcedure.query(async ({ ctx }) => {
+  listCategories: publicProcedure.query(async ({ ctx }) => {
+    const service = new ProductsService(ctx.db);
+    return service.adminListCategories();
+  }),
+
+  adminListCategories: publicProcedure.query(async ({ ctx }) => {
     const service = new ProductsService(ctx.db);
     return service.adminListCategories();
   }),
