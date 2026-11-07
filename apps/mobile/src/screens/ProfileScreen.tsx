@@ -168,38 +168,33 @@ export function ProfileScreen() {
             </View>
           </View>
 
-          {/* Theme Dual Pill Switcher */}
-          <View style={[styles.pillSwitcher, { backgroundColor: isDark ? "#0A1628" : "#F1F5F9" }]}>
-            <TouchableOpacity
-              onPress={() => {
-                if (theme !== "light") toggleTheme();
-              }}
+          {/* Single Theme Toggle Switch */}
+          <TouchableOpacity
+            onPress={toggleTheme}
+            activeOpacity={0.8}
+            style={[
+              styles.singleToggleTrack,
+              {
+                backgroundColor: isDark ? colors.primary : "#E2E8F0",
+              },
+            ]}
+          >
+            <View
               style={[
-                styles.pillOption,
-                theme === "light" && [styles.pillOptionActive, { backgroundColor: colors.card }],
+                styles.singleToggleThumb,
+                {
+                  transform: [{ translateX: isDark ? 20 : 0 }],
+                  backgroundColor: "#FFFFFF",
+                },
               ]}
             >
-              <Sun size={13} color={theme === "light" ? colors.primary : colors.textMuted} />
-              <Text style={[styles.pillOptionText, { color: theme === "light" ? colors.primary : colors.textMuted }]}>
-                Light
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => {
-                if (theme !== "dark") toggleTheme();
-              }}
-              style={[
-                styles.pillOption,
-                theme === "dark" && [styles.pillOptionActive, { backgroundColor: colors.card }],
-              ]}
-            >
-              <Moon size={13} color={theme === "dark" ? colors.primary : colors.textMuted} />
-              <Text style={[styles.pillOptionText, { color: theme === "dark" ? colors.primary : colors.textMuted }]}>
-                Dark
-              </Text>
-            </TouchableOpacity>
-          </View>
+              {isDark ? (
+                <Moon size={13} color={colors.primary} />
+              ) : (
+                <Sun size={13} color="#F59E0B" />
+              )}
+            </View>
+          </TouchableOpacity>
         </View>
 
         {/* Language Switcher (English vs Amharic) */}
@@ -216,32 +211,37 @@ export function ProfileScreen() {
             </View>
           </View>
 
-          {/* Language Dual Pill Switcher */}
-          <View style={[styles.pillSwitcher, { backgroundColor: isDark ? "#0A1628" : "#F1F5F9" }]}>
-            <TouchableOpacity
-              onPress={() => setLanguage("en")}
+          {/* Single Language Toggle Switch */}
+          <TouchableOpacity
+            onPress={() => setLanguage(language === "en" ? "am" : "en")}
+            activeOpacity={0.8}
+            style={[
+              styles.singleLangToggle,
+              {
+                backgroundColor: isDark ? "#0A1628" : "#F1F5F9",
+                borderColor: colors.border,
+              },
+            ]}
+          >
+            <Text
               style={[
-                styles.pillOption,
-                language === "en" && [styles.pillOptionActive, { backgroundColor: colors.card }],
+                styles.singleLangText,
+                { color: language === "am" ? "#10B981" : colors.primary },
               ]}
             >
-              <Text style={[styles.pillOptionText, { color: language === "en" ? colors.primary : colors.textMuted }]}>
-                EN
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setLanguage("am")}
+              {language === "am" ? "አማርኛ" : "English"}
+            </Text>
+            <View
               style={[
-                styles.pillOption,
-                language === "am" && [styles.pillOptionActive, { backgroundColor: colors.card }],
+                styles.singleLangBadge,
+                { backgroundColor: language === "am" ? "#10B981" : colors.primary },
               ]}
             >
-              <Text style={[styles.pillOptionText, { color: language === "am" ? colors.primary : colors.textMuted }]}>
-                አማርኛ
+              <Text style={styles.singleLangBadgeText}>
+                {language === "am" ? "Switch to EN" : "ቀይር ወደ አማ"}
               </Text>
-            </TouchableOpacity>
-          </View>
+            </View>
+          </TouchableOpacity>
         </View>
       </Animatable.View>
 
@@ -764,6 +764,48 @@ const styles = StyleSheet.create({
   prefSub: {
     fontSize: 10,
     marginTop: 1,
+  },
+  singleToggleTrack: {
+    width: 48,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: "center",
+    paddingHorizontal: 2,
+  },
+  singleToggleThumb: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  singleLangToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  singleLangText: {
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  singleLangBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  singleLangBadgeText: {
+    color: "#FFFFFF",
+    fontSize: 10,
+    fontWeight: "800",
   },
   pillSwitcher: {
     flexDirection: "row",

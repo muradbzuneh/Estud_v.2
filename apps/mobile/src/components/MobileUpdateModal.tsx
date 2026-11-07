@@ -131,46 +131,87 @@ export function MobileUpdateModal() {
             {/* Direct EAS Download Link indicator */}
             <View style={[styles.statusBox, { backgroundColor: isDark ? "rgba(29, 107, 243, 0.15)" : "#EFF6FF", borderColor: colors.primary }]}>
               <Smartphone size={16} color={colors.primary} />
-              <Text style={[styles.statusBoxText, { color: colors.primary }]}>
-                Build Channel: Android Preview APK (Verified Signed)
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.statusBoxText, { color: colors.primary }]}>
+                  Build Channel: Android Preview APK (Verified Signed)
+                </Text>
+                <Text style={{ fontSize: 9, color: colors.textSecondary, marginTop: 2 }}>
+                  Release URL: https://estud.et/download/estud-v2.2.0.apk
+                </Text>
+              </View>
+            </View>
+
+            {/* Local App Reload Guide */}
+            <View style={{ padding: 10, borderRadius: 12, backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#F1F5F9", marginTop: 8 }}>
+              <Text style={{ fontSize: 10, fontWeight: "700", color: colors.textPrimary }}>
+                How local app receives updates:
+              </Text>
+              <Text style={{ fontSize: 9, color: colors.textSecondary, marginTop: 2, lineHeight: 13 }}>
+                • In Expo Go / Dev: Press 'r' in Metro terminal or shake phone to reload.
+
+                • On physical phone: Tap 'Download Direct APK' below or 'Refresh v2.2.0'.
               </Text>
             </View>
           </ScrollView>
 
           {/* Action Buttons */}
-          {updateFinished ? (
+          <View style={{ gap: 8 }}>
             <TouchableOpacity
-              onPress={handleClose}
-              style={[styles.actionBtn, { backgroundColor: "#10B981" }]}
+              onPress={() => Linking.openURL("https://estud.et/download/estud-v2.2.0-preview.apk").catch(() => {
+                showSuccessToast("CDN Link Copied", "https://estud.et/download/estud-v2.2.0.apk");
+              })}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+                paddingVertical: 10,
+                borderRadius: 14,
+                borderWidth: 1,
+                borderColor: colors.border,
+                backgroundColor: isDark ? "#0A1628" : "#F8FAFC",
+              }}
             >
-              <CheckCircle2 size={16} color="#FFFFFF" />
-              <Text style={styles.actionBtnText}>
-                {language === "am" ? "ዝመናው ተጠናቋል • ዝጋ" : "Up to Date • Done"}
+              <Download size={14} color={colors.primary} />
+              <Text style={{ fontSize: 11, fontWeight: "700", color: colors.primary }}>
+                Download Signed APK Link (Direct CDN)
               </Text>
             </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              onPress={handleDownloadUpdate}
-              disabled={isUpdating}
-              style={[styles.actionBtn, { backgroundColor: colors.primary }]}
-            >
-              {isUpdating ? (
-                <>
-                  <ActivityIndicator size="small" color="#FFFFFF" />
-                  <Text style={styles.actionBtnText}>
-                    {language === "am" ? "ዝመናው እየተጫነ ነው..." : "Verifying & Applying..."}
-                  </Text>
-                </>
-              ) : (
-                <>
-                  <Download size={16} color="#FFFFFF" />
-                  <Text style={styles.actionBtnText}>
-                    {language === "am" ? "የቅርብ ጊዜውን ስሪት ጫን (v2.2.0)" : "Download & Refresh v2.2.0"}
-                  </Text>
-                </>
-              )}
-            </TouchableOpacity>
-          )}
+
+            {updateFinished ? (
+              <TouchableOpacity
+                onPress={handleClose}
+                style={[styles.actionBtn, { backgroundColor: "#10B981" }]}
+              >
+                <CheckCircle2 size={16} color="#FFFFFF" />
+                <Text style={styles.actionBtnText}>
+                  {language === "am" ? "ዝመናው ተጠናቋል • ዝጋ" : "Up to Date • Done"}
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={handleDownloadUpdate}
+                disabled={isUpdating}
+                style={[styles.actionBtn, { backgroundColor: colors.primary }]}
+              >
+                {isUpdating ? (
+                  <>
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                    <Text style={styles.actionBtnText}>
+                      {language === "am" ? "ዝመናው እየተጫነ ነው..." : "Applying Update v2.2.0..."}
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw size={15} color="#FFFFFF" />
+                    <Text style={styles.actionBtnText}>
+                      {language === "am" ? "የቅርብ ጊዜውን ስሪት ጫን (v2.2.0)" : "Apply & Refresh v2.2.0"}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            )}
+          </View>
         </Animatable.View>
       </View>
     </Modal>

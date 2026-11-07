@@ -40,9 +40,17 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
         ]}
         resizeMode="cover"
       >
-        {/* Layered Estud Vignette Overlays */}
-        <View style={[styles.overlayNavy, { backgroundColor: isDark ? "rgba(5, 22, 46, 0.85)" : "rgba(7, 36, 72, 0.72)" }]} />
-        <View style={[styles.overlayGradient, { backgroundColor: isDark ? "rgba(7, 13, 30, 0.92)" : "rgba(7, 13, 30, 0.82)" }]} />
+        {/* Cinematic Translucent Vignette - ensures hero.jpg is vividly visible while text is crisp */}
+        <View
+          style={[
+            styles.overlayNavy,
+            {
+              backgroundColor: isDark
+                ? "rgba(6, 16, 34, 0.48)"
+                : "rgba(8, 24, 52, 0.40)",
+            },
+          ]}
+        />
 
         <View style={styles.contentContainer}>
           {/* Top Row: Student Marketplace Badge */}
