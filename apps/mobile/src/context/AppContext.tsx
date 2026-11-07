@@ -212,6 +212,7 @@ interface AppContextType {
   isUpdateModalVisible: boolean;
   setUpdateModalVisible: (visible: boolean) => void;
   checkForUpdates: () => void;
+  upgradeAppVersion: (newVer?: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -235,7 +236,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const colors = getThemeColors(theme);
   const t = translations[language];
-  const appVersion = "v2.1.0";
+  const [appVersion, setAppVersion] = useState<string>("v2.2.0");
+
+  const upgradeAppVersion = (newVer?: string) => {
+    const updated = newVer || "v2.2.0";
+    setAppVersion(updated);
+    showSuccessToast(
+      language === "am" ? "ዝመናው ተጠናቋል!" : "App Upgraded Successfully!",
+      `Running Estud ${updated} SafeTrade Release`
+    );
+  };
 
   const toggleTheme = () => {
     const nextTheme: ThemeMode = theme === "light" ? "dark" : "light";
@@ -416,6 +426,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         isLostFoundModalVisible,
         setLostFoundModalVisible,
         checkForUpdates,
+        upgradeAppVersion,
       }}
     >
       {children}

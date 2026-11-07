@@ -23,7 +23,7 @@ import { useApp } from "../context/AppContext";
 import { showSuccessToast } from "../utils/toast";
 
 export function MobileUpdateModal() {
-  const { isUpdateModalVisible, setUpdateModalVisible, appVersion, colors, language } = useApp();
+  const { isUpdateModalVisible, setUpdateModalVisible, appVersion, upgradeAppVersion, colors, language } = useApp();
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateFinished, setUpdateFinished] = useState(false);
 
@@ -40,9 +40,10 @@ export function MobileUpdateModal() {
     setTimeout(() => {
       setIsUpdating(false);
       setUpdateFinished(true);
+      upgradeAppVersion("v2.2.0");
       showSuccessToast(
         language === "am" ? "ዝመናው ተጠናቋል!" : "Update Verified!",
-        "Estud v2.1.0 is installed and ready"
+        "Estud v2.2.0 is installed and ready"
       );
     }, 1500);
   };
@@ -164,7 +165,7 @@ export function MobileUpdateModal() {
                 <>
                   <Download size={16} color="#FFFFFF" />
                   <Text style={styles.actionBtnText}>
-                    {language === "am" ? "የቅርብ ጊዜውን ስሪት ጫን (v2.1.0)" : "Download & Refresh v2.1.0"}
+                    {language === "am" ? "የቅርብ ጊዜውን ስሪት ጫን (v2.2.0)" : "Download & Refresh v2.2.0"}
                   </Text>
                 </>
               )}

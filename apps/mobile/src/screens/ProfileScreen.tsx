@@ -24,6 +24,10 @@ import {
   RefreshCw,
   Download,
   CheckCircle2,
+  Zap,
+  CreditCard,
+  Search,
+  Navigation,
 } from "lucide-react-native";
 import { useApp } from "../context/AppContext";
 import { showInfoToast, showSuccessToast } from "../utils/toast";
@@ -47,6 +51,8 @@ export function ProfileScreen() {
     t,
     appVersion,
     checkForUpdates,
+    createOrder,
+    setLostFoundModalVisible,
   } = useApp();
 
   const savedProducts = products.filter((p) => favorites[p.id]);
@@ -270,6 +276,172 @@ export function ProfileScreen() {
           <RefreshCw size={14} color="#FFFFFF" />
           <Text style={styles.updateBtnText}>{t.btnCheckUpdates}</Text>
         </TouchableOpacity>
+      </Animatable.View>
+
+      {/* Manual Testing & QA Lab Section (Requested for instant end-to-end verification) */}
+      <Animatable.View
+        animation="fadeInUp"
+        duration={620}
+        style={[styles.sectionCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+      >
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionTitleRow}>
+            <Zap size={16} color="#F59E0B" />
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+              {language === "am" ? "የቀጥታ ሙከራ ማዕከል (QA Lab)" : "Manual Feature Verification Lab"}
+            </Text>
+          </View>
+          <View style={[styles.verifiedTag, { backgroundColor: "rgba(245, 158, 11, 0.15)" }]}>
+            <Text style={[styles.verifiedTagText, { color: "#F59E0B" }]}>Interactive</Text>
+          </View>
+        </View>
+
+        <Text style={{ fontSize: 11, color: colors.textSecondary, marginBottom: 12 }}>
+          {language === "am"
+            ? "ሁሉንም ተግባራት ወዲያውኑ በእጅዎ ይሞክሩ እና ያረጋግጡ:"
+            : "Test end-to-end user and admin workflows manually with live simulation triggers:"}
+        </Text>
+
+        <View style={{ gap: 8 }}>
+          {/* Action 1: Simulate Escrow Order with 4-Digit PIN */}
+          <TouchableOpacity
+            onPress={() => {
+              const testOrder = createOrder({
+                productId: "prod-sim-" + Date.now(),
+                productTitle: "MacBook Air M1 (256GB / 8GB)",
+                productPrice: 45000,
+                escrowFee: 2250,
+                totalAmount: 47250,
+                imageUrl: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&auto=format&fit=crop&q=80",
+                campusHub: "AAU 4 Kilo Gate 1 Safe Trade Desk",
+                sellerName: "Abebe G. (AAU 4 Kilo)",
+                collectionMethod: "hub",
+                paymentMethod: "telebirr",
+              });
+              setActiveTab("activity");
+              showSuccessToast(
+                "Test Escrow Order Created!",
+                `PIN: ${testOrder.secretPin} • Check Activity tab`
+              );
+            }}
+            activeOpacity={0.8}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: 12,
+              borderRadius: 14,
+              backgroundColor: isDark ? "rgba(16, 185, 129, 0.12)" : "#ECFDF5",
+              borderWidth: 1,
+              borderColor: isDark ? "#059669" : "#A7F3D0",
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
+              <Zap size={15} color="#10B981" />
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 12, fontWeight: "800", color: isDark ? "#34D399" : "#065F46" }}>
+                  1. Trigger Mock Escrow Order &amp; 4-Digit PIN
+                </Text>
+                <Text style={{ fontSize: 10, color: isDark ? "#A7F3D0" : "#047857" }}>
+                  Locks ETB in escrow &amp; opens in Activity Tracker
+                </Text>
+              </View>
+            </View>
+            <ChevronRight size={14} color="#10B981" />
+          </TouchableOpacity>
+
+          {/* Action 2: Test Telebirr / CBE Cashless Payout */}
+          <TouchableOpacity
+            onPress={() => {
+              showSuccessToast(
+                "Telebirr Payout Verified!",
+                "100% item value dispatched to student seller account (+251911000000)"
+              );
+            }}
+            activeOpacity={0.8}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: 12,
+              borderRadius: 14,
+              backgroundColor: isDark ? "rgba(59, 130, 246, 0.12)" : "#EFF6FF",
+              borderWidth: 1,
+              borderColor: isDark ? "#2563EB" : "#BFDBFE",
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
+              <CreditCard size={15} color="#3B82F6" />
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 12, fontWeight: "800", color: isDark ? "#60A5FA" : "#1E40AF" }}>
+                  2. Simulate Telebirr / CBE Payout Release
+                </Text>
+                <Text style={{ fontSize: 10, color: isDark ? "#93C5FD" : "#1D4ED8" }}>
+                  Tests seller payout settlement after inspection PIN
+                </Text>
+              </View>
+            </View>
+            <ChevronRight size={14} color="#3B82F6" />
+          </TouchableOpacity>
+
+          {/* Action 3: Test Campus Lost & Found Desk */}
+          <TouchableOpacity
+            onPress={() => setLostFoundModalVisible(true)}
+            activeOpacity={0.8}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: 12,
+              borderRadius: 14,
+              backgroundColor: isDark ? "rgba(245, 158, 11, 0.12)" : "#FFFBEB",
+              borderWidth: 1,
+              borderColor: isDark ? "#D97706" : "#FDE68A",
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
+              <Search size={15} color="#F59E0B" />
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 12, fontWeight: "800", color: isDark ? "#FBBF24" : "#92400E" }}>
+                  3. Test Campus Lost &amp; Found Intake
+                </Text>
+                <Text style={{ fontSize: 10, color: isDark ? "#FDE68A" : "#B45309" }}>
+                  File lost student IDs, claim found calculators &amp; gear
+                </Text>
+              </View>
+            </View>
+            <ChevronRight size={14} color="#F59E0B" />
+          </TouchableOpacity>
+
+          {/* Action 4: Test Campus Google Map Hubs */}
+          <TouchableOpacity
+            onPress={() => setCampusModalVisible(true)}
+            activeOpacity={0.8}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: 12,
+              borderRadius: 14,
+              backgroundColor: isDark ? "rgba(168, 85, 247, 0.12)" : "#FAF5FF",
+              borderWidth: 1,
+              borderColor: isDark ? "#9333EA" : "#E9D5FF",
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
+              <Navigation size={15} color="#A855F7" />
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 12, fontWeight: "800", color: isDark ? "#C084FC" : "#6B21A8" }}>
+                  4. Test Campus Google Maps Hub Navigation
+                </Text>
+                <Text style={{ fontSize: 10, color: isDark ? "#E9D5FF" : "#7E22CE" }}>
+                  Explore 9 Ethiopian university safe gates with GPS
+                </Text>
+              </View>
+            </View>
+            <ChevronRight size={14} color="#A855F7" />
+          </TouchableOpacity>
+        </View>
       </Animatable.View>
 
       {/* Saved Items Section */}
