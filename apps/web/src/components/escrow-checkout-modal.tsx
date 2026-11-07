@@ -62,25 +62,49 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
 
   const cleanErrorMessage = (err: unknown): string => {
     if (!err) return "Failed to submit payment. Please verify your connection.";
-    const rawMsg = (err as any)?.message || String(err);
+    let rawMsg = (err as any)?.message || String(err);
+
+    // Strip TRPCClientError prefix
+    if (typeof rawMsg === "string" && rawMsg.startsWith("TRPCClientError:")) {
+      rawMsg = rawMsg.replace(/^TRPCClientError:\s*/, "");
+    }
+
     try {
       const parsed = JSON.parse(rawMsg);
       if (Array.isArray(parsed) && parsed.length > 0) {
         return parsed
-          .map((item: any) => item.message || "Invalid input")
+          .map((item: any) => item?.message || (typeof item === "string" ? item : null))
           .filter(Boolean)
           .join(". ");
       }
+      if (parsed && typeof parsed === "object") {
+        if (parsed.message) return String(parsed.message);
+        if (parsed.error) return String(parsed.error);
+      }
     } catch {
-      // not JSON
+      // not direct JSON
     }
+
+    // Regex extraction fallback for Zod JSON formatted errors
+    if (typeof rawMsg === "string") {
+      const match = rawMsg.match(/["']message["']\s*:\s*["']([^"']+)["']/);
+      if (match && match[1]) {
+        return match[1];
+      }
+      // If raw JSON array/object leaked, provide a clean friendly fallback
+      if (rawMsg.trim().startsWith("[") || rawMsg.trim().startsWith("{")) {
+        return "Invalid reference code provided. Please check your SMS and re-enter.";
+      }
+    }
+
     return rawMsg;
   };
 
   const handleSubmitPayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!transactionRef.trim()) {
-      setErrorMsg("Please enter your transaction reference code from your SMS receipt.");
+    const cleanRef = transactionRef.trim();
+    if (!cleanRef || cleanRef.length < 2) {
+      setErrorMsg("Please enter a valid SMS transaction reference code (e.g. 7GA829104 or FT260948).");
       return;
     }
 
@@ -98,7 +122,7 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
         deliveryMethod: "hub",
         deliveryFee: 0,
         channel: channelMap[paymentProvider] || "TELEBIRR",
-        bankTransactionReference: transactionRef.trim(),
+        bankTransactionReference: cleanRef,
         screenshotUrl: evidenceUrls[0] || "",
         senderAccountOrPhone: session?.user?.name || "Student Buyer",
         notes: `SafeTrade Escrow for ${product.title}`,
@@ -394,6 +418,19 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
                     maxImages={1}
                   />
                 </div>
+
+                {/* Step 2 Inline Notice / Error Banner */}
+                {errorMsg && (
+                  <div className="rounded-2xl bg-rose-500/10 border border-rose-500/30 p-3.5 flex items-start gap-3 text-xs text-rose-600 dark:text-rose-300 animate-in fade-in">
+                    <AlertCircle className="h-4 w-4 shrink-0 text-rose-500 mt-0.5" />
+                    <div className="flex-1 leading-relaxed">
+                      <span className="font-bold block text-rose-700 dark:text-rose-200 mb-0.5">
+                        Reference Verification Required
+                      </span>
+                      <span>{errorMsg}</span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Action Buttons */}
                 <div className="flex gap-2.5 pt-1">

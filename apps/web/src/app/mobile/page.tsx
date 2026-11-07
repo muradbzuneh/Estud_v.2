@@ -158,12 +158,20 @@ export default function MobileAppSimulatorPage() {
     <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4 sm:p-8">
       {/* Top Banner Navigation back to Web */}
       <div className="w-full max-w-4xl flex items-center justify-between text-white mb-6">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 rounded-full bg-slate-800 px-4 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 transition"
-        >
-          &larr; Return to Web Marketplace
-        </Link>
+        <div className="flex items-center gap-2.5">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 rounded-full bg-slate-800 px-4 py-2 text-xs font-bold text-slate-200 hover:bg-slate-700 transition"
+          >
+            &larr; Return to Marketplace
+          </Link>
+          <Link
+            href={"/download" as any}
+            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FF8738] via-[#FE9901] to-[#FFA05F] px-4 py-2 text-xs font-black text-[#07152B] shadow-md hover:brightness-110 transition"
+          >
+            <span>Download APK v2.2.0</span>
+          </Link>
+        </div>
         <div className="flex items-center gap-2 text-xs text-slate-400">
           <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
           <span>Interactive Estud Mobile Simulator (iOS / Android)</span>

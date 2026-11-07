@@ -157,9 +157,13 @@ export function MobileUpdateModal() {
           {/* Action Buttons */}
           <View style={{ gap: 8 }}>
             <TouchableOpacity
-              onPress={() => Linking.openURL("https://estud.et/download/estud-v2.2.0-preview.apk").catch(() => {
-                showSuccessToast("CDN Link Copied", "https://estud.et/download/estud-v2.2.0.apk");
-              })}
+              onPress={() => {
+                Linking.openURL("https://estud.et/download/estud-v2.2.0.apk").catch(() => {
+                  Linking.openURL("https://expo.dev/accounts/muradbzuneh/projects/estud-monorepo/builds").catch(() => {
+                    showSuccessToast("Download Link", "https://estud.et/download");
+                  });
+                });
+              }}
               style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -174,7 +178,7 @@ export function MobileUpdateModal() {
             >
               <Download size={14} color={colors.primary} />
               <Text style={{ fontSize: 11, fontWeight: "700", color: colors.primary }}>
-                Download Signed APK Link (Direct CDN)
+                Download Signed APK (Direct v2.2.0)
               </Text>
             </TouchableOpacity>
 
