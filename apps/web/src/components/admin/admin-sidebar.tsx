@@ -50,11 +50,10 @@ const navSections: NavSection[] = [
     title: "Marketplace Moderation",
     items: [
       { title: "Listings & Valuation", href: "/admin/marketplace/listings", icon: Package },
-      { title: "Categories Taxonomy", href: "/admin/marketplace/categories", icon: Layers },
+      { title: "Categories & Education", href: "/admin/marketplace/categories", icon: Layers },
       { title: "Orders & Escrow", href: "/admin/marketplace/orders", icon: ShoppingBag },
       { title: "Barter Exchanges", href: "/admin/marketplace/exchanges", icon: ArrowLeftRight },
       { title: "Lost & Found Desk", href: "/admin/marketplace/lost-found", icon: Search },
-      { title: "Educational Materials", href: "/admin/marketplace/educational", icon: BookOpen },
     ],
   },
   {

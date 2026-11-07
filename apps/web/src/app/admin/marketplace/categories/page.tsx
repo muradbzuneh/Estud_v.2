@@ -68,6 +68,17 @@ export default function AdminCategoriesPage() {
       subcategories: ["Engineering", "Medicine", "Freshman Course", "Social Science"],
     },
     {
+      id: "cat-edu",
+      name: "Educational Materials & Course Notes",
+      slug: "educational",
+      description: "Departmental lecture summaries, past exam solutions, lab manuals, and study guides",
+      iconName: "GraduationCap",
+      isActive: true,
+      displayOrder: 3,
+      productsCount: 248,
+      subcategories: ["Past Exam Packs", "Lecture Notes", "Lab Manuals", "Course Summaries"],
+    },
+    {
       id: "cat-03",
       name: "Dorm & Campus Living",
       slug: "dorm-living",
