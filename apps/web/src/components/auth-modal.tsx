@@ -290,7 +290,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/65 dark:bg-black/75 p-4 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative w-full max-w-md rounded-3xl bg-white dark:bg-twilight-900 p-6 sm:p-8 shadow-2xl border border-slate-100 dark:border-twilight-700 text-slate-900 dark:text-twilight-100">
-        
+
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -335,17 +335,12 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
 
             {/* Official Estud Brand Header */}
             <div className="text-center mb-5">
-              <div className="flex justify-center mb-3">
+              <div className="flex justify-start mb-3">
                 <EstudLogo size={40} showText={true} />
               </div>
               <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                {mode === "signin" ? "Sign in to your account" : "Create your student account"}
+                {mode === "signin" ? "Sign in" : "Create account"}
               </h2>
-              <p className="text-xs text-slate-500 dark:text-twilight-400 mt-1">
-                {mode === "signin"
-                  ? "Enter your credentials to access your listings and orders."
-                  : "Join verified students trading safely across Ethiopian campuses."}
-              </p>
             </div>
 
             {/* Google OAuth Button */}
@@ -434,7 +429,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
               {/* Mode switch: Email vs Phone */}
               <div className="flex justify-between items-center text-[11px]">
                 <span className="font-semibold text-slate-700 dark:text-twilight-200">
-                  {authMethod === "email" ? "Student or Admin Email *" : "Ethiopian Mobile Phone *"}
+                  {authMethod === "email" ? "Email *" : "Mobile Phone *"}
                 </span>
                 <button
                   type="button"
@@ -445,7 +440,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                   }}
                   className="text-[#FF8738] dark:text-[#FFA05F] font-semibold hover:underline cursor-pointer"
                 >
-                  Use {authMethod === "email" ? "Phone (+251)" : "Email"} instead
+                  Use {authMethod === "email" ? "Phone (+251)" : "Email"}
                 </button>
               </div>
 
@@ -499,7 +494,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
               {mode === "signup" && (
                 <div>
                   <label className="block text-[11px] font-semibold text-slate-700 dark:text-twilight-200 mb-1">
-                    Your University *
+                  University *
                   </label>
                   <select
                     value={university}
@@ -521,7 +516,6 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                   <label className="block text-[11px] font-semibold text-slate-700 dark:text-twilight-200">
                     Password *
                   </label>
-                  <span className="text-[10px] text-slate-400">Min. 8 characters</span>
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -560,7 +554,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
                     <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#07152B] border-t-transparent" />
-                    Validating & Signing In...
+                    Signing In...
                   </span>
                 ) : mode === "signin" ? (
                   adminRequired ? "Sign In to Admin Portal" : "Sign In"
@@ -585,7 +579,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                 </span>
               ) : (
                 <span>
-                  Already have an account?{" "}
+                  Already have an account?{"  "}
                   <button
                     type="button"
                     onClick={() => {
@@ -600,12 +594,6 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
                   </button>
                 </span>
               )}
-            </div>
-
-            {/* Security Trust Badge */}
-            <div className="mt-5 flex items-center justify-center gap-1.5 text-[11px] text-slate-400 dark:text-twilight-400 border-t border-slate-100 dark:border-twilight-800 pt-3">
-              <ShieldCheck className="h-3.5 w-3.5 text-[#FF8738] dark:text-[#FFA05F]" />
-              <span>Protected by Estud Campus SafeTrade & Better Auth</span>
             </div>
           </div>
         )}
