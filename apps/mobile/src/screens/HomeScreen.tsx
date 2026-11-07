@@ -24,6 +24,7 @@ import { MobileProductDetailModal } from "../components/MobileProductDetailModal
 import { MobileAuthModal } from "../components/MobileAuthModal";
 import { MobileCampusModal } from "../components/MobileCampusModal";
 import { MobileUpdateModal } from "../components/MobileUpdateModal";
+import { MobileLostFoundModal } from "../components/MobileLostFoundModal";
 
 import { ExploreScreen } from "./ExploreScreen";
 import { SellScreen } from "./SellScreen";
@@ -41,6 +42,8 @@ export function HomeScreen() {
     isCampusModalVisible,
     setCampusModalVisible,
     setAuthModalVisible,
+    isLostFoundModalVisible,
+    setLostFoundModalVisible,
     products,
     favorites,
     toggleFavorite,
@@ -178,6 +181,10 @@ export function HomeScreen() {
       <MobileProductDetailModal />
       <MobileAuthModal />
       <MobileUpdateModal />
+      <MobileLostFoundModal
+        visible={isLostFoundModalVisible}
+        onClose={() => setLostFoundModalVisible(false)}
+      />
       <MobileCampusModal
         visible={isCampusModalVisible}
         selectedCampus={currentCampus}

@@ -107,6 +107,7 @@ export function Footer() {
               Trust & SafeTrade
             </h4>
             <ul className="mt-3 space-y-2 text-xs text-slate-600 dark:text-slate-400">
+              <li><Link href={"/lost-found" as any} className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline flex items-center gap-1"><span>Lost &amp; Found Desk</span><span className="text-[10px] bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">Active</span></Link></li>
               <li><Link href="#how-it-works" className="hover:text-indigo-600 dark:hover:text-indigo-400">48h Escrow Guarantee</Link></li>
               <li><Link href="#how-it-works" className="hover:text-indigo-600 dark:hover:text-indigo-400">Student ID Verification</Link></li>
               <li><Link href="#how-it-works" className="hover:text-indigo-600 dark:hover:text-indigo-400">Hub Handover Security</Link></li>

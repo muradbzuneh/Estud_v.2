@@ -222,6 +222,21 @@ export function Navbar({
               )}
             </button>
 
+            {/* Campus Lost & Found */}
+            <Link
+              href={"/lost-found" as any}
+              className={`flex items-center gap-1 transition cursor-pointer py-1 ${
+                pathname === "/lost-found"
+                  ? "text-emerald-600 dark:text-emerald-400 font-bold"
+                  : "hover:text-emerald-600 dark:hover:text-emerald-400"
+              }`}
+            >
+              <span>Lost &amp; Found</span>
+              <span className="rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-1.5 py-0.2 border border-emerald-500/20">
+                Desk
+              </span>
+            </Link>
+
             {/* Campus Hubs & Live Google Map */}
             <button
               type="button"
@@ -429,7 +444,22 @@ export function Navbar({
                 ) : null}
               </button>
 
-              {/* Campus Hubs & Live Google Map */}
+              {/* Campus Lost & Found */}
+            <Link
+              href={"/lost-found" as any}
+              className={`flex items-center gap-1 transition cursor-pointer py-1 ${
+                pathname === "/lost-found"
+                  ? "text-emerald-600 dark:text-emerald-400 font-bold"
+                  : "hover:text-emerald-600 dark:hover:text-emerald-400"
+              }`}
+            >
+              <span>Lost &amp; Found</span>
+              <span className="rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-1.5 py-0.2 border border-emerald-500/20">
+                Desk
+              </span>
+            </Link>
+
+            {/* Campus Hubs & Live Google Map */}
               <button
                 type="button"
                 onClick={() => {

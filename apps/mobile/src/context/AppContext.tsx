@@ -203,6 +203,10 @@ interface AppContextType {
   createOrder: (order: Omit<EscrowOrder, "id" | "orderNumber" | "secretPin" | "status" | "createdAt">) => EscrowOrder;
   completeOrder: (orderId: string) => void;
 
+  // Lost & Found Desk Modal
+  isLostFoundModalVisible: boolean;
+  setLostFoundModalVisible: (visible: boolean) => void;
+
   // Version & Updates
   appVersion: string;
   isUpdateModalVisible: boolean;
@@ -223,6 +227,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isCampusModalVisible, setCampusModalVisible] = useState(false);
   const [isAuthModalVisible, setAuthModalVisible] = useState(false);
   const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
+  const [isLostFoundModalVisible, setLostFoundModalVisible] = useState(false);
   const [products, setProducts] = useState<MobileProductItem[]>(INITIAL_PRODUCTS);
   const [favorites, setFavorites] = useState<Record<string, boolean>>({ "prod-1": true, "prod-2": true });
   const [selectedProduct, setSelectedProduct] = useState<MobileProductItem | null>(null);
@@ -408,6 +413,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         appVersion,
         isUpdateModalVisible,
         setUpdateModalVisible,
+        isLostFoundModalVisible,
+        setLostFoundModalVisible,
         checkForUpdates,
       }}
     >

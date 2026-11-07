@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
-import { SlidersHorizontal, ArrowUpDown, MapPin } from "lucide-react-native";
+import { SlidersHorizontal, ArrowUpDown, MapPin, ShieldCheck } from "lucide-react-native";
 import { useApp } from "../context/AppContext";
 import { MobileSearchBar } from "../components/MobileSearchBar";
 import { MobileCategoryList } from "../components/MobileCategoryList";
@@ -21,6 +21,7 @@ export function ExploreScreen() {
     setSelectedProduct,
     currentCampus,
     setCampusModalVisible,
+    setLostFoundModalVisible,
     colors,
     t,
   } = useApp();
@@ -83,6 +84,40 @@ export function ExploreScreen() {
             </Text>
           </View>
           <Text style={[styles.changeText, { color: colors.primary }]}>{t.change}</Text>
+        </TouchableOpacity>
+
+        {/* Campus Lost & Found Desk Banner */}
+        <TouchableOpacity
+          onPress={() => setLostFoundModalVisible(true)}
+          activeOpacity={0.88}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: 10,
+            padding: 12,
+            borderRadius: 18,
+            backgroundColor: isDark ? "rgba(16, 185, 129, 0.12)" : "#ECFDF5",
+            borderWidth: 1,
+            borderColor: isDark ? "rgba(16, 185, 129, 0.3)" : "#A7F3D0",
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
+            <View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: "#10B981", alignItems: "center", justifyContent: "center" }}>
+              <ShieldCheck size={18} color="#FFFFFF" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 12, fontWeight: "900", color: isDark ? "#34D399" : "#065F46" }}>
+                Campus Lost &amp; Found Desk
+              </Text>
+              <Text style={{ fontSize: 10, color: isDark ? "#A7F3D0" : "#047857" }}>
+                Report lost items or claim found gear at campus hubs
+              </Text>
+            </View>
+          </View>
+          <View style={{ backgroundColor: "#10B981", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 }}>
+            <Text style={{ color: "#FFFFFF", fontSize: 10, fontWeight: "800" }}>Open Desk</Text>
+          </View>
         </TouchableOpacity>
       </Animatable.View>
 

@@ -6,6 +6,8 @@ import {
   submitRecoveryClaimSchema,
   adminReviewClaimSchema,
   adminListLostFoundFilterSchema,
+  adminAnnounceFoundSchema,
+  adminUpdateLostFoundStatusSchema,
 } from "./lost-found.schema";
 
 export const lostFoundRouter = router({
@@ -35,6 +37,20 @@ export const lostFoundRouter = router({
     .mutation(async ({ ctx, input }) => {
       const service = new LostFoundService(ctx.db);
       return service.adminReviewClaim(ctx.user.id, input);
+    }),
+
+  adminAnnounceFound: adminProcedure
+    .input(adminAnnounceFoundSchema)
+    .mutation(async ({ ctx, input }) => {
+      const service = new LostFoundService(ctx.db);
+      return service.adminAnnounceFound(ctx.user.id, input);
+    }),
+
+  adminUpdateStatus: adminProcedure
+    .input(adminUpdateLostFoundStatusSchema)
+    .mutation(async ({ ctx, input }) => {
+      const service = new LostFoundService(ctx.db);
+      return service.adminUpdateStatus(ctx.user.id, input);
     }),
 
   adminList: adminProcedure
