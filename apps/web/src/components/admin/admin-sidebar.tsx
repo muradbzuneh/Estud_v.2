@@ -31,7 +31,6 @@ interface NavItem {
   href: string;
   icon: React.ElementType;
   badge?: string;
-  children?: { title: string; href: string }[];
 }
 
 interface NavSection {
@@ -44,45 +43,36 @@ const navSections: NavSection[] = [
     title: "Overview",
     items: [
       { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
-      { title: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+      { title: "Analytics & Reports", href: "/admin/analytics", icon: BarChart3 },
     ],
   },
   {
-    title: "Marketplace",
+    title: "Marketplace Moderation",
     items: [
-      {
-        title: "Listings & Products",
-        href: "/admin/marketplace/listings",
-        icon: Package,
-        children: [
-          { title: "All Items", href: "/admin/marketplace/listings" },
-          { title: "Pending Review", href: "/admin/marketplace/listings?tab=PENDING_REVIEW" },
-          { title: "Categories", href: "/admin/marketplace/categories" },
-          { title: "Manage Listings", href: "/admin/marketplace/listings?tab=PUBLISHED" },
-        ],
-      },
-      { title: "Orders & Transactions", href: "/admin/marketplace/orders", icon: ShoppingBag },
-      { title: "Exchanges", href: "/admin/marketplace/exchanges", icon: ArrowLeftRight },
-      { title: "Lost & Found", href: "/admin/marketplace/lost-found", icon: Search },
+      { title: "Listings & Valuation", href: "/admin/marketplace/listings", icon: Package },
+      { title: "Categories Taxonomy", href: "/admin/marketplace/categories", icon: Layers },
+      { title: "Orders & Escrow", href: "/admin/marketplace/orders", icon: ShoppingBag },
+      { title: "Barter Exchanges", href: "/admin/marketplace/exchanges", icon: ArrowLeftRight },
+      { title: "Lost & Found Desk", href: "/admin/marketplace/lost-found", icon: Search },
       { title: "Educational Materials", href: "/admin/marketplace/educational", icon: BookOpen },
     ],
   },
   {
-    title: "Operations",
+    title: "Escrow & Logistics",
     items: [
-      { title: "Payments", href: "/admin/operations/payments", icon: CreditCard },
-      { title: "Financial Management", href: "/admin/operations/finance", icon: Wallet },
+      { title: "Payment Verification", href: "/admin/operations/payments", icon: CreditCard },
+      { title: "Financial Payouts", href: "/admin/operations/finance", icon: Wallet },
       { title: "Delivery & Handover", href: "/admin/operations/delivery", icon: Truck },
       { title: "Disputes & Refunds", href: "/admin/operations/disputes", icon: ShieldAlert },
-      { title: "Campus Agencies", href: "/admin/operations/campuses", icon: Building2 },
+      { title: "Campus Hubs & Map", href: "/admin/operations/campuses", icon: Building2 },
     ],
   },
   {
-    title: "Communication & System",
+    title: "System & Governance",
     items: [
-      { title: "Notifications", href: "/admin/system/notifications", icon: Bell },
-      { title: "Roles & Permissions", href: "/admin/system/roles", icon: Lock },
-      { title: "Settings", href: "/admin/system/settings", icon: Settings },
+      { title: "Broadcast Alerts", href: "/admin/system/notifications", icon: Bell },
+      { title: "Roles & Users", href: "/admin/system/roles", icon: Lock },
+      { title: "Platform Settings", href: "/admin/system/settings", icon: Settings },
     ],
   },
 ];
@@ -145,50 +135,29 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
                 {section.items.map((item) => {
                   const isActive =
                     pathname === item.href ||
-                    (item.children && pathname.startsWith(item.href));
+                    (item.href !== "/admin" && pathname.startsWith(item.href));
                   const Icon = item.icon;
 
                   return (
-                    <div key={item.title} className="space-y-1">
-                      <Link
-                        href={item.href as any}
-                        className={cn(
-                          "flex items-center justify-between px-2.5 py-1.5 rounded-lg font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/60",
-                          isActive &&
-                            "bg-primary/10 text-primary font-semibold hover:bg-primary/15 hover:text-primary"
-                        )}
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <Icon className="h-4 w-4 shrink-0" />
-                          <span>{item.title}</span>
-                        </div>
-                        {item.children && (
-                          <ChevronDown className="h-3 w-3 opacity-60" />
-                        )}
-                      </Link>
-
-                      {/* Sub-items */}
-                      {item.children && isActive && (
-                        <div className="pl-6 space-y-0.5 border-l border-border/60 ml-4 py-0.5">
-                          {item.children.map((sub) => {
-                            const isSubActive = pathname === sub.href;
-                            return (
-                              <Link
-                                key={sub.title}
-                                href={sub.href as any}
-                                className={cn(
-                                  "block px-2.5 py-1 rounded-md text-[11px] text-muted-foreground hover:text-foreground transition-colors",
-                                  isSubActive &&
-                                    "text-primary font-semibold bg-primary/10"
-                                )}
-                              >
-                                {sub.title}
-                              </Link>
-                            );
-                          })}
-                        </div>
+                    <Link
+                      key={item.title}
+                      href={item.href as any}
+                      className={cn(
+                        "flex items-center justify-between px-2.5 py-2 rounded-lg font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/60",
+                        isActive &&
+                          "bg-primary/10 text-primary font-semibold hover:bg-primary/15 hover:text-primary shadow-2xs"
                       )}
-                    </div>
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Icon className="h-4 w-4 shrink-0" />
+                        <span className="text-xs">{item.title}</span>
+                      </div>
+                      {item.badge && (
+                        <span className="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-bold">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
                   );
                 })}
               </div>

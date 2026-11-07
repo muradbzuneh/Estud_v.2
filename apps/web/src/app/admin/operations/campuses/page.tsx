@@ -23,10 +23,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/trpc/client";
+import { CampusMapModal } from "@/components/campus-map-modal";
 
 export default function AdminCampusesPage() {
   const [isAddInstOpen, setIsAddInstOpen] = React.useState(false);
   const [isAddCampusOpen, setIsAddCampusOpen] = React.useState(false);
+  const [mapModalHub, setMapModalHub] = React.useState<string | null>(null);
 
   // Institution form
   const [instName, setInstName] = React.useState("");
@@ -122,6 +124,16 @@ export default function AdminCampusesPage() {
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
+            onClick={() => setMapModalHub("aau-4kilo")}
+            className="h-9 gap-1.5 text-xs font-semibold border-primary/40 text-primary hover:bg-primary/10 shadow-xs"
+          >
+            <MapPin className="h-4 w-4 text-primary" />
+            <span>Campus Google Map</span>
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          </Button>
+
+          <Button
+            variant="outline"
             onClick={() => {
               if (displayInstitutions.length > 0) {
                 setSelectedInstId(displayInstitutions[0].id);
@@ -208,7 +220,7 @@ export default function AdminCampusesPage() {
               <TableHead className="text-xs font-semibold">Short Code</TableHead>
               <TableHead className="text-xs font-semibold">City / Region</TableHead>
               <TableHead className="text-xs font-semibold">Campuses & Gates</TableHead>
-              <TableHead className="text-xs font-semibold text-right pr-6">Status</TableHead>
+              <TableHead className="text-xs font-semibold text-right pr-6">Hub Map & Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -238,9 +250,20 @@ export default function AdminCampusesPage() {
                   </div>
                 </TableCell>
                 <TableCell className="text-right pr-6">
-                  <Badge variant="success" className="text-[10px]">
-                    Operational
-                  </Badge>
+                  <div className="flex items-center justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setMapModalHub(inst.shortCode)}
+                      className="h-7 text-xs gap-1 font-semibold text-primary hover:text-primary hover:bg-primary/10"
+                    >
+                      <MapPin className="h-3.5 w-3.5 text-primary" />
+                      <span>Live Map</span>
+                    </Button>
+                    <Badge variant="success" className="text-[10px]">
+                      Operational
+                    </Badge>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -403,6 +426,14 @@ export default function AdminCampusesPage() {
             </div>
           </div>
         </div>
+      )}
+      {/* Interactive Google Map Modal */}
+      {mapModalHub && (
+        <CampusMapModal
+          isOpen={!!mapModalHub}
+          onClose={() => setMapModalHub(null)}
+          initialCampusId={mapModalHub}
+        />
       )}
     </div>
   );

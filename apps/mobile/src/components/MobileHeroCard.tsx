@@ -30,7 +30,7 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
       style={[styles.outerContainer, { backgroundColor: colors.heroNavy }]}
     >
       <ImageBackground
-        source={require("../../assets/school-supplies-bg.jpg")}
+        source={require("../../assets/hero.jpg")}
         style={[
           styles.heroBackground,
           {

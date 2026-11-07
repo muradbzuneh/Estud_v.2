@@ -6,9 +6,10 @@ import {
   Modal,
   TouchableOpacity,
   ScrollView,
+  Linking,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
-import { MapPin, Check, X, Building2 } from "lucide-react-native";
+import { MapPin, Check, X, Building2, Navigation, ExternalLink, ShieldCheck } from "lucide-react-native";
 import { ETHIOPIAN_CAMPUSES, useApp } from "../context/AppContext";
 
 interface MobileCampusModalProps {
@@ -26,6 +27,11 @@ export function MobileCampusModal({
 }: MobileCampusModalProps) {
   const { colors, language } = useApp();
   const isDark = colors.mode === "dark";
+
+  const openGoogleMaps = (campus: string) => {
+    const query = encodeURIComponent(`${campus} Ethiopia`);
+    Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${query}`);
+  };
 
   return (
     <Modal
@@ -107,6 +113,30 @@ export function MobileCampusModal({
               );
             })}
           </ScrollView>
+
+          {/* Active Hub SafeTrade & Google Maps Action */}
+          <View style={[styles.mapFooter, { borderTopColor: colors.border, backgroundColor: isDark ? "#081324" : "#F8FAFC" }]}>
+            <View style={styles.mapFooterHeader}>
+              <View style={styles.hubStatusRow}>
+                <ShieldCheck size={14} color="#10B981" />
+                <Text style={[styles.hubStatusText, { color: colors.textSecondary }]}>
+                  {selectedCampus} SafeTrade Inspection Gate Active
+                </Text>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => openGoogleMaps(selectedCampus)}
+              activeOpacity={0.85}
+              style={[styles.mapButton, { backgroundColor: colors.primary }]}
+            >
+              <Navigation size={14} color="#FFFFFF" />
+              <Text style={styles.mapButtonText}>
+                {language === "am" ? "በ Google Maps ይክፈቱ" : "Open Hub in Google Maps"}
+              </Text>
+              <ExternalLink size={13} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
         </Animatable.View>
       </View>
     </Modal>
@@ -193,5 +223,38 @@ const styles = StyleSheet.create({
     borderRadius: 11,
     alignItems: "center",
     justifyContent: "center",
+  },
+  mapFooter: {
+    marginTop: 12,
+    paddingTop: 12,
+    paddingHorizontal: 12,
+    paddingBottom: 4,
+    borderTopWidth: 1,
+    borderRadius: 16,
+  },
+  mapFooterHeader: {
+    marginBottom: 8,
+  },
+  hubStatusRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  hubStatusText: {
+    fontSize: 11,
+    fontWeight: "500",
+  },
+  mapButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 11,
+    borderRadius: 12,
+  },
+  mapButtonText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "700",
   },
 });

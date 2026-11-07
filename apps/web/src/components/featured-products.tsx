@@ -17,6 +17,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { EscrowCheckoutModal } from "./escrow-checkout-modal";
+import { CampusMapModal } from "./campus-map-modal";
 import { useLanguage } from "./language-context";
 import { trpc } from "@/trpc/client";
 
@@ -144,6 +145,7 @@ export function FeaturedProducts({
   const [showAll, setShowAll] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const [checkoutProduct, setCheckoutProduct] = useState<DisplayProduct | null>(null);
+  const [mapCampus, setMapCampus] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -371,11 +373,16 @@ export function FeaturedProducts({
                   <span className="text-[11px]">({item.reviewCount})</span>
                 </div>
 
-                {/* Location Badge */}
-                <div className="mt-2 flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                  <MapPin className="h-3 w-3 text-slate-400" />
-                  <span className="truncate">{item.location}</span>
-                </div>
+                {/* Location Badge (Click to view Campus Hub on Google Map) */}
+                <button
+                  type="button"
+                  onClick={() => setMapCampus(item.location)}
+                  className="mt-2 flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 transition cursor-pointer"
+                  title="View Campus SafeTrade Hub on Google Map"
+                >
+                  <MapPin className="h-3 w-3 text-brand-600 dark:text-brand-400 shrink-0" />
+                  <span className="truncate underline underline-offset-2">{item.location}</span>
+                </button>
 
                 {/* Price & Action */}
                 <div className="mt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3">
@@ -451,6 +458,14 @@ export function FeaturedProducts({
             campus: checkoutProduct.location,
             sellerName: "Verified AAU Student",
           }}
+        />
+      )}
+      {/* Interactive Google Map Campus Hub Modal */}
+      {mapCampus && (
+        <CampusMapModal
+          isOpen={!!mapCampus}
+          onClose={() => setMapCampus(null)}
+          initialCampusId={mapCampus}
         />
       )}
     </section>

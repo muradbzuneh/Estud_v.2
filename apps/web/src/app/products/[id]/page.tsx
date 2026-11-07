@@ -27,6 +27,7 @@ import { Footer } from "@/components/footer";
 import { ProductGallery } from "@/components/product-gallery";
 import { EscrowCheckoutModal } from "@/components/escrow-checkout-modal";
 import { ExchangeProposalModal } from "@/components/exchange-proposal-modal";
+import { CampusMapModal } from "@/components/campus-map-modal";
 import { trpc } from "@/trpc/client";
 
 const FALLBACK_CATALOG: Record<string, any> = {
@@ -67,6 +68,7 @@ export default function ProductDetailPage() {
 
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isExchangeOpen, setIsExchangeOpen] = useState(false);
+  const [isMapOpen, setIsMapOpen] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [activeTab, setActiveTab] = useState<"details" | "inspection" | "seller">("details");
 
@@ -249,10 +251,16 @@ export default function ProductDetailPage() {
                   <span className="px-2 py-0.5 rounded-full bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 text-[11px] font-semibold">
                     {product.condition}
                   </span>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <MapPin className="h-3.5 w-3.5 text-brand-600" />
-                    <span>{product.campus}</span>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsMapOpen(true)}
+                    className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-brand-600 dark:hover:text-brand-400 bg-slate-50 dark:bg-twilight-750 px-2.5 py-1 rounded-lg border border-slate-200/60 dark:border-twilight-700 transition cursor-pointer"
+                    title="View Campus SafeTrade Hub on Google Map"
+                  >
+                    <MapPin className="h-3.5 w-3.5 text-brand-600 dark:text-brand-400" />
+                    <span className="font-medium underline underline-offset-2">{product.campus}</span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  </button>
                 </div>
 
                 <h1 className="text-lg font-bold text-slate-900 dark:text-white mt-2 leading-snug">
@@ -343,6 +351,15 @@ export default function ProductDetailPage() {
             campus: product.campus,
             sellerName: product.seller.name,
           }}
+        />
+      )}
+
+      {/* Interactive Google Map Campus Hub Modal */}
+      {isMapOpen && (
+        <CampusMapModal
+          isOpen={isMapOpen}
+          onClose={() => setIsMapOpen(false)}
+          initialCampusId={product.campus}
         />
       )}
 

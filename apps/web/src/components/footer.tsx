@@ -1,12 +1,15 @@
 "use client";
 
+import React, { useState } from "react";
 import Link from "next/link";
-import { ShieldCheck, Heart } from "lucide-react";
+import { ShieldCheck, MapPin } from "lucide-react";
 import { EstudLogo } from "./estud-logo";
 import { useLanguage } from "./language-context";
+import { CampusMapModal } from "./campus-map-modal";
 
 export function Footer() {
   const { t } = useLanguage();
+  const [selectedCampus, setSelectedCampus] = useState<string | null>(null);
 
   return (
     <footer className="border-t border-slate-200/80 dark:border-twilight-700 bg-white dark:bg-twilight-900 pt-12 pb-8 transition-colors duration-200">
@@ -40,15 +43,61 @@ export function Footer() {
 
           {/* Column 2 */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              Campuses
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+              <span>Campuses & Hubs</span>
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
             </h4>
             <ul className="mt-3 space-y-2 text-xs text-slate-600 dark:text-slate-400">
-              <li><span className="text-slate-700 dark:text-slate-300">Addis Ababa University (AAU)</span></li>
-              <li><span className="text-slate-700 dark:text-slate-300">ASTU Adama</span></li>
-              <li><span className="text-slate-700 dark:text-slate-300">Hawassa University</span></li>
-              <li><span className="text-slate-700 dark:text-slate-300">Jimma University</span></li>
-              <li><span className="text-slate-700 dark:text-slate-300">Bahir Dar University</span></li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCampus("aau-4kilo")}
+                  className="hover:text-brand-600 dark:hover:text-brand-400 flex items-center gap-1 text-left transition cursor-pointer"
+                >
+                  <MapPin className="h-3 w-3 text-slate-400" />
+                  <span>Addis Ababa University (AAU)</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCampus("astu")}
+                  className="hover:text-brand-600 dark:hover:text-brand-400 flex items-center gap-1 text-left transition cursor-pointer"
+                >
+                  <MapPin className="h-3 w-3 text-slate-400" />
+                  <span>ASTU Adama</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCampus("hu")}
+                  className="hover:text-brand-600 dark:hover:text-brand-400 flex items-center gap-1 text-left transition cursor-pointer"
+                >
+                  <MapPin className="h-3 w-3 text-slate-400" />
+                  <span>Hawassa University (HU)</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCampus("ju")}
+                  className="hover:text-brand-600 dark:hover:text-brand-400 flex items-center gap-1 text-left transition cursor-pointer"
+                >
+                  <MapPin className="h-3 w-3 text-slate-400" />
+                  <span>Jimma University (JU)</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCampus("bdu")}
+                  className="hover:text-brand-600 dark:hover:text-brand-400 flex items-center gap-1 text-left transition cursor-pointer"
+                >
+                  <MapPin className="h-3 w-3 text-slate-400" />
+                  <span>Bahir Dar University (BDU)</span>
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -78,6 +127,13 @@ export function Footer() {
           </div>
         </div>
       </div>
+
+      {/* Interactive Google Map Campus Hub Modal */}
+      <CampusMapModal
+        isOpen={!!selectedCampus}
+        onClose={() => setSelectedCampus(null)}
+        initialCampusId={selectedCampus || undefined}
+      />
     </footer>
   );
 }

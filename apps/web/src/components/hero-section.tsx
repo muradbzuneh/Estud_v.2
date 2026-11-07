@@ -70,7 +70,7 @@ export function HeroSection({
       <div className="absolute inset-0 -z-20 overflow-hidden">
         {/* Desktop stationery background */}
         <Image
-          src="/images/school-supplies-bg-desktop.jpg"
+          src="/images/hero.jpg"
           alt="Estud Student Marketplace Campus Background"
           fill
           priority
