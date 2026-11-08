@@ -169,7 +169,7 @@ export default function MobileAppSimulatorPage() {
             href={"/download" as any}
             className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FF8738] via-[#FE9901] to-[#FFA05F] px-4 py-2 text-xs font-black text-[#07152B] shadow-md hover:brightness-110 transition"
           >
-            <span>Download APK v2.2.0</span>
+            <span>Download APK v2.2.1</span>
           </Link>
         </div>
         <div className="flex items-center gap-2 text-xs text-slate-400">

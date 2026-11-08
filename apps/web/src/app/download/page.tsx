@@ -26,8 +26,8 @@ export default function DownloadPage() {
   const handleDownload = () => {
     setDownloadStarted(true);
     const link = document.createElement("a");
-    link.href = "https://expo.dev/artifacts/eas/KOpOJDPTN-GKp495yQQyzROKddpMmSh_HhodhoBx7kc.apk";
-    link.download = "estud-v2.2.0.apk";
+    link.href = "https://expo.dev/artifacts/eas/4UCXyoHPFAjNU9QGN8EsLq4Xhv19Wz1Pwnf25D6jkH4.apk";
+    link.download = "estud-v2.2.1.apk";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -56,7 +56,7 @@ export default function DownloadPage() {
             <div className="md:col-span-7 space-y-5">
               <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 px-3.5 py-1 text-xs font-bold text-amber-300">
                 <Sparkles className="h-3.5 w-3.5" />
-                <span>OFFICIAL RELEASE &bull; v2.2.0 (STABLE)</span>
+                <span>OFFICIAL RELEASE &bull; v2.2.1 (STABLE)</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
@@ -71,7 +71,7 @@ export default function DownloadPage() {
               <div className="grid grid-cols-3 gap-3 py-2 text-xs">
                 <div className="rounded-xl bg-white/5 border border-white/10 p-2.5">
                   <div className="text-slate-400 text-[10px] uppercase font-bold">Version</div>
-                  <div className="font-mono font-bold text-amber-300">v2.2.0 Signed</div>
+                  <div className="font-mono font-bold text-amber-300">v2.2.1 Signed</div>
                 </div>
                 <div className="rounded-xl bg-white/5 border border-white/10 p-2.5">
                   <div className="text-slate-400 text-[10px] uppercase font-bold">Format</div>
@@ -91,7 +91,7 @@ export default function DownloadPage() {
                   className="flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#FF8738] via-[#FE9901] to-[#FFA05F] hover:from-[#FE9901] hover:to-[#FF8738] px-6 py-4 text-sm font-black text-[#07152B] shadow-lg shadow-[#FF8738]/30 hover:shadow-xl hover:shadow-[#FF8738]/40 transition active:scale-[0.98] cursor-pointer"
                 >
                   <Download className="h-5 w-5 stroke-[2.5]" />
-                  <span>{downloadStarted ? "Downloading APK..." : "Download Estud v2.2.0 APK"}</span>
+                  <span>{downloadStarted ? "Downloading APK..." : "Download Estud v2.2.1 APK"}</span>
                 </button>
 
                 <a
@@ -108,7 +108,7 @@ export default function DownloadPage() {
               {downloadStarted && (
                 <div className="flex items-center gap-2 text-xs text-emerald-400 animate-in fade-in">
                   <CheckCircle2 className="h-4 w-4 shrink-0" />
-                  <span>Download started! File: <code className="font-mono text-white">estud-v2.2.0.apk</code></span>
+                  <span>Download started! File: <code className="font-mono text-white">estud-v2.2.1.apk</code></span>
                 </div>
               )}
             </div>
@@ -146,7 +146,7 @@ export default function DownloadPage() {
         {/* Feature Highlights Grid */}
         <div className="space-y-6">
           <div className="text-center space-y-2">
-            <h2 className="text-2xl font-bold tracking-tight">What&apos;s New in v2.2.0</h2>
+            <h2 className="text-2xl font-bold tracking-tight">What&apos;s New in v2.2.1</h2>
             <p className="text-xs text-slate-400">Built specifically for Ethiopian higher education campuses</p>
           </div>
 
@@ -197,7 +197,7 @@ export default function DownloadPage() {
               </div>
               <div className="font-bold text-white">Download the APK</div>
               <p className="text-slate-400 leading-relaxed">
-                Tap &ldquo;Download Estud v2.2.0 APK&rdquo; above. If prompted by your browser, tap &ldquo;Download anyway&rdquo;.
+                Tap &ldquo;Download Estud v2.2.1 APK&rdquo; above. If prompted by your browser, tap &ldquo;Download anyway&rdquo;.
               </p>
             </div>
 

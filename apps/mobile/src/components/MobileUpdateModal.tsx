@@ -136,7 +136,7 @@ export function MobileUpdateModal() {
                   Build Channel: Android Preview APK (Verified Signed)
                 </Text>
                 <Text style={{ fontSize: 9, color: colors.textSecondary, marginTop: 2 }}>
-                  Release URL: https://estud.et/download/estud-v2.2.0.apk
+                  Release URL: https://estud.et/download/estud-v2.2.1.apk
                 </Text>
               </View>
             </View>
@@ -149,7 +149,7 @@ export function MobileUpdateModal() {
               <Text style={{ fontSize: 9, color: colors.textSecondary, marginTop: 2, lineHeight: 13 }}>
                 • In Expo Go / Dev: Press 'r' in Metro terminal or shake phone to reload.
 
-                • On physical phone: Tap 'Download Direct APK' below or 'Refresh v2.2.0'.
+                • On physical phone: Tap 'Download Direct APK' below or 'Refresh v2.2.1'.
               </Text>
             </View>
           </ScrollView>
@@ -158,7 +158,7 @@ export function MobileUpdateModal() {
           <View style={{ gap: 8 }}>
             <TouchableOpacity
               onPress={() => {
-                Linking.openURL("https://expo.dev/artifacts/eas/KOpOJDPTN-GKp495yQQyzROKddpMmSh_HhodhoBx7kc.apk").catch(() => {
+                Linking.openURL("https://expo.dev/artifacts/eas/4UCXyoHPFAjNU9QGN8EsLq4Xhv19Wz1Pwnf25D6jkH4.apk").catch(() => {
                   Linking.openURL("https://expo.dev/accounts/muradbzuneh/projects/estud-monorepo/builds").catch(() => {
                     showSuccessToast("Download Link", "https://estud.et/download");
                   });
@@ -178,7 +178,7 @@ export function MobileUpdateModal() {
             >
               <Download size={14} color={colors.primary} />
               <Text style={{ fontSize: 11, fontWeight: "700", color: colors.primary }}>
-                Download Signed APK (Direct v2.2.0)
+                Download Signed APK (Direct v2.2.1)
               </Text>
             </TouchableOpacity>
 
