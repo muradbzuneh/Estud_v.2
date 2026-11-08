@@ -23,7 +23,6 @@ import { useLanguage } from "./language-context";
 import { LanguageToggle } from "./language-toggle";
 import { ThemeToggle } from "./theme-toggle";
 import { AuthModal } from "./auth-modal";
-import { CampusMapModal } from "./campus-map-modal";
 import { useSession, signOut } from "@/lib/auth-client";
 
 interface NavbarProps {
@@ -49,7 +48,6 @@ export function Navbar({
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [campusMapOpen, setCampusMapOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -236,20 +234,6 @@ export function Navbar({
                 Desk
               </span>
             </Link>
-
-            {/* Campus Hubs & Live Google Map */}
-            <button
-              type="button"
-              onClick={() => setCampusMapOpen(true)}
-              className="flex items-center gap-1.5 rounded-full bg-brand-50/90 dark:bg-twilight-750/90 px-3 py-1.5 text-xs font-semibold text-brand-700 dark:text-brand-300 border border-brand-200/80 dark:border-twilight-600 hover:bg-brand-100 dark:hover:bg-twilight-700 hover:border-brand-300 dark:hover:border-twilight-500 shadow-2xs transition cursor-pointer"
-            >
-              <MapPin className="h-3.5 w-3.5 text-brand-600 dark:text-brand-400" />
-              <span>Campus Map</span>
-              <span className="flex h-1.5 w-1.5 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
-              </span>
-            </button>
           </nav>
 
           {/* Global Search Bar */}
@@ -459,22 +443,6 @@ export function Navbar({
               </span>
             </Link>
 
-            {/* Campus Hubs & Live Google Map */}
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setCampusMapOpen(true);
-                }}
-                className="text-left rounded-xl px-3 py-2 hover:bg-slate-50 dark:hover:bg-twilight-800 text-brand-600 dark:text-brand-400 font-semibold transition flex items-center justify-between"
-              >
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  <span>Campus SafeTrade Map</span>
-                </div>
-                <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              </button>
-
               {isAdmin && (
                 <Link
                   href="/admin"
@@ -519,12 +487,6 @@ export function Navbar({
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         initialMode="signin"
-      />
-
-      {/* Interactive Google Map Campus Hub Modal */}
-      <CampusMapModal
-        isOpen={campusMapOpen}
-        onClose={() => setCampusMapOpen(false)}
       />
     </>
   );
