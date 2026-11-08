@@ -30,6 +30,7 @@ export interface EscrowOrder {
   collectionMethod: "hub" | "runner";
   paymentMethod: "telebirr" | "cbe" | "cash";
   secretPin: string;
+  transactionReference?: string;
   status: "secured" | "at_hub" | "ready_inspection" | "completed" | "disputed";
   createdAt: string;
 }
@@ -236,10 +237,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const colors = getThemeColors(theme);
   const t = translations[language];
-  const [appVersion, setAppVersion] = useState<string>("v2.2.0");
+  const [appVersion, setAppVersion] = useState<string>("v2.2.1");
 
   const upgradeAppVersion = (newVer?: string) => {
-    const updated = newVer || "v2.2.0";
+    const updated = newVer || "v2.2.1";
     setAppVersion(updated);
     showSuccessToast(
       language === "am" ? "ዝመናው ተጠናቋል!" : "App Upgraded Successfully!",

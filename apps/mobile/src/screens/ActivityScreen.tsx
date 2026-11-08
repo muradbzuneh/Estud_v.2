@@ -59,7 +59,7 @@ export function ActivityScreen() {
       </Animatable.View>
 
       {/* Tabs: Active vs Completed */}
-      <View style={[styles.tabToggle, { backgroundColor: isDark ? "#0A1628" : "#F1F5F9" }]}>
+      <View style={[styles.tabToggle, { backgroundColor: isDark ? "#293548" : "#F1F5F9" }]}>
         <TouchableOpacity
           onPress={() => setFilter("active")}
           style={[
@@ -176,7 +176,7 @@ export function ActivityScreen() {
               </View>
 
               {/* Campus Desk Location */}
-              <View style={[styles.locationBox, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", borderColor: colors.border }]}>
+              <View style={[styles.locationBox, { backgroundColor: isDark ? "#293548" : "#F8FAFC", borderColor: colors.border }]}>
                 <Building2 size={13} color={colors.primary} />
                 <Text style={[styles.locationText, { color: colors.textSecondary }]} numberOfLines={1}>
                   {order.campusHub}

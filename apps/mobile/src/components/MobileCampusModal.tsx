@@ -84,7 +84,7 @@ export function MobileCampusModal({
                   style={[
                     styles.campusItem,
                     {
-                      backgroundColor: isSelected ? colors.primaryLight : (isDark ? "#0A1628" : "#F8FAFC"),
+                      backgroundColor: isSelected ? colors.primaryLight : (isDark ? "#293548" : "#F8FAFC"),
                       borderColor: isSelected ? colors.primary : colors.border,
                     },
                   ]}

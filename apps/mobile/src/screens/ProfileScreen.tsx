@@ -93,7 +93,7 @@ export function ProfileScreen() {
           </View>
 
           {/* Trust Score & Stats Banner */}
-          <View style={[styles.statsRow, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", borderColor: colors.border }]}>
+          <View style={[styles.statsRow, { backgroundColor: isDark ? colors.cardElevated : "#F8FAFC", borderColor: colors.border }]}>
             <View style={styles.statBox}>
               <View style={styles.statTitleRow}>
                 <Star size={13} color="#F59E0B" fill="#F59E0B" />
@@ -211,34 +211,28 @@ export function ProfileScreen() {
             </View>
           </View>
 
-          {/* Single Language Toggle Switch */}
+          {/* Normal Standard Language Sliding Toggle */}
           <TouchableOpacity
             onPress={() => setLanguage(language === "en" ? "am" : "en")}
             activeOpacity={0.8}
             style={[
-              styles.singleLangToggle,
+              styles.singleToggleTrack,
               {
-                backgroundColor: isDark ? "#0A1628" : "#F1F5F9",
-                borderColor: colors.border,
+                backgroundColor: language === "am" ? "#10B981" : colors.primary,
               },
             ]}
           >
-            <Text
-              style={[
-                styles.singleLangText,
-                { color: language === "am" ? "#10B981" : colors.primary },
-              ]}
-            >
-              {language === "am" ? "አማርኛ" : "English"}
-            </Text>
             <View
               style={[
-                styles.singleLangBadge,
-                { backgroundColor: language === "am" ? "#10B981" : colors.primary },
+                styles.singleToggleThumb,
+                {
+                  transform: [{ translateX: language === "am" ? 20 : 0 }],
+                  backgroundColor: "#FFFFFF",
+                },
               ]}
             >
-              <Text style={styles.singleLangBadgeText}>
-                {language === "am" ? "Switch to EN" : "ቀይር ወደ አማ"}
+              <Text style={{ fontSize: 9, fontWeight: "900", color: language === "am" ? "#10B981" : colors.primary }}>
+                {language === "am" ? "አማ" : "EN"}
               </Text>
             </View>
           </TouchableOpacity>

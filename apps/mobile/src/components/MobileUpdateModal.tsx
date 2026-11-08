@@ -40,12 +40,12 @@ export function MobileUpdateModal() {
     setTimeout(() => {
       setIsUpdating(false);
       setUpdateFinished(true);
-      upgradeAppVersion("v2.2.0");
+      upgradeAppVersion("v2.2.1");
       showSuccessToast(
         language === "am" ? "ዝመናው ተጠናቋል!" : "Update Verified!",
-        "Estud v2.2.0 is installed and ready"
+        "Estud v2.2.1 is active with realistic Ethiopian payment & soft dark mode"
       );
-    }, 1500);
+    }, 1200);
   };
 
   const isDark = colors.mode === "dark";
@@ -86,7 +86,7 @@ export function MobileUpdateModal() {
 
           {/* Body */}
           <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
-            <View style={[styles.releaseBox, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", borderColor: colors.border }]}>
+            <View style={[styles.releaseBox, { backgroundColor: isDark ? "#293548" : "#F8FAFC", borderColor: colors.border }]}>
               <Text style={[styles.releaseTitle, { color: colors.textPrimary }]}>
                 {language === "am" ? "በዚህ ስሪት ምን አዲስ ነገር አለ?" : "What's New in This Release:"}
               </Text>
@@ -173,7 +173,7 @@ export function MobileUpdateModal() {
                 borderRadius: 14,
                 borderWidth: 1,
                 borderColor: colors.border,
-                backgroundColor: isDark ? "#0A1628" : "#F8FAFC",
+                backgroundColor: isDark ? "#293548" : "#F8FAFC",
               }}
             >
               <Download size={14} color={colors.primary} />
@@ -202,14 +202,14 @@ export function MobileUpdateModal() {
                   <>
                     <ActivityIndicator size="small" color="#FFFFFF" />
                     <Text style={styles.actionBtnText}>
-                      {language === "am" ? "ዝመናው እየተጫነ ነው..." : "Applying Update v2.2.0..."}
+                      {language === "am" ? "ዝመናው እየተጫነ ነው..." : "Applying Update v2.2.1..."}
                     </Text>
                   </>
                 ) : (
                   <>
                     <RefreshCw size={15} color="#FFFFFF" />
                     <Text style={styles.actionBtnText}>
-                      {language === "am" ? "የቅርብ ጊዜውን ስሪት ጫን (v2.2.0)" : "Apply & Refresh v2.2.0"}
+                      {language === "am" ? "የቅርብ ጊዜውን ስሪት ጫን (v2.2.1)" : "Apply & Refresh v2.2.1"}
                     </Text>
                   </>
                 )}

@@ -186,7 +186,7 @@ export function MobileLostFoundModal({ visible, onClose }: MobileLostFoundModalP
 
           {/* Subheader Action Bar */}
           <View style={styles.navRow}>
-            <View style={[styles.tabBar, { backgroundColor: isDark ? "#0A1628" : "#F1F5F9" }]}>
+            <View style={[styles.tabBar, { backgroundColor: isDark ? "#293548" : "#F1F5F9" }]}>
               {(["ALL", "FOUND", "LOST"] as const).map((tab) => (
                 <TouchableOpacity
                   key={tab}
@@ -276,7 +276,7 @@ export function MobileLostFoundModal({ visible, onClose }: MobileLostFoundModalP
                     placeholderTextColor={colors.textMuted}
                     value={formTitle}
                     onChangeText={setFormTitle}
-                    style={[styles.input, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", color: colors.textPrimary, borderColor: colors.border }]}
+                    style={[styles.input, { backgroundColor: isDark ? "#293548" : "#F8FAFC", color: colors.textPrimary, borderColor: colors.border }]}
                   />
                 </View>
 
@@ -287,7 +287,7 @@ export function MobileLostFoundModal({ visible, onClose }: MobileLostFoundModalP
                     placeholderTextColor={colors.textMuted}
                     value={formCategory}
                     onChangeText={setFormCategory}
-                    style={[styles.input, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", color: colors.textPrimary, borderColor: colors.border }]}
+                    style={[styles.input, { backgroundColor: isDark ? "#293548" : "#F8FAFC", color: colors.textPrimary, borderColor: colors.border }]}
                   />
                 </View>
 
@@ -298,7 +298,7 @@ export function MobileLostFoundModal({ visible, onClose }: MobileLostFoundModalP
                     placeholderTextColor={colors.textMuted}
                     value={formLocation}
                     onChangeText={setFormLocation}
-                    style={[styles.input, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", color: colors.textPrimary, borderColor: colors.border }]}
+                    style={[styles.input, { backgroundColor: isDark ? "#293548" : "#F8FAFC", color: colors.textPrimary, borderColor: colors.border }]}
                   />
                 </View>
 
@@ -311,7 +311,7 @@ export function MobileLostFoundModal({ visible, onClose }: MobileLostFoundModalP
                     numberOfLines={3}
                     value={formDescription}
                     onChangeText={setFormDescription}
-                    style={[styles.textArea, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", color: colors.textPrimary, borderColor: colors.border }]}
+                    style={[styles.textArea, { backgroundColor: isDark ? "#293548" : "#F8FAFC", color: colors.textPrimary, borderColor: colors.border }]}
                   />
                 </View>
 
@@ -323,7 +323,7 @@ export function MobileLostFoundModal({ visible, onClose }: MobileLostFoundModalP
                       placeholderTextColor={colors.textMuted}
                       value={formSecretMark}
                       onChangeText={setFormSecretMark}
-                      style={[styles.input, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", color: colors.textPrimary, borderColor: "#F59E0B" }]}
+                      style={[styles.input, { backgroundColor: isDark ? "#293548" : "#F8FAFC", color: colors.textPrimary, borderColor: "#F59E0B" }]}
                     />
                   </View>
                 )}
@@ -356,7 +356,7 @@ export function MobileLostFoundModal({ visible, onClose }: MobileLostFoundModalP
                     numberOfLines={4}
                     value={claimProof}
                     onChangeText={setClaimProof}
-                    style={[styles.textArea, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", color: colors.textPrimary, borderColor: colors.border }]}
+                    style={[styles.textArea, { backgroundColor: isDark ? "#293548" : "#F8FAFC", color: colors.textPrimary, borderColor: colors.border }]}
                   />
                 </View>
 
@@ -382,7 +382,7 @@ export function MobileLostFoundModal({ visible, onClose }: MobileLostFoundModalP
                 {filteredItems.map((item) => (
                   <View
                     key={item.id}
-                    style={[styles.itemCard, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", borderColor: colors.border }]}
+                    style={[styles.itemCard, { backgroundColor: isDark ? "#293548" : "#F8FAFC", borderColor: colors.border }]}
                   >
                     <View style={styles.itemHeader}>
                       <View style={styles.itemBadges}>

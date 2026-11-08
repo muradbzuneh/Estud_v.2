@@ -180,7 +180,7 @@ export function SellScreen() {
         <TouchableOpacity
           onPress={handleResetForm}
           activeOpacity={0.8}
-          style={[styles.actionBtnSecondary, { backgroundColor: isDark ? "#0A1628" : "#F1F5F9" }]}
+          style={[styles.actionBtnSecondary, { backgroundColor: isDark ? "#293548" : "#F1F5F9" }]}
         >
           <Text style={[styles.actionBtnSecondaryText, { color: colors.textSecondary }]}>
             {language === "am" ? "ሌላ ዕቃ ለመሸጥ ይለጥፉ" : "List Another Item"}
@@ -382,7 +382,7 @@ export function SellScreen() {
         />
 
         {/* Live Guaranteed Payout Box */}
-        <View style={[styles.payoutBox, { backgroundColor: isDark ? "#0A1628" : "#F8FAFC", borderColor: colors.border }]}>
+        <View style={[styles.payoutBox, { backgroundColor: isDark ? "#293548" : "#F8FAFC", borderColor: colors.border }]}>
           <View style={styles.payoutRow}>
             <Text style={[styles.payoutLabel, { color: colors.textSecondary }]}>Your Asking Price:</Text>
             <Text style={[styles.payoutValue, { color: colors.textPrimary }]}>ETB {numericPrice.toLocaleString()}</Text>

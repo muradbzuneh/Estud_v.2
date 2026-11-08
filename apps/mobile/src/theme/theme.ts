@@ -54,28 +54,28 @@ export const lightColors: ColorPalette = {
 
 export const darkColors: ColorPalette = {
   mode: "dark",
-  background: "#070D1E",    // Midnight Dark Navy
-  card: "#0D182E",          // Elevated Dark Blue
-  cardElevated: "#132342",
-  border: "rgba(255, 255, 255, 0.12)",
-  borderStrong: "rgba(255, 255, 255, 0.22)",
-  textPrimary: "#FFFFFF",
-  textSecondary: "#CBD5E1",
+  background: "#0F172A",    // Soft Slate 900 (gentle, light dark mode)
+  card: "#1E293B",          // Elevated Slate 800
+  cardElevated: "#2D3B4F",  // Subtle Elevated Layer
+  border: "rgba(255, 255, 255, 0.09)",
+  borderStrong: "rgba(255, 255, 255, 0.18)",
+  textPrimary: "#F8FAFC",   // Crisp Slate 50
+  textSecondary: "#94A3B8", // Gentle Slate 400
   textMuted: "#64748B",
-  primary: "#3B82F6",       // Vibrant Blue
-  primaryLight: "rgba(59, 130, 246, 0.18)",
-  primaryDark: "#1D6BF3",
-  accent: "#FBBF24",        // Bright Golden Yellow
-  accentLight: "rgba(251, 191, 36, 0.18)",
+  primary: "#38BDF8",       // Bright Sky Blue (high contrast & attractive)
+  primaryLight: "rgba(56, 189, 248, 0.14)",
+  primaryDark: "#0284C7",
+  accent: "#FBBF24",        // Warm Golden Amber
+  accentLight: "rgba(251, 191, 36, 0.16)",
   success: "#34D399",
-  successLight: "rgba(52, 211, 153, 0.18)",
+  successLight: "rgba(52, 211, 153, 0.16)",
   danger: "#F87171",
-  dangerLight: "rgba(248, 113, 113, 0.18)",
-  inputBg: "#0B1426",
-  headerBg: "#070D1E",
-  tabBarBg: "#070D1E",
+  dangerLight: "rgba(248, 113, 113, 0.16)",
+  inputBg: "#162032",
+  headerBg: "#0F172A",
+  tabBarBg: "#0F172A",
   tabBarBorder: "rgba(255, 255, 255, 0.08)",
-  heroNavy: "#05162E",
+  heroNavy: "#1E293B",
 };
 
 export function getThemeColors(mode: ThemeMode): ColorPalette {

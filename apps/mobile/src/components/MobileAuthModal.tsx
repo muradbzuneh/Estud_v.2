@@ -352,7 +352,7 @@ export function MobileAuthModal() {
                     login("Natnael Tsegaye", "natnael@aau.edu.et", "AAU 4 Kilo (Science)");
                     showSuccessToast("Signed in as Student!", "Natnael T. (AAU 4 Kilo)");
                   }}
-                  style={{ flex: 1, paddingVertical: 8, borderRadius: 10, backgroundColor: isDark ? "#0A1628" : "#EFF6FF", alignItems: "center", borderWidth: 1, borderColor: colors.primary }}
+                  style={{ flex: 1, paddingVertical: 8, borderRadius: 10, backgroundColor: isDark ? "#293548" : "#EFF6FF", alignItems: "center", borderWidth: 1, borderColor: colors.primary }}
                 >
                   <Text style={{ fontSize: 10, fontWeight: "800", color: colors.primary }}>Student</Text>
                 </TouchableOpacity>
@@ -362,7 +362,7 @@ export function MobileAuthModal() {
                     login("Biruk Gate Rep", "rep.4kilo@estud.et", "AAU 4 Kilo (Science)");
                     showSuccessToast("Signed in as Campus Rep!", "Gate 1 Hub Officer");
                   }}
-                  style={{ flex: 1, paddingVertical: 8, borderRadius: 10, backgroundColor: isDark ? "#0A1628" : "#ECFDF5", alignItems: "center", borderWidth: 1, borderColor: "#10B981" }}
+                  style={{ flex: 1, paddingVertical: 8, borderRadius: 10, backgroundColor: isDark ? "#293548" : "#ECFDF5", alignItems: "center", borderWidth: 1, borderColor: "#10B981" }}
                 >
                   <Text style={{ fontSize: 10, fontWeight: "800", color: "#10B981" }}>Campus Rep</Text>
                 </TouchableOpacity>
@@ -372,7 +372,7 @@ export function MobileAuthModal() {
                     login("Murad Admin", "admin@estud.et", "Addis Ababa Central Hub");
                     showSuccessToast("Signed in as Admin!", "Super Admin Privileges");
                   }}
-                  style={{ flex: 1, paddingVertical: 8, borderRadius: 10, backgroundColor: isDark ? "#0A1628" : "#FEF3C7", alignItems: "center", borderWidth: 1, borderColor: "#F59E0B" }}
+                  style={{ flex: 1, paddingVertical: 8, borderRadius: 10, backgroundColor: isDark ? "#293548" : "#FEF3C7", alignItems: "center", borderWidth: 1, borderColor: "#F59E0B" }}
                 >
                   <Text style={{ fontSize: 10, fontWeight: "800", color: "#D97706" }}>Super Admin</Text>
                 </TouchableOpacity>
