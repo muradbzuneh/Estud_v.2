@@ -158,7 +158,7 @@ export function MobileUpdateModal() {
           <View style={{ gap: 8 }}>
             <TouchableOpacity
               onPress={() => {
-                Linking.openURL("https://estud.et/download/estud-v2.2.0.apk").catch(() => {
+                Linking.openURL("https://expo.dev/artifacts/eas/KOpOJDPTN-GKp495yQQyzROKddpMmSh_HhodhoBx7kc.apk").catch(() => {
                   Linking.openURL("https://expo.dev/accounts/muradbzuneh/projects/estud-monorepo/builds").catch(() => {
                     showSuccessToast("Download Link", "https://estud.et/download");
                   });

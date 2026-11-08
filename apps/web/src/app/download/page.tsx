@@ -26,7 +26,7 @@ export default function DownloadPage() {
   const handleDownload = () => {
     setDownloadStarted(true);
     const link = document.createElement("a");
-    link.href = "/download/estud-v2.2.0.apk";
+    link.href = "https://expo.dev/artifacts/eas/KOpOJDPTN-GKp495yQQyzROKddpMmSh_HhodhoBx7kc.apk";
     link.download = "estud-v2.2.0.apk";
     document.body.appendChild(link);
     link.click();
