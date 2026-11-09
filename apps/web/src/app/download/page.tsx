@@ -172,7 +172,7 @@ export default function DownloadPage() {
             </div>
 
             <div className="rounded-2xl bg-white/5 border border-white/10 p-5 space-y-3">
-              <div className="h-10 w-10 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+              <div className="h-10 w-10 rounded-xl bg-brand-500/15 border border-brand-500/30 flex items-center justify-center text-brand-400">
                 <Moon className="h-5 w-5" />
               </div>
               <h3 className="font-bold text-sm text-white">Deep Midnight Dark Theme</h3>

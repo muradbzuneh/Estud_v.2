@@ -198,7 +198,7 @@ export default function MobileAppSimulatorPage() {
             <button
               type="button"
               onClick={() => setShowDrawer(!showDrawer)}
-              className="p-1 text-slate-800 hover:text-indigo-600 transition"
+              className="p-1 text-slate-800 hover:text-brand-600 transition"
               aria-label="Open menu drawer"
             >
               <Menu className="h-5 w-5" />
@@ -211,7 +211,7 @@ export default function MobileAppSimulatorPage() {
             <button
               type="button"
               onClick={() => setShowNotifications(!showNotifications)}
-              className="relative p-1 text-slate-700 hover:text-indigo-600 transition"
+              className="relative p-1 text-slate-700 hover:text-brand-600 transition"
               aria-label="Open notifications"
             >
               <Bell className="h-5 w-5" />
@@ -237,8 +237,8 @@ export default function MobileAppSimulatorPage() {
                 <span className="text-[10px] text-emerald-600">2 New</span>
               </div>
               <div className="space-y-2">
-                <div className="rounded-xl bg-indigo-50/70 p-2 text-[11px]">
-                  <p className="font-bold text-indigo-900">Pickup PIN Ready</p>
+                <div className="rounded-xl bg-brand-50/70 p-2 text-[11px]">
+                  <p className="font-bold text-brand-900">Pickup PIN Ready</p>
                   <p className="text-slate-600 mt-0.5">Order #EST-84920 ready at AAU 4-Kilo hub.</p>
                 </div>
                 <div className="rounded-xl bg-slate-50 p-2 text-[11px]">
@@ -274,7 +274,7 @@ export default function MobileAppSimulatorPage() {
                       setSelectedCategory("all");
                       setShowDrawer(false);
                     }}
-                    className="w-full text-left px-3 py-2 rounded-xl text-indigo-600 bg-indigo-50 font-bold"
+                    className="w-full text-left px-3 py-2 rounded-xl text-brand-600 bg-brand-50 font-bold"
                   >
                     Home Marketplace
                   </button>
@@ -377,13 +377,13 @@ export default function MobileAppSimulatorPage() {
                   placeholder="Search for books, laptops, phones..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-9 text-xs font-medium focus:border-indigo-600 focus:bg-white focus:outline-none"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-9 text-xs font-medium focus:border-brand-600 focus:bg-white focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => setShowFilterModal(!showFilterModal)}
                   className={`absolute right-2.5 p-1 rounded-lg border transition ${
-                    showFilterModal ? "bg-indigo-600 border-indigo-600 text-white" : "bg-white border-slate-200 text-slate-600"
+                    showFilterModal ? "bg-brand-600 border-brand-600 text-white" : "bg-white border-slate-200 text-slate-600"
                   }`}
                   aria-label="Filter campus hubs"
                 >
@@ -393,13 +393,13 @@ export default function MobileAppSimulatorPage() {
 
               {/* Campus Filter Modal Chips */}
               {showFilterModal && (
-                <div className="rounded-2xl bg-indigo-50/70 p-3 border border-indigo-100 space-y-2 animate-in fade-in">
-                  <div className="flex items-center justify-between text-[11px] font-bold text-indigo-900">
+                <div className="rounded-2xl bg-brand-50/70 p-3 border border-brand-100 space-y-2 animate-in fade-in">
+                  <div className="flex items-center justify-between text-[11px] font-bold text-brand-900">
                     <span>Filter by Campus Hub</span>
                     <button
                       type="button"
                       onClick={() => setSearchQuery("")}
-                      className="text-[10px] text-indigo-600 underline"
+                      className="text-[10px] text-brand-600 underline"
                     >
                       Clear
                     </button>
@@ -413,7 +413,7 @@ export default function MobileAppSimulatorPage() {
                           setSearchQuery(campus === "All Campuses" ? "" : campus);
                           setShowFilterModal(false);
                         }}
-                        className="rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold text-slate-700 border border-slate-200 hover:bg-indigo-600 hover:text-white transition"
+                        className="rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold text-slate-700 border border-slate-200 hover:bg-brand-600 hover:text-white transition"
                       >
                         {campus}
                       </button>
@@ -436,13 +436,13 @@ export default function MobileAppSimulatorPage() {
                       <div
                         className={`h-12 w-12 rounded-2xl flex items-center justify-center border transition ${
                           isSelected
-                            ? "bg-indigo-50 border-indigo-600 text-indigo-700 shadow-sm"
+                            ? "bg-brand-50 border-brand-600 text-brand-700 shadow-sm"
                             : "bg-slate-50 border-slate-200 text-slate-600"
                         }`}
                       >
                         <Icon className="h-5 w-5" />
                       </div>
-                      <span className={`text-[10px] font-bold ${isSelected ? "text-indigo-600" : "text-slate-600"}`}>
+                      <span className={`text-[10px] font-bold ${isSelected ? "text-brand-600" : "text-slate-600"}`}>
                         {cat.name}
                       </span>
                     </button>
@@ -462,7 +462,7 @@ export default function MobileAppSimulatorPage() {
                     setSelectedCategory("all");
                     setSearchQuery("");
                   }}
-                  className="text-[11px] font-bold text-indigo-600 flex items-center gap-0.5 hover:underline"
+                  className="text-[11px] font-bold text-brand-600 flex items-center gap-0.5 hover:underline"
                 >
                   View All <ChevronRight className="h-3 w-3" />
                 </button>
@@ -495,7 +495,7 @@ export default function MobileAppSimulatorPage() {
 
                     {/* Content */}
                     <div className="p-2.5 space-y-1">
-                      <div className="text-[9px] font-bold text-indigo-700">{item.condition}</div>
+                      <div className="text-[9px] font-bold text-brand-700">{item.condition}</div>
                       <h4 className="text-[11px] font-black text-slate-900 truncate">{item.title}</h4>
                       <div className="flex items-baseline gap-1">
                         <span className="text-xs font-black text-slate-900">ETB {item.price.toLocaleString()}</span>
@@ -512,7 +512,7 @@ export default function MobileAppSimulatorPage() {
 
                         <button
                           onClick={() => setSelectedProduct(item)}
-                          className="h-6 w-6 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition"
+                          className="h-6 w-6 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center hover:bg-brand-600 hover:text-white transition"
                         >
                           <ShoppingBag className="h-3 w-3" />
                         </button>
@@ -532,7 +532,7 @@ export default function MobileAppSimulatorPage() {
           {activeTab === "explore" && (
             <div className="p-4 space-y-4">
               <div className="text-center space-y-1 py-2">
-                <Compass className="h-8 w-8 text-indigo-600 mx-auto" />
+                <Compass className="h-8 w-8 text-brand-600 mx-auto" />
                 <h3 className="text-sm font-black text-slate-900">Explore Ethiopian Campuses</h3>
                 <p className="text-[11px] text-slate-500">Select your campus hub to view student listings nearby.</p>
               </div>
@@ -552,7 +552,7 @@ export default function MobileAppSimulatorPage() {
                       setSearchQuery(camp.tag);
                       setActiveTab("home");
                     }}
-                    className="flex items-center justify-between p-3 rounded-2xl border border-slate-200 bg-white hover:border-indigo-600 hover:bg-indigo-50/40 transition text-left"
+                    className="flex items-center justify-between p-3 rounded-2xl border border-slate-200 bg-white hover:border-brand-600 hover:bg-brand-50/40 transition text-left"
                   >
                     <div>
                       <p className="text-xs font-bold text-slate-900">{camp.name}</p>
@@ -589,7 +589,7 @@ export default function MobileAppSimulatorPage() {
             <div className="p-4 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-black text-slate-900">SafeTrade Escrow Activity</h3>
-                <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">1 Active</span>
+                <span className="text-[10px] font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full">1 Active</span>
               </div>
 
               {/* Active Escrow Order Card with 4-Digit PIN */}
@@ -604,18 +604,18 @@ export default function MobileAppSimulatorPage() {
                 <div>
                   <h4 className="text-xs font-black text-slate-900">Laptop Dell Inspiron 15 (16GB RAM)</h4>
                   <p className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
-                    <MapPin className="h-3 w-3 text-indigo-600" />
+                    <MapPin className="h-3 w-3 text-brand-600" />
                     AAU 4 Kilo - Science Hub Desk
                   </p>
                 </div>
 
                 {/* Secret 4-digit PIN */}
-                <div className="rounded-xl bg-indigo-50/80 p-3 text-center border border-indigo-100 space-y-1">
-                  <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-indigo-900 uppercase">
-                    <ShieldCheck className="h-3.5 w-3.5 text-indigo-600" />
+                <div className="rounded-xl bg-brand-50/80 p-3 text-center border border-brand-100 space-y-1">
+                  <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-brand-900 uppercase">
+                    <ShieldCheck className="h-3.5 w-3.5 text-brand-600" />
                     Secret Inspection PIN
                   </div>
-                  <div className="text-2xl font-black font-mono tracking-widest text-indigo-950">
+                  <div className="text-2xl font-black font-mono tracking-widest text-brand-950">
                     7 2 9 4
                   </div>
                   <p className="text-[9px] text-slate-500">
@@ -653,7 +653,7 @@ export default function MobileAppSimulatorPage() {
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-100 flex items-center justify-around px-2 z-30">
           <button
             onClick={() => setActiveTab("home")}
-            className={`flex flex-col items-center gap-0.5 ${activeTab === "home" ? "text-indigo-600" : "text-slate-400"}`}
+            className={`flex flex-col items-center gap-0.5 ${activeTab === "home" ? "text-brand-600" : "text-slate-400"}`}
           >
             <Home className="h-5 w-5" />
             <span className="text-[10px] font-bold">Home</span>
@@ -661,7 +661,7 @@ export default function MobileAppSimulatorPage() {
 
           <button
             onClick={() => setActiveTab("explore")}
-            className={`flex flex-col items-center gap-0.5 ${activeTab === "explore" ? "text-indigo-600" : "text-slate-400"}`}
+            className={`flex flex-col items-center gap-0.5 ${activeTab === "explore" ? "text-brand-600" : "text-slate-400"}`}
           >
             <Compass className="h-5 w-5" />
             <span className="text-[10px] font-bold">Explore</span>
@@ -672,15 +672,15 @@ export default function MobileAppSimulatorPage() {
             onClick={() => setActiveTab("sell")}
             className="flex flex-col items-center -top-3 relative group"
           >
-            <div className="h-12 w-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/40 border-4 border-white group-hover:scale-105 transition">
+            <div className="h-12 w-12 rounded-full bg-gradient-to-r from-[#FF8738] to-[#F59E0B] flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-amber-500/30 border-4 border-white group-hover:scale-105 transition">
               <Plus className="h-6 w-6 stroke-[3]" />
             </div>
-            <span className="text-[10px] font-bold text-indigo-600 mt-0.5">Sell</span>
+            <span className="text-[10px] font-bold text-brand-600 mt-0.5">Sell</span>
           </button>
 
           <button
             onClick={() => setActiveTab("activity")}
-            className={`flex flex-col items-center gap-0.5 ${activeTab === "activity" ? "text-indigo-600" : "text-slate-400"}`}
+            className={`flex flex-col items-center gap-0.5 ${activeTab === "activity" ? "text-brand-600" : "text-slate-400"}`}
           >
             <Clock className="h-5 w-5" />
             <span className="text-[10px] font-bold">Activity</span>
@@ -688,7 +688,7 @@ export default function MobileAppSimulatorPage() {
 
           <button
             onClick={() => setActiveTab("profile")}
-            className={`flex flex-col items-center gap-0.5 ${activeTab === "profile" ? "text-indigo-600" : "text-slate-400"}`}
+            className={`flex flex-col items-center gap-0.5 ${activeTab === "profile" ? "text-brand-600" : "text-slate-400"}`}
           >
             <User className="h-5 w-5" />
             <span className="text-[10px] font-bold">Profile</span>
