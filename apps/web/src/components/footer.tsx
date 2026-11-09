@@ -33,11 +33,11 @@ export function Footer() {
               Marketplace
             </h4>
             <ul className="mt-3 space-y-2 text-xs text-slate-600 dark:text-slate-400">
-              <li><Link href="#products" className="hover:text-indigo-600 dark:hover:text-indigo-400">Textbooks & Study</Link></li>
-              <li><Link href="#products" className="hover:text-indigo-600 dark:hover:text-indigo-400">Laptops & Computers</Link></li>
-              <li><Link href="#products" className="hover:text-indigo-600 dark:hover:text-indigo-400">Calculators & Stationery</Link></li>
-              <li><Link href="#products" className="hover:text-indigo-600 dark:hover:text-indigo-400">Engineering Gear</Link></li>
-              <li><Link href="#products" className="hover:text-indigo-600 dark:hover:text-indigo-400">Dorm & Campus Living</Link></li>
+              <li><Link href="#products" className="hover:text-brand-600 dark:hover:text-brand-400">Textbooks & Study</Link></li>
+              <li><Link href="#products" className="hover:text-brand-600 dark:hover:text-brand-400">Laptops & Computers</Link></li>
+              <li><Link href="#products" className="hover:text-brand-600 dark:hover:text-brand-400">Calculators & Stationery</Link></li>
+              <li><Link href="#products" className="hover:text-brand-600 dark:hover:text-brand-400">Engineering Gear</Link></li>
+              <li><Link href="#products" className="hover:text-brand-600 dark:hover:text-brand-400">Dorm & Campus Living</Link></li>
             </ul>
           </div>
 
@@ -108,11 +108,11 @@ export function Footer() {
             </h4>
             <ul className="mt-3 space-y-2 text-xs text-slate-600 dark:text-slate-400">
               <li><Link href={"/lost-found" as any} className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline flex items-center gap-1"><span>Lost &amp; Found Desk</span><span className="text-[10px] bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">Active</span></Link></li>
-              <li><Link href="#how-it-works" className="hover:text-indigo-600 dark:hover:text-indigo-400">48h Escrow Guarantee</Link></li>
-              <li><Link href="#how-it-works" className="hover:text-indigo-600 dark:hover:text-indigo-400">Student ID Verification</Link></li>
-              <li><Link href="#how-it-works" className="hover:text-indigo-600 dark:hover:text-indigo-400">Hub Handover Security</Link></li>
-              <li><Link href="/sell" className="hover:text-indigo-600 dark:hover:text-indigo-400">0% Seller Fee Policy</Link></li>
-              <li><Link href="/mobile" className="hover:text-indigo-600 dark:hover:text-indigo-400">Mobile App Guide</Link></li>
+              <li><Link href="#how-it-works" className="hover:text-brand-600 dark:hover:text-brand-400">48h Escrow Guarantee</Link></li>
+              <li><Link href="#how-it-works" className="hover:text-brand-600 dark:hover:text-brand-400">Student ID Verification</Link></li>
+              <li><Link href="#how-it-works" className="hover:text-brand-600 dark:hover:text-brand-400">Hub Handover Security</Link></li>
+              <li><Link href="/sell" className="hover:text-brand-600 dark:hover:text-brand-400">0% Seller Fee Policy</Link></li>
+              <li><Link href="/mobile" className="hover:text-brand-600 dark:hover:text-brand-400">Mobile App Guide</Link></li>
               <li><Link href={"/download" as any} className="text-amber-600 dark:text-amber-400 font-bold hover:underline flex items-center gap-1"><span>Download Mobile APK (v2.2.1)</span><span className="text-[9px] bg-amber-500/15 text-amber-600 dark:text-amber-400 px-1 py-0.5 rounded font-mono">NEW</span></Link></li>
             </ul>
           </div>
@@ -123,9 +123,9 @@ export function Footer() {
             &copy; {new Date().getFullYear()} {t("footer.copyright")}
           </div>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Privacy Policy</a>
-            <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Terms of Escrow Service</a>
-            <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Campus Agent Support</a>
+            <a href="#" className="hover:text-brand-600 dark:hover:text-brand-400">Privacy Policy</a>
+            <a href="#" className="hover:text-brand-600 dark:hover:text-brand-400">Terms of Escrow Service</a>
+            <a href="#" className="hover:text-brand-600 dark:hover:text-brand-400">Campus Agent Support</a>
           </div>
         </div>
       </div>

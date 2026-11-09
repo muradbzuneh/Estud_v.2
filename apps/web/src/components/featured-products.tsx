@@ -297,7 +297,7 @@ export function FeaturedProducts({
             onClick={() => {
               setShowAll(true);
             }}
-            className="mt-3 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="mt-3 text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline"
           >
             {t("products.clearFilters")}
           </button>
@@ -411,33 +411,33 @@ export function FeaturedProducts({
             </motion.div>
           ))}
 
-          {/* Promotional Sell Card matching Mockup */}
+          {/* Promotional Sell Card (Strict 60-30-10 Design System) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4 }}
             whileHover={{ y: -3 }}
-            className="relative flex flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-twilight-950 via-twilight-900 to-twilight-950 border border-twilight-700 p-6 text-white shadow-xl"
+            className="relative flex flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-[#072448] via-[#0A1C3E] to-[#07152B] border border-white/15 p-6 text-white shadow-xl"
           >
             <div className="space-y-4">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 backdrop-blur border border-white/20">
-                <Sparkles className="h-6 w-6 text-brand-400" />
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 backdrop-blur border border-white/15 text-[#FF8738]">
+                <Sparkles className="h-5 w-5" />
               </div>
               <div>
                 <h3 className="text-lg font-black leading-snug">
                   {t("products.promoTitle")}
                 </h3>
-                <p className="mt-1 text-xs text-slate-300 leading-relaxed">
+                <p className="mt-1 text-xs text-slate-200 leading-relaxed font-normal">
                   {t("products.promoDesc")}
                 </p>
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-white/10">
+            <div className="mt-6 pt-4 border-t border-white/15">
               <Link
                 href="/sell"
-                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 py-3 text-xs font-medium text-white transition cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#FF8738] to-[#F59E0B] hover:from-[#F59E0B] hover:to-[#FF8738] py-3 text-xs font-bold text-slate-950 transition-all shadow-md shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               >
                 {t("products.promoBtn")} <ArrowRight className="h-3.5 w-3.5" />
               </Link>
