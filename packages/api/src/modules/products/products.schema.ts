@@ -1,16 +1,31 @@
 import { z } from "zod";
 
 export const listProductsFilterSchema = z.object({
-  categoryId: z.string().uuid().optional(),
-  institutionId: z.string().uuid().optional(),
-  campusId: z.string().uuid().optional(),
-  condition: z.enum(["NEW", "LIKE_NEW", "GOOD", "FAIR"]).optional(),
-  isExchangeEligible: z.boolean().optional(),
-  minPrice: z.number().optional(),
-  maxPrice: z.number().optional(),
-  search: z.string().optional(),
+  categoryId: z.string().uuid().nullable().optional(),
+  institutionId: z.string().uuid().nullable().optional(),
+  campusId: z.string().uuid().nullable().optional(),
+  condition: z.enum(["NEW", "LIKE_NEW", "GOOD", "FAIR"]).nullable().optional(),
+  isExchangeEligible: z.boolean().nullable().optional(),
+  minPrice: z.number().nullable().optional(),
+  maxPrice: z.number().nullable().optional(),
+  search: z.string().nullable().optional(),
   limit: z.number().min(1).max(100).default(20),
   cursor: z.number().default(0),
+});
+
+export const submitMobileListingSchema = z.object({
+  title: z.string().min(2, "Title must be at least 2 characters"),
+  description: z.string().optional(),
+  category: z.string().default("laptops"),
+  condition: z.enum(["NEW", "LIKE_NEW", "GOOD", "FAIR"]).default("LIKE_NEW"),
+  price: z.number().positive("Price must be positive"),
+  campus: z.string().optional(),
+  imageUrl: z.string().optional(),
+  images: z.array(z.string()).optional(),
+  isExchangeEligible: z.boolean().default(false),
+  sellerName: z.string().optional(),
+  sellerId: z.string().optional(),
+  status: z.enum(["APPROVED", "PENDING_VALUATION"]).default("PENDING_VALUATION"),
 });
 
 export const submitListingSchema = z.object({

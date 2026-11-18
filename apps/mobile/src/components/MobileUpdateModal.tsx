@@ -23,7 +23,7 @@ import { useApp } from "../context/AppContext";
 import { showSuccessToast } from "../utils/toast";
 
 export function MobileUpdateModal() {
-  const { isUpdateModalVisible, setUpdateModalVisible, appVersion, upgradeAppVersion, colors, language } = useApp();
+  const { isUpdateModalVisible, setUpdateModalVisible, appVersion, upgradeAppVersion, colors, language, serverRelease } = useApp();
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateFinished, setUpdateFinished] = useState(false);
 
@@ -40,10 +40,10 @@ export function MobileUpdateModal() {
     setTimeout(() => {
       setIsUpdating(false);
       setUpdateFinished(true);
-      upgradeAppVersion("v2.2.1");
+      upgradeAppVersion(serverRelease?.version || "v2.3.1");
       showSuccessToast(
-        language === "am" ? "ዝመናው ተጠናቋል!" : "Update Verified!",
-        "Estud v2.2.1 is active with realistic Ethiopian payment & soft dark mode"
+        language === "am" ? "ዝመናው ተጠናቋል!" : "App Upgraded Successfully!",
+        "Estud v2.3.1 LiveSync is active with screenshot proofs & admin review desk"
       );
     }, 1200);
   };
@@ -95,8 +95,8 @@ export function MobileUpdateModal() {
                 <CheckCircle2 size={15} color="#10B981" />
                 <Text style={[styles.featureText, { color: colors.textSecondary }]}>
                   {language === "am"
-                    ? "አማርኛ ቋንቋ እና የጨለማ ገጽታ (Dark Mode) ድጋፍ"
-                    : "Full Amharic (አማርኛ) localization & Dark Midnight theme"}
+                    ? "ቀጥታ የፖስትግሬስ (PostgreSQL) ግንኙነት እና ፈጣን የዕቃዎች እና ዜና ማመሳሰል"
+                    : "Real-Time PostgreSQL LiveSync: Admin products & breaking news update live"}
                 </Text>
               </View>
 
@@ -104,8 +104,8 @@ export function MobileUpdateModal() {
                 <CheckCircle2 size={15} color="#10B981" />
                 <Text style={[styles.featureText, { color: colors.textSecondary }]}>
                   {language === "am"
-                    ? "ቀጥታ የGoogle ማረጋገጫ (Google Auth) እና ዘመናዊ ቶስት"
-                    : "Direct Google OAuth integration & sleek animated toast alerts"}
+                    ? "ከመሳሪያ ቀጥታ ፎቶዎችን መስቀል (Device Photo & Camera Upload)"
+                    : "Native Device & Camera Photo Upload when listing products"}
                 </Text>
               </View>
 
@@ -113,8 +113,8 @@ export function MobileUpdateModal() {
                 <CheckCircle2 size={15} color="#10B981" />
                 <Text style={[styles.featureText, { color: colors.textSecondary }]}>
                   {language === "am"
-                    ? "ሙሉ በሙሉ ምላሽ ሰጪ (Responsive) የጀግና ሰሌዳ"
-                    : "Full-width adaptive responsive hero across all device sizes"}
+                    ? "የባንክ/ቴሌብር ደረሰኝ ስክሪንሽት ማረጋገጫ (Payment Screenshot Proof)"
+                    : "Bank & Telebirr Transfer Screenshot Proof for trusted escrow release"}
                 </Text>
               </View>
 
@@ -122,8 +122,8 @@ export function MobileUpdateModal() {
                 <CheckCircle2 size={15} color="#10B981" />
                 <Text style={[styles.featureText, { color: colors.textSecondary }]}>
                   {language === "am"
-                    ? "የተሻሻለ ባለ 4-ዲጂት ሚስጥራዊ ፒን እና የኤስክሮው ዋስትና"
-                    : "Enhanced 4-digit inspection PIN & SafeTrade Escrow protection"}
+                    ? "ባለ 48-ሰዓት ጊዜ ገደብ ያለው የሚስጥር ፒን (Time-Limited Security PIN)"
+                    : "Time-limited 48h Inspection PIN with dynamic security code refresh"}
                 </Text>
               </View>
             </View>
@@ -136,29 +136,18 @@ export function MobileUpdateModal() {
                   Build Channel: Android Preview APK (Verified Signed)
                 </Text>
                 <Text style={{ fontSize: 9, color: colors.textSecondary, marginTop: 2 }}>
-                  Release URL: https://estud.et/download/estud-v2.2.1.apk
+                  Release URL: https://estud.et/download/estud-v2.3.0.apk
                 </Text>
               </View>
             </View>
 
-            {/* Local App Reload Guide */}
-            <View style={{ padding: 10, borderRadius: 12, backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#F1F5F9", marginTop: 8 }}>
-              <Text style={{ fontSize: 10, fontWeight: "700", color: colors.textPrimary }}>
-                How local app receives updates:
-              </Text>
-              <Text style={{ fontSize: 9, color: colors.textSecondary, marginTop: 2, lineHeight: 13 }}>
-                • In Expo Go / Dev: Press 'r' in Metro terminal or shake phone to reload.
-
-                • On physical phone: Tap 'Download Direct APK' below or 'Refresh v2.2.1'.
-              </Text>
-            </View>
           </ScrollView>
 
           {/* Action Buttons */}
           <View style={{ gap: 8 }}>
             <TouchableOpacity
               onPress={() => {
-                Linking.openURL("https://expo.dev/artifacts/eas/4UCXyoHPFAjNU9QGN8EsLq4Xhv19Wz1Pwnf25D6jkH4.apk").catch(() => {
+                Linking.openURL(serverRelease?.downloadUrl || "https://expo.dev/artifacts/eas/4UCXyoHPFAjNU9QGN8EsLq4Xhv19Wz1Pwnf25D6jkH4.apk").catch(() => {
                   Linking.openURL("https://expo.dev/accounts/muradbzuneh/projects/estud-monorepo/builds").catch(() => {
                     showSuccessToast("Download Link", "https://estud.et/download");
                   });
@@ -178,7 +167,7 @@ export function MobileUpdateModal() {
             >
               <Download size={14} color={colors.primary} />
               <Text style={{ fontSize: 11, fontWeight: "700", color: colors.primary }}>
-                Download Signed APK (Direct v2.2.1)
+                Download Signed APK (v2.3.0)
               </Text>
             </TouchableOpacity>
 
@@ -202,14 +191,14 @@ export function MobileUpdateModal() {
                   <>
                     <ActivityIndicator size="small" color="#FFFFFF" />
                     <Text style={styles.actionBtnText}>
-                      {language === "am" ? "ዝመናው እየተጫነ ነው..." : "Applying Update v2.2.1..."}
+                      {language === "am" ? "ዝመናው እየተጫነ ነው..." : "Applying Update (v2.3.0)..."}
                     </Text>
                   </>
                 ) : (
                   <>
                     <RefreshCw size={15} color="#FFFFFF" />
                     <Text style={styles.actionBtnText}>
-                      {language === "am" ? "የቅርብ ጊዜውን ስሪት ጫን (v2.2.1)" : "Apply & Refresh v2.2.1"}
+                      {language === "am" ? "የቅርብ ጊዜውን ስሪት ጫን (v2.3.0)" : "Apply & Refresh v2.3.0"}
                     </Text>
                   </>
                 )}

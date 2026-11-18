@@ -1,8 +1,17 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { MobileProductItem } from "../components/MobileProductCard";
 import { ThemeMode, ColorPalette, getThemeColors } from "../theme/theme";
 import { Language, Translations, translations } from "../i18n/translations";
 import { showSuccessToast, showInfoToast, showUpdateToast } from "../utils/toast";
+import {
+  checkoutWithEscrowMobile,
+  fetchLiveProductsMobile,
+  fetchLiveBroadcastsMobile,
+  submitProductMobile,
+  CampusBroadcastItem,
+  AppReleaseInfo,
+  fetchLatestReleaseMobile,
+} from "../utils/api";
 
 export interface StudentUser {
   id: string;
@@ -30,7 +39,11 @@ export interface EscrowOrder {
   collectionMethod: "hub" | "runner";
   paymentMethod: "telebirr" | "cbe" | "cash";
   secretPin: string;
+  expiresAt: number;
+  expiresFormatted: string;
+  isExpired?: boolean;
   transactionReference?: string;
+  screenshotUrl?: string;
   status: "secured" | "at_hub" | "ready_inspection" | "completed" | "disputed";
   createdAt: string;
 }
@@ -129,6 +142,15 @@ export const INITIAL_PRODUCTS: MobileProductItem[] = [
   },
 ];
 
+const INITIAL_EXPIRATION_TIME = Date.now() + 48 * 60 * 60 * 1000;
+const INITIAL_EXPIRATION_FORMATTED = new Date(INITIAL_EXPIRATION_TIME).toLocaleDateString("en-US", {
+  weekday: "short",
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
 export const INITIAL_ORDERS: EscrowOrder[] = [
   {
     id: "ord-1",
@@ -144,6 +166,9 @@ export const INITIAL_ORDERS: EscrowOrder[] = [
     collectionMethod: "hub",
     paymentMethod: "telebirr",
     secretPin: "7 2 9 4",
+    expiresAt: INITIAL_EXPIRATION_TIME,
+    expiresFormatted: `Valid for 48h until ${INITIAL_EXPIRATION_FORMATTED}`,
+    isExpired: false,
     status: "ready_inspection",
     createdAt: "Today, 10:15 AM",
   },
@@ -189,20 +214,26 @@ interface AppContextType {
   isCampusModalVisible: boolean;
   setCampusModalVisible: (visible: boolean) => void;
 
-  // Products
+  // Real-time Products & Broadcasts
   products: MobileProductItem[];
-  addProduct: (product: Omit<MobileProductItem, "id" | "rating" | "reviewCount">) => void;
+  addProduct: (product: Omit<MobileProductItem, "id" | "rating" | "reviewCount">) => Promise<void>;
   favorites: Record<string, boolean>;
   toggleFavorite: (id: string) => void;
+  broadcasts: CampusBroadcastItem[];
+  isLiveConnected: boolean;
+  lastSyncedAt: Date | null;
+  refreshLiveProducts: () => Promise<void>;
+  refreshLiveBroadcasts: () => Promise<void>;
 
   // Product Detail & Checkout Modal
   selectedProduct: MobileProductItem | null;
   setSelectedProduct: (product: MobileProductItem | null) => void;
 
-  // Escrow Orders
+  // Escrow Orders & Expiration
   orders: EscrowOrder[];
-  createOrder: (order: Omit<EscrowOrder, "id" | "orderNumber" | "secretPin" | "status" | "createdAt">) => EscrowOrder;
+  createOrder: (order: Omit<EscrowOrder, "id" | "orderNumber" | "secretPin" | "expiresAt" | "expiresFormatted" | "status" | "createdAt">) => EscrowOrder;
   completeOrder: (orderId: string) => void;
+  regenerateOrderPin: (orderId: string) => string;
 
   // Lost & Found Desk Modal
   isLostFoundModalVisible: boolean;
@@ -210,16 +241,17 @@ interface AppContextType {
 
   // Version & Updates
   appVersion: string;
+  serverRelease: AppReleaseInfo | null;
+  isUpdateAvailable: boolean;
   isUpdateModalVisible: boolean;
   setUpdateModalVisible: (visible: boolean) => void;
-  checkForUpdates: () => void;
+  checkForUpdates: (silent?: boolean) => Promise<void>;
   upgradeAppVersion: (newVer?: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  // Theme default: light as requested
   const [theme, setThemeState] = useState<ThemeMode>("light");
   const [language, setLanguageState] = useState<Language>("en");
 
@@ -230,21 +262,119 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isAuthModalVisible, setAuthModalVisible] = useState(false);
   const [isUpdateModalVisible, setUpdateModalVisible] = useState(false);
   const [isLostFoundModalVisible, setLostFoundModalVisible] = useState(false);
+
+  // Products and real-time connectivity
   const [products, setProducts] = useState<MobileProductItem[]>(INITIAL_PRODUCTS);
+  const [broadcasts, setBroadcasts] = useState<CampusBroadcastItem[]>([]);
+  const [isLiveConnected, setIsLiveConnected] = useState<boolean>(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
+
   const [favorites, setFavorites] = useState<Record<string, boolean>>({ "prod-1": true, "prod-2": true });
   const [selectedProduct, setSelectedProduct] = useState<MobileProductItem | null>(null);
   const [orders, setOrders] = useState<EscrowOrder[]>(INITIAL_ORDERS);
 
   const colors = getThemeColors(theme);
   const t = translations[language];
-  const [appVersion, setAppVersion] = useState<string>("v2.2.1");
+  const [appVersion, setAppVersion] = useState<string>("v2.3.1");
+  const [serverRelease, setServerRelease] = useState<AppReleaseInfo | null>(null);
+  const [isUpdateAvailable, setIsUpdateAvailable] = useState<boolean>(false);
+
+  /**
+   * Automatically queries server for new releases and shows update alert if available
+   */
+  const checkForUpdates = useCallback(async (silent = false) => {
+    try {
+      const release = await fetchLatestReleaseMobile();
+      if (release) {
+        setIsLiveConnected(true);
+        setLastSyncedAt(new Date());
+        setServerRelease(release);
+        const serverVer = release.version.replace(/^v/, "").trim();
+        const currentVer = appVersion.replace(/^v/, "").trim();
+        const hasNewerVersion = serverVer !== currentVer;
+
+        if (hasNewerVersion || release.forceUpdate) {
+          setIsUpdateAvailable(true);
+          if (!silent || release.forceUpdate) {
+            setUpdateModalVisible(true);
+            showUpdateToast(
+              language === "am" ? "አዲስ ዝመና ተገኝቷል!" : `New Update Available (${release.version})!`,
+              release.title
+            );
+          }
+        } else {
+          setIsUpdateAvailable(false);
+          if (!silent) {
+            showSuccessToast(
+              language === "am" ? "የቅርብ ጊዜ ስሪት ነው" : "You are up to date!",
+              `Running Estud ${appVersion} LiveSync`
+            );
+          }
+        }
+      }
+    } catch {
+      // Offline fallback
+    }
+  }, [appVersion, language]);
+
+  /**
+   * Refreshes active listings from PostgreSQL
+   */
+  const refreshLiveProducts = useCallback(async () => {
+    try {
+      const live = await fetchLiveProductsMobile();
+      if (live) {
+        if (live.length > 0) {
+          setProducts(live);
+        }
+        setIsLiveConnected(true);
+        setLastSyncedAt(new Date());
+      }
+    } catch {
+      // Offline fallback
+    }
+  }, []);
+
+  /**
+   * Refreshes real-time campus broadcasts sent from the Admin Desk
+   */
+  const refreshLiveBroadcasts = useCallback(async () => {
+    try {
+      const liveNews = await fetchLiveBroadcastsMobile();
+      if (liveNews) {
+        if (liveNews.length > 0) {
+          setBroadcasts(liveNews);
+        }
+        setIsLiveConnected(true);
+        setLastSyncedAt(new Date());
+      }
+    } catch {
+      // Offline fallback
+    }
+  }, []);
+
+  // Live Auto-Sync polling: fetches live products, news, and updates automatically every 8 seconds
+  useEffect(() => {
+    refreshLiveProducts();
+    refreshLiveBroadcasts();
+    checkForUpdates(true);
+
+    const interval = setInterval(() => {
+      refreshLiveProducts();
+      refreshLiveBroadcasts();
+      checkForUpdates(true);
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, [refreshLiveProducts, refreshLiveBroadcasts, checkForUpdates]);
 
   const upgradeAppVersion = (newVer?: string) => {
-    const updated = newVer || "v2.2.1";
+    const updated = newVer || (serverRelease ? `v${serverRelease.version}` : "v2.3.1");
     setAppVersion(updated);
+    setIsUpdateAvailable(false);
     showSuccessToast(
       language === "am" ? "ዝመናው ተጠናቋል!" : "App Upgraded Successfully!",
-      `Running Estud ${updated} SafeTrade Release`
+      `Running Estud ${updated} Fluent LiveSync & Trust Edition`
     );
   };
 
@@ -294,7 +424,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const loginWithGoogle = async () => {
-    // Realistic Google OAuth sign-in flow
     const googleUser: StudentUser = {
       id: "google-" + Date.now(),
       name: "Murad Bezuneh",
@@ -322,19 +451,48 @@ export function AppProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const addProduct = (newProduct: Omit<MobileProductItem, "id" | "rating" | "reviewCount">) => {
+  /**
+   * Submits student listing for Admin Desk review & approval before going live
+   */
+  const addProduct = async (newProduct: Omit<MobileProductItem, "id" | "rating" | "reviewCount">) => {
+    const tempId = "prod-" + Date.now();
     const item: MobileProductItem = {
       ...newProduct,
-      id: "prod-" + Date.now(),
+      id: tempId,
       rating: 5.0,
       reviewCount: 1,
       badge: "New",
     };
-    setProducts((prev) => [item, ...prev]);
+
     showSuccessToast(
-      language === "am" ? "ዕቃዎ ተለጥፏል!" : "Listing Published!",
-      `"${item.title}" is now visible to campus students`
+      language === "am" ? "ዕቃዎ ለግምገማ ቀርቧል!" : "Submitted for Review!",
+      language === "am"
+        ? `"${item.title}" በአድሚን ተገምግሞ ሲፈቀድ በገበያው ላይ ይታያል።`
+        : `"${item.title}" will appear live on marketplace once approved by Admin.`
     );
+
+    try {
+      await submitProductMobile({
+        title: item.title,
+        description: `${item.title} (${item.condition}) - Listed from mobile at ${item.location}`,
+        category: item.category || "laptops",
+        condition: (item.condition?.includes("Brand")
+          ? "NEW"
+          : item.condition?.includes("Good")
+          ? "GOOD"
+          : "LIKE_NEW") as any,
+        price: item.price,
+        campus: item.location,
+        imageUrl: item.imageUrl,
+        sellerName: user?.name || "Verified Student Seller",
+        sellerId: user?.id,
+      });
+
+      // Refresh live approved products
+      await refreshLiveProducts();
+    } catch (err: any) {
+      console.warn("[Mobile API] Listing submission note:", err?.message || err);
+    }
   };
 
   const toggleFavorite = (id: string) => {
@@ -348,25 +506,117 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const createOrder = (orderData: Omit<EscrowOrder, "id" | "orderNumber" | "secretPin" | "status" | "createdAt">) => {
+  /**
+   * Creates escrow order with 48-Hour PIN expiration and syncs payment proof to Admin Queue
+   */
+  const createOrder = (
+    orderData: Omit<
+      EscrowOrder,
+      "id" | "orderNumber" | "secretPin" | "expiresAt" | "expiresFormatted" | "status" | "createdAt"
+    >
+  ) => {
     const randomPin = `${Math.floor(1 + Math.random() * 9)} ${Math.floor(0 + Math.random() * 9)} ${Math.floor(0 + Math.random() * 9)} ${Math.floor(1 + Math.random() * 9)}`;
     const randomOrderNumber = `EST-${Math.floor(10000 + Math.random() * 89999)}`;
-    
+    const expiresAt = Date.now() + 48 * 60 * 60 * 1000; // 48 Hours validity
+    const expiresFormatted = new Date(expiresAt).toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
     const newOrder: EscrowOrder = {
       ...orderData,
       id: "ord-" + Date.now(),
       orderNumber: randomOrderNumber,
       secretPin: randomPin,
+      expiresAt,
+      expiresFormatted: `Valid for 48h until ${expiresFormatted}`,
+      isExpired: false,
       status: "ready_inspection",
       createdAt: "Just now",
     };
 
     setOrders((prev) => [newOrder, ...prev]);
     showSuccessToast(
-      language === "am" ? "የኤስክሮው ክፍያ ተይዟል!" : "Funds Locked in Escrow!",
-      `Inspection PIN: ${randomPin}`
+      language === "am" ? "የተጠበቀ ክፍያ ተይዟል!" : "Funds Locked in Safe Protection!",
+      `Inspection PIN: ${randomPin} (Valid for 48h)`
     );
+
+    // Live sync order & payment to PostgreSQL and Admin Verification Queue
+    const channelMap: Record<string, "TELEBIRR" | "CBE_TRANSFER" | "OTHER_BANK"> = {
+      telebirr: "TELEBIRR",
+      cbe: "CBE_TRANSFER",
+      cash: "OTHER_BANK",
+    };
+
+    checkoutWithEscrowMobile({
+      productId: orderData.productId,
+      deliveryMethod: orderData.collectionMethod,
+      deliveryFee: orderData.collectionMethod === "runner" ? 75 : 0,
+      channel: channelMap[orderData.paymentMethod] || "TELEBIRR",
+      bankTransactionReference: orderData.transactionReference || ("MOB-" + Date.now().toString(36).toUpperCase()),
+      screenshotUrl: orderData.screenshotUrl,
+      senderAccountOrPhone: user?.name || "Mobile Student User",
+      notes: `Mobile order for ${orderData.productTitle} (${orderData.collectionMethod === "runner" ? "Student Runner" : "Campus Hub"})`,
+    })
+      .then((serverRes) => {
+        if (serverRes?.orderNumber) {
+          setOrders((current) =>
+            current.map((o) =>
+              o.id === newOrder.id ? { ...o, orderNumber: serverRes.orderNumber } : o
+            )
+          );
+        }
+        showSuccessToast(
+          language === "am" ? "ክፍያዎ ለአስተዳዳሪው ደርሷል!" : "Payment Synced to Campus Admin!",
+          language === "am"
+            ? `የማረጋገጫ ሰነድ (${orderData.transactionReference}) ለአስተዳዳሪው ተልኳል`
+            : `Receipt proof & ref ${orderData.transactionReference} delivered to Admin verification desk`
+        );
+      })
+      .catch((err) => {
+        console.warn("[Mobile API] Escrow sync note:", err?.message || err);
+      });
+
     return newOrder;
+  };
+
+  /**
+   * Regenerates/extends the Secret Inspection PIN if expired or refreshed for security
+   */
+  const regenerateOrderPin = (orderId: string): string => {
+    const freshPin = `${Math.floor(1 + Math.random() * 9)} ${Math.floor(0 + Math.random() * 9)} ${Math.floor(0 + Math.random() * 9)} ${Math.floor(1 + Math.random() * 9)}`;
+    const newExpiresAt = Date.now() + 48 * 60 * 60 * 1000;
+    const newExpiresFormatted = new Date(newExpiresAt).toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === orderId
+          ? {
+              ...o,
+              secretPin: freshPin,
+              expiresAt: newExpiresAt,
+              expiresFormatted: `Valid for 48h until ${newExpiresFormatted}`,
+              isExpired: false,
+            }
+          : o
+      )
+    );
+
+    showSuccessToast(
+      language === "am" ? "አዲስ ሚስጥራዊ ፒን ተፈጥሯል!" : "Fresh Secret PIN Generated!",
+      `New PIN: ${freshPin} • Valid for 48 hours`
+    );
+
+    return freshPin;
   };
 
   const completeOrder = (orderId: string) => {
@@ -379,15 +629,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const checkForUpdates = () => {
-    showUpdateToast(
-      language === "am" ? "አዳዲስ ዝመናዎች እየተፈተሹ ነው..." : "Checking for updates...",
-      "Connecting to Estud Release CDN"
-    );
-    setTimeout(() => {
-      setUpdateModalVisible(true);
-    }, 800);
-  };
+
 
   return (
     <AppContext.Provider
@@ -416,16 +658,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
         addProduct,
         favorites,
         toggleFavorite,
+        broadcasts,
+        isLiveConnected,
+        lastSyncedAt,
+        refreshLiveProducts,
+        refreshLiveBroadcasts,
         selectedProduct,
         setSelectedProduct,
         orders,
         createOrder,
         completeOrder,
-        appVersion,
-        isUpdateModalVisible,
-        setUpdateModalVisible,
+        regenerateOrderPin,
         isLostFoundModalVisible,
         setLostFoundModalVisible,
+        appVersion,
+        serverRelease,
+        isUpdateAvailable,
+        isUpdateModalVisible,
+        setUpdateModalVisible,
         checkForUpdates,
         upgradeAppVersion,
       }}

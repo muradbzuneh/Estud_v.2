@@ -4,6 +4,7 @@ import { ProductsService } from "./products.service";
 import {
   listProductsFilterSchema,
   submitListingSchema,
+  submitMobileListingSchema,
   adminValuationSchema,
   adminApproveSchema,
   adminListProductsFilterSchema,
@@ -38,6 +39,16 @@ export const productsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const service = new ProductsService(ctx.db);
       return service.submitListing(ctx.user.id, input);
+    }),
+
+  submitMobileListing: publicProcedure
+    .input(submitMobileListingSchema)
+    .mutation(async ({ ctx, input }) => {
+      const service = new ProductsService(ctx.db);
+      return service.submitMobileListing({
+        ...input,
+        sellerId: ctx.user?.id || input.sellerId,
+      });
     }),
 
   adminValuate: adminProcedure

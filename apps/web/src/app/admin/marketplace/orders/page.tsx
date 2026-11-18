@@ -19,6 +19,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge, SectionTypeTag } from "@/components/ui/status-badge";
 import {
   Table,
   TableBody,
@@ -284,9 +285,7 @@ export default function AdminOrdersPage() {
                   ETB {order.totalAmount}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={order.statusVariant} className="text-[10px]">
-                    {order.status}
-                  </Badge>
+                  <StatusBadge status={order.status} />
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">{order.createdAt}</TableCell>
                 <TableCell className="text-right pr-6">

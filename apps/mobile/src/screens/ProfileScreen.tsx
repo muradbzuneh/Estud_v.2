@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Modal,
+  TextInput,
+  ActivityIndicator,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import {
@@ -28,9 +31,18 @@ import {
   CreditCard,
   Search,
   Navigation,
+  Wifi,
+  Server,
+  Edit3,
+  Check,
 } from "lucide-react-native";
 import { useApp } from "../context/AppContext";
 import { showInfoToast, showSuccessToast } from "../utils/toast";
+import {
+  getApiBaseUrl,
+  setCustomApiBaseUrl,
+  pingBackendServer,
+} from "../utils/api";
 
 export function ProfileScreen() {
   const {
@@ -53,7 +65,50 @@ export function ProfileScreen() {
     checkForUpdates,
     createOrder,
     setLostFoundModalVisible,
+    isLiveConnected,
   } = useApp();
+
+  const [isTestingPing, setIsTestingPing] = useState(false);
+  const [isServerModalOpen, setServerModalOpen] = useState(false);
+  const [serverUrlInput, setServerUrlInput] = useState(getApiBaseUrl());
+
+  const handleTestConnection = async () => {
+    setIsTestingPing(true);
+    const result = await pingBackendServer();
+    setIsTestingPing(false);
+    if (result.ok) {
+      showSuccessToast(
+        language === "am" ? "የሰርቨር ግንኙነት ተሳክቷል!" : "Backend Connected!",
+        `Host responded LIVE at ${result.url}`
+      );
+      checkForUpdates(true);
+    } else {
+      showInfoToast(
+        language === "am" ? "ከሰርቨር ጋር መገናኘት አልተቻለም" : "Backend Offline / Unreachable",
+        `${result.statusText} at ${result.url}. Connect to same Wi-Fi / Hotspot.`
+      );
+    }
+  };
+
+  const handleSaveServerUrl = () => {
+    const trimmed = serverUrlInput.trim();
+    if (!trimmed) return;
+    setCustomApiBaseUrl(trimmed);
+    setServerModalOpen(false);
+    showSuccessToast(
+      language === "am" ? "ሰርቨር ተዘምኗል" : "Server Endpoint Saved",
+      `Connecting to ${trimmed}`
+    );
+    handleTestConnection();
+  };
+
+  const handleResetServerUrl = () => {
+    setCustomApiBaseUrl(null);
+    setServerUrlInput(getApiBaseUrl());
+    setServerModalOpen(false);
+    showInfoToast("Reset to Default", "Reverted to default IP");
+    handleTestConnection();
+  };
 
   const savedProducts = products.filter((p) => favorites[p.id]);
   const isDark = colors.mode === "dark";
@@ -255,188 +310,158 @@ export function ProfileScreen() {
               <Text style={[styles.prefSub, { color: colors.textSecondary }]}>{appVersion} &bull; SafeTrade Release</Text>
             </View>
           </View>
-          <View style={styles.verifiedTag}>
-            <CheckCircle2 size={11} color="#10B981" />
-            <Text style={styles.verifiedTagText}>Active</Text>
+          <View
+            style={[
+              styles.verifiedTag,
+              {
+                backgroundColor: isLiveConnected ? "rgba(16, 185, 129, 0.15)" : "rgba(245, 158, 11, 0.15)",
+                borderColor: isLiveConnected ? "#10B981" : "#F59E0B",
+              },
+            ]}
+          >
+            <View
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: 4,
+                backgroundColor: isLiveConnected ? "#10B981" : "#F59E0B",
+                marginRight: 4,
+              }}
+            />
+            <Text style={[styles.verifiedTagText, { color: isLiveConnected ? "#10B981" : "#D97706" }]}>
+              {isLiveConnected ? "Live" : "Local Sync"}
+            </Text>
           </View>
+        </View>
+
+        {/* Real-time Backend Host Endpoint & Diagnostic Ping */}
+        <View
+          style={{
+            marginTop: 12,
+            padding: 10,
+            borderRadius: 10,
+            backgroundColor: isDark ? "rgba(255, 255, 255, 0.04)" : "#F1F5F9",
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <Server size={12} color={colors.primary} />
+              <Text style={{ fontSize: 10, color: colors.textMuted, fontWeight: "700", textTransform: "uppercase" }}>
+                Backend Server
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                setServerUrlInput(getApiBaseUrl());
+                setServerModalOpen(true);
+              }}
+              style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
+            >
+              <Edit3 size={11} color={colors.primary} />
+              <Text style={{ fontSize: 11, fontWeight: "600", color: colors.primary }}>Edit</Text>
+            </TouchableOpacity>
+          </View>
+
+          <Text numberOfLines={1} style={{ fontSize: 12, fontWeight: "600", color: colors.textPrimary, marginBottom: 8 }}>
+            {getApiBaseUrl()}
+          </Text>
+
+          <TouchableOpacity
+            onPress={handleTestConnection}
+            disabled={isTestingPing}
+            activeOpacity={0.8}
+            style={{
+              paddingVertical: 7,
+              borderRadius: 6,
+              backgroundColor: isDark ? "rgba(59, 130, 246, 0.2)" : "#DBEAFE",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "row",
+              gap: 6,
+            }}
+          >
+            {isTestingPing ? (
+              <ActivityIndicator size="small" color={colors.primary} />
+            ) : (
+              <>
+                <Wifi size={13} color={colors.primary} />
+                <Text style={{ fontSize: 11, fontWeight: "700", color: colors.primary }}>
+                  Test Server Ping
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* Dedicated Update Button */}
         <TouchableOpacity
-          onPress={checkForUpdates}
+          onPress={() => checkForUpdates(false)}
           activeOpacity={0.88}
-          style={[styles.updateBtn, { backgroundColor: colors.primary }]}
+          style={[styles.updateBtn, { backgroundColor: colors.primary, marginTop: 12 }]}
         >
           <RefreshCw size={14} color="#FFFFFF" />
           <Text style={styles.updateBtnText}>{t.btnCheckUpdates}</Text>
         </TouchableOpacity>
       </Animatable.View>
 
-      {/* Manual Testing & QA Lab Section (Requested for instant end-to-end verification) */}
-      <Animatable.View
-        animation="fadeInUp"
-        duration={620}
-        style={[styles.sectionCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+      {/* Backend Server Configuration Modal */}
+      <Modal
+        visible={isServerModalOpen}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setServerModalOpen(false)}
       >
-        <View style={styles.sectionHeader}>
-          <View style={styles.sectionTitleRow}>
-            <Zap size={16} color="#F59E0B" />
-            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-              {language === "am" ? "የቀጥታ ሙከራ ማዕከል (QA Lab)" : "Manual Feature Verification Lab"}
+        <View style={styles.serverModalOverlay}>
+          <View style={[styles.serverModalContent, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 8 }}>
+              <Server size={18} color={colors.primary} />
+              <Text style={[styles.serverModalTitle, { color: colors.textPrimary }]}>
+                Configure Backend Server
+              </Text>
+            </View>
+            <Text style={[styles.serverModalDesc, { color: colors.textSecondary }]}>
+              Enter your computer host IP (e.g. http://192.168.137.89:3000) or public deployment URL.
             </Text>
-          </View>
-          <View style={[styles.verifiedTag, { backgroundColor: "rgba(245, 158, 11, 0.15)" }]}>
-            <Text style={[styles.verifiedTagText, { color: "#F59E0B" }]}>Interactive</Text>
+
+            <TextInput
+              value={serverUrlInput}
+              onChangeText={setServerUrlInput}
+              placeholder="http://192.168.137.89:3000"
+              placeholderTextColor={colors.textMuted}
+              autoCapitalize="none"
+              autoCorrect={false}
+              style={[
+                styles.serverModalInput,
+                {
+                  backgroundColor: colors.inputBg,
+                  borderColor: colors.border,
+                  color: colors.textPrimary,
+                },
+              ]}
+            />
+
+            <View style={styles.serverModalBtnRow}>
+              <TouchableOpacity
+                onPress={handleResetServerUrl}
+                style={[styles.serverModalSecondaryBtn, { borderColor: colors.border }]}
+              >
+                <Text style={[styles.serverModalSecondaryBtnText, { color: colors.textSecondary }]}>
+                  Reset Default
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleSaveServerUrl}
+                style={[styles.serverModalPrimaryBtn, { backgroundColor: colors.primary }]}
+              >
+                <Check size={14} color="#FFFFFF" />
+                <Text style={styles.serverModalPrimaryBtnText}>Save & Ping</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-
-        <Text style={{ fontSize: 11, color: colors.textSecondary, marginBottom: 12 }}>
-          {language === "am"
-            ? "ሁሉንም ተግባራት ወዲያውኑ በእጅዎ ይሞክሩ እና ያረጋግጡ:"
-            : "Test end-to-end user and admin workflows manually with live simulation triggers:"}
-        </Text>
-
-        <View style={{ gap: 8 }}>
-          {/* Action 1: Simulate Escrow Order with 4-Digit PIN */}
-          <TouchableOpacity
-            onPress={() => {
-              const testOrder = createOrder({
-                productId: "prod-sim-" + Date.now(),
-                productTitle: "MacBook Air M1 (256GB / 8GB)",
-                productPrice: 45000,
-                escrowFee: 2250,
-                totalAmount: 47250,
-                imageUrl: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&auto=format&fit=crop&q=80",
-                campusHub: "AAU 4 Kilo Gate 1 Safe Trade Desk",
-                sellerName: "Abebe G. (AAU 4 Kilo)",
-                collectionMethod: "hub",
-                paymentMethod: "telebirr",
-              });
-              setActiveTab("activity");
-              showSuccessToast(
-                "Test Escrow Order Created!",
-                `PIN: ${testOrder.secretPin} • Check Activity tab`
-              );
-            }}
-            activeOpacity={0.8}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: 12,
-              borderRadius: 14,
-              backgroundColor: isDark ? "rgba(16, 185, 129, 0.12)" : "#ECFDF5",
-              borderWidth: 1,
-              borderColor: isDark ? "#059669" : "#A7F3D0",
-            }}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
-              <Zap size={15} color="#10B981" />
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 12, fontWeight: "800", color: isDark ? "#34D399" : "#065F46" }}>
-                  1. Trigger Mock Escrow Order &amp; 4-Digit PIN
-                </Text>
-                <Text style={{ fontSize: 10, color: isDark ? "#A7F3D0" : "#047857" }}>
-                  Locks ETB in escrow &amp; opens in Activity Tracker
-                </Text>
-              </View>
-            </View>
-            <ChevronRight size={14} color="#10B981" />
-          </TouchableOpacity>
-
-          {/* Action 2: Test Telebirr / CBE Cashless Payout */}
-          <TouchableOpacity
-            onPress={() => {
-              showSuccessToast(
-                "Telebirr Payout Verified!",
-                "100% item value dispatched to student seller account (+251911000000)"
-              );
-            }}
-            activeOpacity={0.8}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: 12,
-              borderRadius: 14,
-              backgroundColor: isDark ? "rgba(59, 130, 246, 0.12)" : "#EFF6FF",
-              borderWidth: 1,
-              borderColor: isDark ? "#2563EB" : "#BFDBFE",
-            }}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
-              <CreditCard size={15} color="#3B82F6" />
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 12, fontWeight: "800", color: isDark ? "#60A5FA" : "#1E40AF" }}>
-                  2. Simulate Telebirr / CBE Payout Release
-                </Text>
-                <Text style={{ fontSize: 10, color: isDark ? "#93C5FD" : "#1D4ED8" }}>
-                  Tests seller payout settlement after inspection PIN
-                </Text>
-              </View>
-            </View>
-            <ChevronRight size={14} color="#3B82F6" />
-          </TouchableOpacity>
-
-          {/* Action 3: Test Campus Lost & Found Desk */}
-          <TouchableOpacity
-            onPress={() => setLostFoundModalVisible(true)}
-            activeOpacity={0.8}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: 12,
-              borderRadius: 14,
-              backgroundColor: isDark ? "rgba(245, 158, 11, 0.12)" : "#FFFBEB",
-              borderWidth: 1,
-              borderColor: isDark ? "#D97706" : "#FDE68A",
-            }}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
-              <Search size={15} color="#F59E0B" />
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 12, fontWeight: "800", color: isDark ? "#FBBF24" : "#92400E" }}>
-                  3. Test Campus Lost &amp; Found Intake
-                </Text>
-                <Text style={{ fontSize: 10, color: isDark ? "#FDE68A" : "#B45309" }}>
-                  File lost student IDs, claim found calculators &amp; gear
-                </Text>
-              </View>
-            </View>
-            <ChevronRight size={14} color="#F59E0B" />
-          </TouchableOpacity>
-
-          {/* Action 4: Test Campus Google Map Hubs */}
-          <TouchableOpacity
-            onPress={() => setCampusModalVisible(true)}
-            activeOpacity={0.8}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: 12,
-              borderRadius: 14,
-              backgroundColor: isDark ? "rgba(168, 85, 247, 0.12)" : "#FAF5FF",
-              borderWidth: 1,
-              borderColor: isDark ? "#9333EA" : "#E9D5FF",
-            }}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
-              <Navigation size={15} color="#A855F7" />
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 12, fontWeight: "800", color: isDark ? "#C084FC" : "#6B21A8" }}>
-                  4. Test Campus Google Maps Hub Navigation
-                </Text>
-                <Text style={{ fontSize: 10, color: isDark ? "#E9D5FF" : "#7E22CE" }}>
-                  Explore 9 Ethiopian university safe gates with GPS
-                </Text>
-              </View>
-            </View>
-            <ChevronRight size={14} color="#A855F7" />
-          </TouchableOpacity>
-        </View>
-      </Animatable.View>
+      </Modal>
 
       {/* Saved Items Section */}
       <Animatable.View
@@ -944,5 +969,72 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "800",
     color: "#EF4444",
+  },
+  serverModalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  serverModalContent: {
+    width: "100%",
+    maxWidth: 380,
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  serverModalTitle: {
+    fontSize: 15,
+    fontWeight: "800",
+  },
+  serverModalDesc: {
+    fontSize: 12,
+    lineHeight: 18,
+    marginBottom: 14,
+  },
+  serverModalInput: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 13,
+    fontWeight: "600",
+    marginBottom: 16,
+  },
+  serverModalBtnRow: {
+    flexDirection: "row",
+    gap: 10,
+    justifyContent: "flex-end",
+  },
+  serverModalSecondaryBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  serverModalSecondaryBtnText: {
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  serverModalPrimaryBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  serverModalPrimaryBtnText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "800",
   },
 });

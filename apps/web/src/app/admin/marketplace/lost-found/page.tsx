@@ -29,6 +29,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge, SectionTypeTag } from "@/components/ui/status-badge";
 import {
   Table,
   TableBody,
@@ -417,15 +418,9 @@ export default function AdminLostFoundPage() {
                     <div className="text-[10px] text-muted-foreground font-normal">By: {report.reporter}</div>
                   </TableCell>
                   <TableCell>
-                    <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        report.type === "FOUND"
-                          ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
-                          : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
-                      }`}
-                    >
+                    <SectionTypeTag className={report.type === "FOUND" ? "text-emerald-600 bg-emerald-500/10 border-emerald-500/20" : "text-amber-600 bg-amber-500/10 border-amber-500/20"}>
                       {report.type}
-                    </span>
+                    </SectionTypeTag>
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">{report.category}</TableCell>
                   <TableCell className="text-xs text-muted-foreground">
@@ -435,17 +430,7 @@ export default function AdminLostFoundPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        report.status === "VERIFIED_RECOVERED"
-                          ? "bg-blue-500/10 text-blue-600 border border-blue-500/20"
-                          : report.status === "CLAIM_SUBMITTED"
-                          ? "bg-purple-500/10 text-purple-600 border border-purple-500/20"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {report.status}
-                    </span>
+                    <StatusBadge status={report.status} />
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">{report.createdAt}</TableCell>
                   <TableCell className="text-right pr-6">

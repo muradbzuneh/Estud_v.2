@@ -21,9 +21,14 @@ import {
   Repeat,
   Sparkles,
   ArrowRight,
+  Upload,
+  Image as ImageIcon,
+  Loader2,
+  Clock,
 } from "lucide-react-native";
 import { useApp, ETHIOPIAN_CAMPUSES } from "../context/AppContext";
 import { showErrorToast, showSuccessToast, showInfoToast } from "../utils/toast";
+import { pickImageFromDevice, takePhotoWithCamera } from "../utils/imagePicker";
 
 const SAMPLE_PHOTO_PRESETS = [
   "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&auto=format&fit=crop&q=80",
@@ -58,14 +63,54 @@ export function SellScreen() {
   const [price, setPrice] = useState("");
   const [isBarterOpen, setIsBarterOpen] = useState(false);
   const [barterPreference, setBarterPreference] = useState("");
-  const [photos, setPhotos] = useState<string[]>([SAMPLE_PHOTO_PRESETS[0]]);
+  const [photos, setPhotos] = useState<string[]>([]);
   const [submittedProduct, setSubmittedProduct] = useState<any | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const numericPrice = parseFloat(price.replace(/[^0-9.]/g, "")) || 0;
   const buyerEscrowFee = Math.round(numericPrice * 0.05);
   const isDark = colors.mode === "dark";
 
-  const handleAddPhoto = () => {
+  // Pick photo from device gallery (files/photos)
+  const handlePickFromDevice = async () => {
+    if (photos.length >= 5) {
+      showErrorToast(
+        language === "am" ? "የፎቶ ገደብ" : "Photo Limit",
+        "You can upload up to 5 photos max."
+      );
+      return;
+    }
+    const uri = await pickImageFromDevice();
+    if (uri) {
+      setPhotos([...photos, uri]);
+      showSuccessToast(
+        language === "am" ? "ፎቶ ከመሳሪያዎ ተጨምሯል" : "Photo Added from Device",
+        `Listing now has ${photos.length + 1} photos`
+      );
+    }
+  };
+
+  // Capture photo with device camera
+  const handleCameraSnap = async () => {
+    if (photos.length >= 5) {
+      showErrorToast(
+        language === "am" ? "የፎቶ ገደብ" : "Photo Limit",
+        "You can upload up to 5 photos max."
+      );
+      return;
+    }
+    const uri = await takePhotoWithCamera();
+    if (uri) {
+      setPhotos([...photos, uri]);
+      showSuccessToast(
+        language === "am" ? "ካሜራ ፎቶ ተጨምሯል" : "Camera Photo Captured",
+        `Listing now has ${photos.length + 1} photos`
+      );
+    }
+  };
+
+  // Quick preset sample photo
+  const handleAddSamplePreset = () => {
     if (photos.length >= 5) {
       showErrorToast(
         language === "am" ? "የፎቶ ገደብ" : "Photo Limit",
@@ -76,27 +121,31 @@ export function SellScreen() {
     const nextPhoto = SAMPLE_PHOTO_PRESETS[photos.length % SAMPLE_PHOTO_PRESETS.length];
     setPhotos([...photos, nextPhoto]);
     showSuccessToast(
-      language === "am" ? "ፎቶ ተጨምሯል" : "Photo Added",
+      language === "am" ? "የሙከራ ፎቶ ተጨምሯል" : "Sample Photo Added",
       `Listing has ${photos.length + 1} photos`
     );
   };
 
   const handleRemovePhoto = (index: number) => {
-    if (photos.length === 1) {
-      showErrorToast(
-        language === "am" ? "ቢያንስ 1 ፎቶ ያስፈልጋል" : "Photo Required",
-        "Your listing must have at least one photo."
-      );
-      return;
-    }
     setPhotos(photos.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = () => {
-    if (!title.trim()) {
+  const handleSubmit = async () => {
+    if (photos.length === 0) {
+      showErrorToast(
+        language === "am" ? "ፎቶ ያስፈልጋል" : "Photo Required",
+        language === "am"
+          ? "እባክዎ ከመሳሪያዎ ወይም በካሜራ ቢያንስ 1 የዕቃዎን ፎቶ ያያይዙ"
+          : "Please upload at least one photo of your item from your device or camera."
+      );
+      return;
+    }
+    if (!title.trim() || title.trim().length < 3) {
       showErrorToast(
         language === "am" ? "የዕቃው ስም ይጎድላል" : "Missing Title",
-        "Please enter a descriptive item title"
+        language === "am"
+          ? "እባክዎ ትክክለኛ የዕቃ ስም ያስገቡ (ቢያንስ 3 ፊደላት)"
+          : "Please enter a descriptive item title (at least 3 characters)"
       );
       return;
     }
@@ -107,6 +156,8 @@ export function SellScreen() {
       );
       return;
     }
+
+    setIsSubmitting(true);
 
     const newProd = {
       title: title.trim(),
@@ -119,13 +170,20 @@ export function SellScreen() {
       badge: "New" as const,
     };
 
-    addProduct(newProd);
-    setSubmittedProduct(newProd);
+    try {
+      await addProduct(newProd);
+      setSubmittedProduct(newProd);
+    } catch {
+      // Handled in addProduct
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleResetForm = () => {
     setTitle("");
     setPrice("");
+    setPhotos([]);
     setBarterPreference("");
     setIsBarterOpen(false);
     setSubmittedProduct(null);
@@ -134,16 +192,16 @@ export function SellScreen() {
   if (submittedProduct) {
     return (
       <ScrollView contentContainerStyle={[styles.successContainer, { backgroundColor: colors.background }]}>
-        <Animatable.View animation="zoomIn" duration={450} style={styles.successIconCircle}>
-          <CheckCircle2 size={52} color="#10B981" />
+        <Animatable.View animation="zoomIn" duration={450} style={[styles.successIconCircle, { backgroundColor: "#FE9901" + "20" }]}>
+          <Clock size={48} color="#FE9901" />
         </Animatable.View>
         <Text style={[styles.successTitle, { color: colors.textPrimary }]}>
-          {language === "am" ? "ዕቃው በተሳካ ሁኔታ ተለጥፏል!" : "Listing Published Live!"}
+          {language === "am" ? "ለአድሚን ግምገማ ቀርቧል!" : "Submitted for Admin Review!"}
         </Text>
         <Text style={[styles.successSubtitle, { color: colors.textSecondary }]}>
           {language === "am"
-            ? `ዕቃዎ "${submittedProduct.title}" በ${campus} ላሉ ተማሪዎች ክፍት ሆኗል።`
-            : `Your item "${submittedProduct.title}" is now visible to students across ${campus}.`}
+            ? `ዕቃዎ "${submittedProduct.title}" ወደ አድሚን ግምገማ ገብቷል። ጥራቱና ዋጋው ተረጋግጦ ሲፈቀድ በ${campus} ገበያ ላይ ወዲያውኑ ይታያል።`
+            : `Your item "${submittedProduct.title}" is queued for Admin review. Once approved, it will appear live across ${campus}.`}
         </Text>
 
         <Animatable.View
@@ -153,12 +211,18 @@ export function SellScreen() {
         >
           <Image source={{ uri: submittedProduct.imageUrl }} style={styles.liveSummaryImage} />
           <View style={styles.liveSummaryInfo}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: "#FE9901" }} />
+              <Text style={{ fontSize: 11, fontWeight: "700", color: "#FE9901", textTransform: "uppercase" }}>
+                Pending Admin Approval
+              </Text>
+            </View>
             <Text style={[styles.liveSummaryTitle, { color: colors.textPrimary }]}>{submittedProduct.title}</Text>
             <Text style={[styles.liveSummaryPrice, { color: colors.primary }]}>
               ETB {submittedProduct.price.toLocaleString()}
             </Text>
             <View style={styles.sellerFeeHighlight}>
-              <Text style={styles.sellerFeeHighlightText}>0% Seller Fee - 100% Payout Guaranteed</Text>
+              <Text style={styles.sellerFeeHighlightText}>0% Seller Fee - 100% Payout Upon Escrow Release</Text>
             </View>
           </View>
         </Animatable.View>
@@ -219,35 +283,88 @@ export function SellScreen() {
           </Text>
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.photosScroll}>
-          {photos.map((uri, idx) => (
-            <View key={idx} style={[styles.photoThumbWrapper, { borderColor: colors.border }]}>
-              <Image source={{ uri }} style={styles.photoThumb} />
+        {photos.length === 0 ? (
+          <View style={[styles.photoEmptyDropZone, { backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "#F8FAFC", borderColor: colors.border }]}>
+            <View style={[styles.photoEmptyIconCircle, { backgroundColor: colors.primaryLight }]}>
+              <Upload size={22} color={colors.primary} />
+            </View>
+            <Text style={[styles.photoEmptyTitle, { color: colors.textPrimary }]}>
+              {language === "am" ? "የዕቃውን ፎቶ ያያይዙ *" : "Upload Item Photos *"}
+            </Text>
+            <Text style={[styles.photoEmptySub, { color: colors.textSecondary }]}>
+              {language === "am" ? "ቢያንስ 1 ፎቶ ያስፈልጋል (እስከ 5)" : "At least 1 photo required (up to 5)"}
+            </Text>
+            <View style={styles.uploadActionsRow}>
               <TouchableOpacity
-                onPress={() => handleRemovePhoto(idx)}
-                style={styles.removePhotoBtn}
+                onPress={handlePickFromDevice}
+                activeOpacity={0.85}
+                style={[styles.uploadActionButton, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
               >
-                <Trash2 size={12} color="#FFFFFF" />
+                <Upload size={14} color={colors.primary} />
+                <Text style={[styles.uploadActionText, { color: colors.primary }]}>
+                  {language === "am" ? "ከመሳሪያ ምረጥ" : "Upload from Device"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleCameraSnap}
+                activeOpacity={0.85}
+                style={[styles.uploadActionButton, { backgroundColor: isDark ? "rgba(255,255,255,0.06)" : "#F1F5F9", borderColor: colors.border }]}
+              >
+                <Camera size={14} color={colors.textPrimary} />
+                <Text style={[styles.uploadActionText, { color: colors.textPrimary }]}>
+                  {language === "am" ? "ካሜራ" : "Camera"}
+                </Text>
               </TouchableOpacity>
             </View>
-          ))}
+          </View>
+        ) : (
+          <>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.photosScroll}>
+              {photos.map((uri, idx) => (
+                <View key={idx} style={[styles.photoThumbWrapper, { borderColor: colors.border }]}>
+                  <Image source={{ uri }} style={styles.photoThumb} />
+                  <TouchableOpacity
+                    onPress={() => handleRemovePhoto(idx)}
+                    style={styles.removePhotoBtn}
+                  >
+                    <Trash2 size={12} color="#FFFFFF" />
+                  </TouchableOpacity>
+                  {idx === 0 && (
+                    <View style={styles.primaryCoverBadge}>
+                      <Text style={styles.primaryCoverBadgeText}>Cover</Text>
+                    </View>
+                  )}
+                </View>
+              ))}
+            </ScrollView>
 
-          {photos.length < 5 && (
-            <TouchableOpacity
-              onPress={handleAddPhoto}
-              style={[
-                styles.addPhotoBtn,
-                {
-                  borderColor: colors.primary,
-                  backgroundColor: colors.primaryLight,
-                },
-              ]}
-            >
-              <Camera size={20} color={colors.primary} />
-              <Text style={[styles.addPhotoText, { color: colors.primary }]}>+ Add Photo</Text>
-            </TouchableOpacity>
-          )}
-        </ScrollView>
+            {photos.length < 5 && (
+              <View style={styles.uploadActionsRow}>
+                <TouchableOpacity
+                  onPress={handlePickFromDevice}
+                  activeOpacity={0.85}
+                  style={[styles.uploadActionButton, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
+                >
+                  <Upload size={14} color={colors.primary} />
+                  <Text style={[styles.uploadActionText, { color: colors.primary }]}>
+                    {language === "am" ? "ፎቶ ጨምር" : "Add More"}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={handleCameraSnap}
+                  activeOpacity={0.85}
+                  style={[styles.uploadActionButton, { backgroundColor: isDark ? "rgba(255,255,255,0.06)" : "#F1F5F9", borderColor: colors.border }]}
+                >
+                  <Camera size={14} color={colors.textPrimary} />
+                  <Text style={[styles.uploadActionText, { color: colors.textPrimary }]}>
+                    {language === "am" ? "ካሜራ" : "Camera"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </>
+        )}
       </Animatable.View>
 
       {/* Step 2: Item Details */}
@@ -541,6 +658,65 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginRight: 10,
     borderWidth: 1,
+  },
+  primaryCoverBadge: {
+    position: "absolute",
+    bottom: 4,
+    left: 4,
+    backgroundColor: "rgba(16, 185, 129, 0.9)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  primaryCoverBadgeText: {
+    color: "#FFFFFF",
+    fontSize: 9,
+    fontWeight: "900",
+  },
+  photoEmptyDropZone: {
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 8,
+  },
+  photoEmptyIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  photoEmptyTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    marginBottom: 2,
+  },
+  photoEmptySub: {
+    fontSize: 11,
+    marginBottom: 12,
+  },
+  uploadActionsRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 12,
+  },
+  uploadActionButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  uploadActionText: {
+    fontSize: 12,
+    fontWeight: "800",
   },
   photoThumb: {
     width: "100%",

@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import React from "react";
 import Image from "next/image";
@@ -68,27 +68,27 @@ export function HeroSection({
       <div className="absolute inset-0 -z-20 overflow-hidden">
         {/* Desktop stationery background */}
         <Image
-          src="/images/school-supplies-bg-desktop.jpg"
+          src="/images/hero.jpg"
           alt="Estud Student Marketplace Campus Background"
           fill
           priority
           sizes="100vw"
-          className="hidden md:block object-cover object-top"
+          className="hidden md:block object-cover object-center"
         />
 
         {/* Mobile stationery background */}
         <Image
-          src="/images/school-supplies-bg.jpg"
+          src="/images/2.jpg"
           alt="Estud Student Marketplace Campus Background"
           fill
           priority
           sizes="100vw"
-          className="block md:hidden object-cover object-top"
+          className="block md:hidden object-cover object-center"
         />
       </div>
 
       {/* 30% Structural Depth overlay: stationery at top is clearly visible, while text overlay is transparent and high-contrast */}
-      <div className="absolute inset-0 -z-10 bg-[#072448]/45 pointer-events-none" />
+      <div className="absolute inset-0 -z-10" />
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#071E3D]/30 via-[#072448]/60 to-[#07152B]/90 pointer-events-none" />
 
       {/* 10% Subtle Brand Accent matching logo ribbon fold */}
@@ -165,40 +165,11 @@ export function HeroSection({
             </motion.div>
 
             {/* Trust indicators */}
-            <motion.div
-              variants={itemVariants}
-              className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs font-medium text-white/85 sm:text-sm lg:justify-start"
-            >
-              <span className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#FF8738]" />
-                Student marketplace
-              </span>
 
-              <span className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#1D6BF3]" />
-                Buy &amp; sell
-              </span>
-
-              <span className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                Exchange items
-              </span>
-            </motion.div>
           </motion.div>
 
           {/* Right Column / Mobile Bottom: Hero Showcase Carousel */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.8,
-              delay: 0.3,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-            className="relative z-10 mx-auto flex w-full max-w-xl items-center justify-center lg:col-span-6 lg:max-w-none mt-4 lg:mt-0"
-          >
-            <HeroShowcase />
-          </motion.div>
+
 
         </div>
       </div>

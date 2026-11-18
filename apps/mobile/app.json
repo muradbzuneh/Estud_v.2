@@ -2,7 +2,7 @@
   "expo": {
     "name": "Estud",
     "slug": "estud-monorepo",
-    "version": "2.2.1",
+    "version": "2.3.1",
     "orientation": "portrait",
     "icon": "./assets/logos/estud-app-icon-dark.jpg",
     "userInterfaceStyle": "automatic",
@@ -17,12 +17,15 @@
     },
     "android": {
       "package": "com.muradbzuneh.estudmonorepo",
-      "versionCode": 2,
+      "versionCode": 4,
       "adaptiveIcon": {
         "foregroundImage": "./assets/logos/estud-app-icon-dark.jpg",
         "backgroundColor": "#070d1e"
       },
       "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
@@ -33,6 +36,12 @@
         "projectId": "f4894b7e-d5b3-4379-8c99-abcef6ff8847"
       }
     },
-    "owner": "muradbzuneh"
+    "updates": {
+      "url": "https://u.expo.dev/f4894b7e-d5b3-4379-8c99-abcef6ff8847"
+    },
+    "owner": "muradbzuneh",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }

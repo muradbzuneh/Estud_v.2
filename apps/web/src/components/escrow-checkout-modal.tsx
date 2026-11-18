@@ -226,17 +226,17 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
         ) : (
           /* Main 2-Step Flow */
           <div className="space-y-5">
-            {/* Header */}
+            {/* Header with simple understandable explanation */}
             <div className="flex items-center gap-3 border-b border-slate-100 dark:border-twilight-700 pb-3.5">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400">
                 <ShieldCheck className="h-6 w-6" />
               </div>
               <div>
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                  SafeTrade Escrow Checkout
+                  Safe Campus Handover Protection
                 </h2>
                 <p className="text-[11px] text-slate-500 dark:text-twilight-300">
-                  Step {step} of 2 &bull; 100% Protected Handover
+                  Step {step} of 2 &bull; Money held safely until you inspect the item in person
                 </p>
               </div>
             </div>
@@ -291,17 +291,25 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
                     </span>
                   </div>
                   <div className="flex justify-between text-slate-600 dark:text-twilight-300">
-                    <span>5% SafeTrade Escrow Protection:</span>
+                    <span>5% Safe Buyer Protection Fee:</span>
                     <span className="font-semibold text-slate-900 dark:text-white">
                       ETB {escrowFee.toLocaleString()}
                     </span>
                   </div>
                   <div className="border-t border-slate-200 dark:border-twilight-700 pt-2 flex justify-between text-sm font-bold text-slate-900 dark:text-white">
-                    <span>Total Amount to Transfer:</span>
+                    <span>Total Protected Amount:</span>
                     <span className="text-brand-600 dark:text-brand-400">
                       ETB {totalAmount.toLocaleString()}
                     </span>
                   </div>
+                </div>
+
+                {/* Educational Reassurance */}
+                <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-2.5 text-[11px] text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                  <span>
+                    Zero Risk: The seller only receives money after you physically inspect the item at the campus desk.
+                  </span>
                 </div>
 
                 {/* Choose Payment Method */}

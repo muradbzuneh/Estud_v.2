@@ -27,16 +27,23 @@ import {
   Check,
   Navigation,
   ExternalLink,
+  Upload,
+  Camera,
+  Image as ImageIcon,
+  AlertCircle,
 } from "lucide-react-native";
 import { useApp } from "../context/AppContext";
 import { showErrorToast, showSuccessToast, showInfoToast } from "../utils/toast";
+import { pickImageFromDevice, takePhotoWithCamera, SAMPLE_PAYMENT_PROOFS } from "../utils/imagePicker";
 
 export function MobileProductDetailModal() {
   const { selectedProduct, setSelectedProduct, createOrder, setActiveTab, colors, language } = useApp();
   const [collectionMethod, setCollectionMethod] = useState<"hub" | "runner">("hub");
   const [paymentMethod, setPaymentMethod] = useState<"telebirr" | "cbe" | "cash">("telebirr");
   const [transactionRef, setTransactionRef] = useState("");
+  const [screenshotProof, setScreenshotProof] = useState<string | null>(null);
   const [confirmedRef, setConfirmedRef] = useState<string | null>(null);
+  const [confirmedScreenshot, setConfirmedScreenshot] = useState<string | null>(null);
   const [createdOrderPin, setCreatedOrderPin] = useState<string | null>(null);
   const [copiedAccount, setCopiedAccount] = useState(false);
 
@@ -51,8 +58,32 @@ export function MobileProductDetailModal() {
   const handleClose = () => {
     setCreatedOrderPin(null);
     setConfirmedRef(null);
+    setConfirmedScreenshot(null);
+    setScreenshotProof(null);
     setTransactionRef("");
     setSelectedProduct(null);
+  };
+
+  const handlePickProofFromDevice = async () => {
+    const uri = await pickImageFromDevice();
+    if (uri) {
+      setScreenshotProof(uri);
+      showSuccessToast(
+        language === "am" ? "የክፍያ ማረጋገጫ ተያይዟል" : "Payment Proof Attached",
+        "Screenshot ready for admin verification"
+      );
+    }
+  };
+
+  const handleCameraSnapProof = async () => {
+    const uri = await takePhotoWithCamera();
+    if (uri) {
+      setScreenshotProof(uri);
+      showSuccessToast(
+        language === "am" ? "የደረሰኝ ፎቶ ተነስቷል" : "Receipt Photo Captured",
+        "Ready for safe escrow lock"
+      );
+    }
   };
 
   const handleCopyAccount = (acc: string) => {
@@ -74,16 +105,27 @@ export function MobileProductDetailModal() {
       const cleanRef = transactionRef.trim();
       if (!cleanRef || cleanRef.length < 3) {
         showErrorToast(
-          language === "am" ? "የግብይት ቁጥር ያስፈልጋል" : "Transaction Code Required",
+          language === "am" ? "የግብይት ቁጥር ያስፈልጋል" : "Transaction Reference Required",
           language === "am"
             ? "እባክዎ ከቴሌብር ወይም ንግድ ባንክ የደረሰዎትን የማረጋገጫ ቁጥር ያስገቡ"
-            : "Please enter your SMS transaction reference code (e.g. FT260948 or 7GA829104)"
+            : "Please enter your SMS transaction reference code"
+        );
+        return;
+      }
+
+      if (!screenshotProof) {
+        showErrorToast(
+          language === "am" ? "የደረሰኝ ስክሪንሽት ያስፈልጋል" : "Screenshot Proof Required",
+          language === "am"
+            ? "እባክዎ የክፍያዎን ደረሰኝ ስክሪንሽት ወይም ፎቶ ያያይዙ"
+            : "Please upload or snap a photo of your transfer confirmation receipt."
         );
         return;
       }
     }
 
     const finalRef = paymentMethod === "cash" ? "CASH-HUB" : transactionRef.trim();
+    const finalProof = paymentMethod === "cash" ? undefined : (screenshotProof || undefined);
 
     const order = createOrder({
       productId: selectedProduct.id,
@@ -97,9 +139,11 @@ export function MobileProductDetailModal() {
       collectionMethod,
       paymentMethod,
       transactionReference: finalRef,
+      screenshotUrl: finalProof,
     });
 
     setConfirmedRef(finalRef);
+    setConfirmedScreenshot(finalProof || null);
     setCreatedOrderPin(order.secretPin);
 
     // Live alert dispatch simulation
@@ -148,12 +192,12 @@ export function MobileProductDetailModal() {
               </Animatable.View>
 
               <Text style={[styles.successTitle, { color: colors.textPrimary }]}>
-                {language === "am" ? "ክፍያዎ ወደ ኤስክሮው ገብቷል!" : "Payment Submitted to Escrow!"}
+                {language === "am" ? "ክፍያዎ ወደ ኤስክሮው ገብቷል!" : "Payment Sent with Safe Protection!"}
               </Text>
               <Text style={[styles.successSubtitle, { color: colors.textSecondary }]}>
                 {language === "am"
                   ? `የ ETB ${totalAmount.toLocaleString()} ክፍያዎ በሴፍ ትሬድ ኤስክሮው ተቆልፏል። የካምፓስ አስተዳዳሪው ማረጋገጫ ቁጥር (${confirmedRef}) አረጋግጧል።`
-                  : `Your transfer of ETB ${totalAmount.toLocaleString()} is locked in SafeTrade Escrow. Transaction reference (${confirmedRef}) has been delivered to the campus admin desk.`}
+                  : `Your transfer of ETB ${totalAmount.toLocaleString()} is held securely. Transaction reference (${confirmedRef}) has been delivered to the campus admin desk.`}
               </Text>
 
               {/* Verified Reference Banner */}
@@ -187,12 +231,36 @@ export function MobileProductDetailModal() {
                   </Text>
                 </View>
                 <Text style={[styles.pinCode, { color: colors.textPrimary }]}>{createdOrderPin}</Text>
+
+                {/* Expiration Notice Badge */}
+                <View style={styles.pinExpireBadge}>
+                  <Clock size={12} color="#F59E0B" />
+                  <Text style={styles.pinExpireText}>
+                    {language === "am"
+                      ? "የሚያበቃበት ጊዜ: 48 ሰዓታት (ካለቀ በእንቅስቃሴ ገጽ ያድሱ)"
+                      : "Security Notice: Valid for 48 Hours (Extendable in Activity)"}
+                  </Text>
+                </View>
+
                 <Text style={styles.pinWarning}>
                   {language === "am"
                     ? "ዕቃውን በአካል በካምፓስ ዴስክ ፈትሸው ካላረጋገጡ በስተቀር ይህን ፒን ለማንም ሰው አያጋሩ!"
                     : "Do NOT share this code until you physically test and inspect your item at the campus hub!"}
                 </Text>
               </Animatable.View>
+
+              {/* Screenshot Delivered Proof Summary */}
+              {confirmedScreenshot && (
+                <View style={[styles.confirmedScreenshotCard, { backgroundColor: isDark ? colors.cardElevated : "#F1F5F9", borderColor: colors.border }]}>
+                  <View style={styles.confirmedScreenshotHeader}>
+                    <ShieldCheck size={14} color="#10B981" />
+                    <Text style={[styles.confirmedScreenshotTitle, { color: colors.textPrimary }]}>
+                      {language === "am" ? "የክፍያ ማረጋገጫ ሰነድ ለአስተዳዳሪው ተልኳል" : "Payment Proof Delivered to Admin Desk"}
+                    </Text>
+                  </View>
+                  <Image source={{ uri: confirmedScreenshot }} style={styles.confirmedScreenshotImage} resizeMode="cover" />
+                </View>
+              )}
 
               {/* Handover Steps */}
               <View style={[styles.instructionCard, { backgroundColor: isDark ? colors.cardElevated : "#F8FAFC", borderColor: colors.border }]}>
@@ -234,7 +302,7 @@ export function MobileProductDetailModal() {
                 />
                 <View style={styles.escrowBadgeTop}>
                   <ShieldCheck size={12} color="#FFFFFF" />
-                  <Text style={styles.escrowBadgeTopText}>SafeTrade Escrow Protected</Text>
+                  <Text style={styles.escrowBadgeTopText}>100% Buyer Protection</Text>
                 </View>
               </View>
 
@@ -418,6 +486,66 @@ export function MobileProductDetailModal() {
                       Enter the confirmation code from your {paymentMethod === "telebirr" ? "Telebirr" : "CBE"} SMS receipt.
                     </Text>
                   </View>
+
+                  {/* Transfer Screenshot Proof Uploader */}
+                  <View style={styles.proofUploadBox}>
+                    <View style={styles.proofHeaderRow}>
+                      <Text style={[styles.refInputLabel, { color: colors.textPrimary }]}>
+                        {language === "am" ? "የባንክ/ቴሌብር ደረሰኝ ስክሪንሽት *" : "Transfer Receipt Screenshot Proof *"}
+                      </Text>
+                      <View style={styles.verifiedTagPill}>
+                        <ShieldCheck size={11} color="#10B981" />
+                        <Text style={styles.verifiedTagPillText}>Admin Verified</Text>
+                      </View>
+                    </View>
+
+                    {screenshotProof ? (
+                      <View style={[styles.proofPreviewCard, { backgroundColor: isDark ? colors.card : "#FFFFFF", borderColor: colors.border }]}>
+                        <Image source={{ uri: screenshotProof }} style={styles.proofThumb} />
+                        <View style={styles.proofMetaInfo}>
+                          <View style={styles.proofAttachedBadge}>
+                            <CheckCircle2 size={12} color="#10B981" />
+                            <Text style={styles.proofAttachedBadgeText}>Screenshot Proof Attached</Text>
+                          </View>
+                          <Text style={[styles.proofFileName, { color: colors.textSecondary }]}>
+                            Queued for Admin Payments Desk verification
+                          </Text>
+                          <View style={styles.proofActionsRow}>
+                            <TouchableOpacity onPress={handlePickProofFromDevice} style={styles.proofActionPill}>
+                              <Upload size={11} color={colors.primary} />
+                              <Text style={[styles.proofActionPillText, { color: colors.primary }]}>From Device</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleCameraSnapProof} style={styles.proofActionPill}>
+                              <Camera size={11} color={colors.primary} />
+                              <Text style={[styles.proofActionPillText, { color: colors.primary }]}>Camera</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      </View>
+                    ) : (
+                      <View style={styles.proofEmptyCard}>
+                        <Text style={[styles.proofEmptyNotice, { color: colors.textSecondary }]}>
+                          Upload transfer slip screenshot for instant escrow verification.
+                        </Text>
+                        <View style={styles.proofButtonsRow}>
+                          <TouchableOpacity
+                            onPress={handlePickProofFromDevice}
+                            style={[styles.proofBtnPrimary, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
+                          >
+                            <Upload size={13} color={colors.primary} />
+                            <Text style={[styles.proofBtnPrimaryText, { color: colors.primary }]}>Pick from Device</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={handleCameraSnapProof}
+                            style={[styles.proofBtnSecondary, { borderColor: colors.border }]}
+                          >
+                            <Camera size={13} color={colors.textPrimary} />
+                            <Text style={[styles.proofBtnSecondaryText, { color: colors.textPrimary }]}>Camera</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    )}
+                  </View>
                 </View>
               )}
 
@@ -428,7 +556,7 @@ export function MobileProductDetailModal() {
                   <Text style={[styles.breakdownVal, { color: colors.textPrimary }]}>ETB {itemPrice.toLocaleString()}</Text>
                 </View>
                 <View style={styles.breakdownRow}>
-                  <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>SafeTrade Escrow Fee (5%):</Text>
+                  <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>Buyer Protection Fee (5%):</Text>
                   <Text style={[styles.breakdownVal, { color: colors.textPrimary }]}>+ETB {escrowFee.toLocaleString()}</Text>
                 </View>
                 {collectionMethod === "runner" && (
@@ -451,7 +579,7 @@ export function MobileProductDetailModal() {
               >
                 <ShieldCheck size={18} color="#FFFFFF" />
                 <Text style={styles.checkoutBtnText}>
-                  Confirm & Lock ETB {totalAmount.toLocaleString()} in Escrow
+                  Confirm & Pay ETB {totalAmount.toLocaleString()} with Buyer Protection
                 </Text>
               </TouchableOpacity>
             </ScrollView>
@@ -906,5 +1034,157 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 13,
     fontWeight: "800",
+  },
+  pinExpireBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: "rgba(245, 158, 11, 0.15)",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    marginVertical: 4,
+  },
+  pinExpireText: {
+    fontSize: 10,
+    fontWeight: "800",
+    color: "#D97706",
+  },
+  confirmedScreenshotCard: {
+    width: "100%",
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 14,
+  },
+  confirmedScreenshotHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 8,
+  },
+  confirmedScreenshotTitle: {
+    fontSize: 11,
+    fontWeight: "800",
+  },
+  confirmedScreenshotImage: {
+    width: "100%",
+    height: 120,
+    borderRadius: 10,
+  },
+  proofUploadBox: {
+    marginTop: 12,
+  },
+  proofHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 6,
+  },
+  verifiedTagPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(16, 185, 129, 0.12)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  verifiedTagPillText: {
+    fontSize: 9,
+    fontWeight: "800",
+    color: "#10B981",
+  },
+  proofPreviewCard: {
+    flexDirection: "row",
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 8,
+    gap: 10,
+    alignItems: "center",
+  },
+  proofThumb: {
+    width: 64,
+    height: 64,
+    borderRadius: 8,
+  },
+  proofMetaInfo: {
+    flex: 1,
+    gap: 4,
+  },
+  proofAttachedBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  proofAttachedBadgeText: {
+    fontSize: 11,
+    fontWeight: "800",
+    color: "#10B981",
+  },
+  proofFileName: {
+    fontSize: 10,
+  },
+  proofActionsRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 2,
+  },
+  proofActionPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingVertical: 3,
+    paddingHorizontal: 6,
+    borderRadius: 6,
+    backgroundColor: "rgba(29, 107, 243, 0.08)",
+  },
+  proofActionPillText: {
+    fontSize: 10,
+    fontWeight: "800",
+  },
+  proofEmptyCard: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderColor: "#CBD5E1",
+    padding: 12,
+    gap: 8,
+  },
+  proofEmptyNotice: {
+    fontSize: 11,
+    lineHeight: 15,
+  },
+  proofButtonsRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  proofBtnPrimary: {
+    flex: 1.5,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  proofBtnPrimaryText: {
+    fontSize: 11,
+    fontWeight: "800",
+  },
+  proofBtnSecondary: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  proofBtnSecondaryText: {
+    fontSize: 11,
+    fontWeight: "700",
   },
 });

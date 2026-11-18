@@ -27,6 +27,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge, SectionTypeTag } from "@/components/ui/status-badge";
 import {
   Table,
   TableBody,
@@ -481,10 +482,7 @@ export default function AdminListingsPage() {
                   </TableCell>
                   <TableCell className="text-xs font-semibold">{item.price}</TableCell>
                   <TableCell>
-                    <Badge variant={item.statusVariant} className="text-[10px]">
-                      <span className="h-1.5 w-1.5 rounded-full bg-current mr-1.5" />
-                      {item.status}
-                    </Badge>
+                    <StatusBadge status={item.status} />
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">{item.posted}</TableCell>
                   <TableCell className="text-right pr-6">

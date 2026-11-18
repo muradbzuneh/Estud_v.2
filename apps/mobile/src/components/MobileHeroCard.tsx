@@ -35,7 +35,7 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
           styles.heroBackground,
           {
             paddingHorizontal: isCompact ? 16 : 20,
-            paddingVertical: isCompact ? 22 : 28,
+            paddingVertical: isCompact ? 16 : 20,
           },
         ]}
         resizeMode="cover"
@@ -65,63 +65,49 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
             </View>
           </View>
 
-          {/* Headline with Luminous Gold Highlight */}
-          <Text
-            style={[
-              styles.heading,
-              {
-                fontSize: isCompact ? 24 : 28,
-                lineHeight: isCompact ? 30 : 35,
-              },
-            ]}
-          >
-            {t.heroTitle1}{"\n"}
-            {t.heroTitle2}{"\n"}
-            <Text style={styles.headingAccent}>{t.heroTitleAccent}</Text>
-          </Text>
+          {/* Main Hero Row: Headline + Trust Badge */}
+          <View style={styles.heroMainGrid}>
+            <View style={styles.heroTextCol}>
+              <Text
+                style={[
+                  styles.heading,
+                  {
+                    fontSize: isCompact ? 22 : 26,
+                    lineHeight: isCompact ? 28 : 32,
+                  },
+                ]}
+              >
+                {t.heroTitle1}{"\n"}
+                {t.heroTitle2}{"\n"}
+                <Text style={styles.headingAccent}>{t.heroTitleAccent}</Text>
+              </Text>
 
-          {/* Subtitle */}
-          <Text
-            style={[
-              styles.subtitle,
-              {
-                fontSize: isCompact ? 11 : 12,
-                lineHeight: isCompact ? 16 : 18,
-              },
-            ]}
-          >
-            {t.heroSubtitle}
-          </Text>
-
-          {/* 3D Student Backpack Showcase Feature Container with subtle animation */}
-          <Animatable.View
-            animation="zoomIn"
-            delay={200}
-            duration={500}
-            style={styles.showcaseRow}
-          >
-            <View style={styles.showcaseImageCard}>
-              <Image
-                source={require("../../assets/student-backpack-3d.jpg")}
-                style={styles.showcaseImage}
-                resizeMode="contain"
-              />
+              <Text
+                style={[
+                  styles.subtitle,
+                  {
+                    fontSize: isCompact ? 11 : 12,
+                    lineHeight: isCompact ? 16 : 18,
+                  },
+                ]}
+              >
+                {t.heroSubtitle}
+              </Text>
             </View>
-            <View style={styles.showcaseTextCol}>
-              <View style={styles.featureItem}>
-                <ShieldCheck size={14} color="#10B981" />
-                <Text style={styles.featureText}>{t.heroFeature1}</Text>
+
+            {/* Right Side Trust Badge Card - fills the hero space cleanly */}
+            <View style={styles.trustBadgeCard}>
+              <View style={styles.trustIconCircle}>
+                <ShieldCheck size={26} color="#FE9901" />
               </View>
-              <View style={styles.featureItem}>
-                <CheckCircle2 size={14} color="#FBBF24" />
-                <Text style={styles.featureText}>{t.heroFeature2}</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <Sparkles size={14} color="#60A5FA" />
-                <Text style={styles.featureText}>{t.heroFeature3}</Text>
+              <Text style={styles.trustBadgeTitle}>SafeTrade</Text>
+              <Text style={styles.trustBadgeDesc}>100% Escrow Protection</Text>
+              <View style={styles.trustMiniPill}>
+                <CheckCircle2 size={10} color="#10B981" />
+                <Text style={styles.trustMiniPillText}>0% Seller Fee</Text>
               </View>
             </View>
-          </Animatable.View>
+          </View>
 
           {/* Dual Action CTA Buttons (Full width responsive) */}
           <View style={styles.ctaRow}>
@@ -140,9 +126,6 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
               style={[styles.secondaryButton, { flex: 1 }]}
             >
               <Text style={styles.secondaryButtonText}>{t.heroSellBtn}</Text>
-              <View style={styles.zeroFeePill}>
-                <Text style={styles.zeroFeeText}>0% Fee</Text>
-              </View>
             </TouchableOpacity>
           </View>
         </View>
@@ -233,9 +216,72 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: "#CBD5E1",
-    marginTop: 8,
+    marginTop: 6,
+    lineHeight: 16,
+  },
+  heroMainGrid: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
     marginBottom: 16,
-    maxWidth: "96%",
+  },
+  heroTextCol: {
+    flex: 1.35,
+  },
+  trustBadgeCard: {
+    flex: 1,
+    backgroundColor: "rgba(10, 25, 58, 0.72)",
+    borderWidth: 1,
+    borderColor: "rgba(254, 153, 1, 0.40)",
+    borderRadius: 18,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  trustIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "rgba(254, 153, 1, 0.16)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 6,
+  },
+  trustBadgeTitle: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 0.2,
+  },
+  trustBadgeDesc: {
+    color: "#94A3B8",
+    fontSize: 10,
+    textAlign: "center",
+    marginTop: 2,
+    marginBottom: 6,
+  },
+  trustMiniPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(16, 185, 129, 0.15)",
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(16, 185, 129, 0.3)",
+  },
+  trustMiniPillText: {
+    color: "#6EE7B7",
+    fontSize: 9,
+    fontWeight: "700",
   },
   showcaseRow: {
     flexDirection: "row",

@@ -17,12 +17,14 @@ import {
   AlertTriangle,
   ChevronRight,
   Sparkles,
+  RefreshCw,
+  FileCheck,
 } from "lucide-react-native";
 import { useApp } from "../context/AppContext";
 import { showSuccessToast, showInfoToast } from "../utils/toast";
 
 export function ActivityScreen() {
-  const { orders, completeOrder, setActiveTab, colors, t, language } = useApp();
+  const { orders, completeOrder, regenerateOrderPin, setActiveTab, colors, t, language } = useApp();
   const [filter, setFilter] = useState<"active" | "completed">("active");
 
   const activeOrders = orders.filter((o) => o.status !== "completed");
@@ -183,7 +185,7 @@ export function ActivityScreen() {
                 </Text>
               </View>
 
-              {/* Secret 4-Digit PIN Box with Animation */}
+              {/* Secret 4-Digit PIN Box with Animation & Expiration */}
               {!isCompleted ? (
                 <Animatable.View
                   animation="pulse"
@@ -198,12 +200,33 @@ export function ActivityScreen() {
                   ]}
                 >
                   <View style={styles.pinHeader}>
-                    <Lock size={14} color={colors.primary} />
-                    <Text style={[styles.pinHeaderTitle, { color: colors.primary }]}>
-                      {t.secretPinTitle}
-                    </Text>
+                    <View style={styles.pinHeaderLeft}>
+                      <Lock size={14} color={colors.primary} />
+                      <Text style={[styles.pinHeaderTitle, { color: colors.primary }]}>
+                        {t.secretPinTitle}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => regenerateOrderPin(order.id)}
+                      hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                      style={styles.rotatePinButton}
+                    >
+                      <RefreshCw size={11} color={colors.primary} />
+                      <Text style={[styles.rotatePinText, { color: colors.primary }]}>
+                        {language === "am" ? "አድስ" : "Refresh"}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
                   <Text style={[styles.pinCode, { color: colors.textPrimary }]}>{order.secretPin}</Text>
+
+                  {/* Expiration badge */}
+                  <View style={styles.pinExpirationRow}>
+                    <Clock size={11} color="#D97706" />
+                    <Text style={styles.pinExpirationText}>
+                      {order.expiresFormatted || "Valid for 48 Hours"}
+                    </Text>
+                  </View>
+
                   <Text style={[styles.pinNotice, { color: colors.textSecondary }]}>
                     {t.secretPinNotice}
                   </Text>
@@ -380,10 +403,44 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   pinHeader: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 4,
+  },
+  pinHeaderLeft: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    marginBottom: 4,
+  },
+  rotatePinButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(29, 107, 243, 0.1)",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  rotatePinText: {
+    fontSize: 10,
+    fontWeight: "800",
+  },
+  pinExpirationRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(245, 158, 11, 0.12)",
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 8,
+    marginVertical: 4,
+  },
+  pinExpirationText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#D97706",
   },
   pinHeaderTitle: {
     fontSize: 11,

@@ -20,6 +20,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge, SectionTypeTag } from "@/components/ui/status-badge";
 import {
   Table,
   TableBody,
@@ -292,9 +293,9 @@ export default function AdminPaymentsPage() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline" className="text-[10px] font-semibold uppercase">
-                    {payment.channel}
-                  </Badge>
+                  <SectionTypeTag>
+                    {payment.channel.replace("_", " ")}
+                  </SectionTypeTag>
                 </TableCell>
                 <TableCell className="font-mono text-xs text-muted-foreground">
                   {payment.bankRef}
@@ -303,18 +304,7 @@ export default function AdminPaymentsPage() {
                   ETB {payment.amount}
                 </TableCell>
                 <TableCell>
-                  <Badge
-                    variant={
-                      payment.status === "VERIFIED"
-                        ? "success"
-                        : payment.status === "REJECTED"
-                        ? "destructive"
-                        : "warning"
-                    }
-                    className="text-[10px]"
-                  >
-                    {payment.status}
-                  </Badge>
+                  <StatusBadge status={payment.status} />
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">{payment.createdAt}</TableCell>
                 <TableCell className="text-right pr-6">

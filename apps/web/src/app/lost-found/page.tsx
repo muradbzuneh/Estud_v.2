@@ -25,6 +25,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { trpc } from "@/trpc/client";
 import { ImageUploader } from "@/components/image-uploader";
+import { StatusBadge, SectionTypeTag } from "@/components/ui/status-badge";
 
 interface LostFoundItem {
   id: string;
@@ -56,7 +57,7 @@ const INITIAL_FALLBACK_ITEMS: LostFoundItem[] = [
     status: "OPEN",
     reporterName: "Campus Gate 1 Rep (Biruk)",
     contactPhone: "+251911223344",
-    imageUrl: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1576267423445-b2e0074d68a4?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "lf-mock-2",
@@ -86,7 +87,7 @@ const INITIAL_FALLBACK_ITEMS: LostFoundItem[] = [
     status: "OPEN",
     reporterName: "Library Admin Desk",
     contactPhone: "+251933445566",
-    imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=600&q=80",
   },
   {
     id: "lf-mock-4",
@@ -331,58 +332,58 @@ export default function LostFoundPage() {
       )}
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0F1D38] via-[#14264A] to-[#0A1428] text-white p-8 md:p-12 shadow-2xl border border-white/10">
-          <div className="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-          <div className="absolute -left-16 -bottom-16 w-80 h-80 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
+        {/* Open-Source Inspired Clean Campus Notice Board Hero */}
+        <div className="relative overflow-hidden rounded-3xl bg-white dark:bg-twilight-800 border border-slate-200/80 dark:border-twilight-700 p-6 sm:p-8 md:p-10 shadow-xs">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+            <div className="max-w-2xl space-y-3.5">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Verified Campus Handover Desks</span>
+              </div>
 
-          <div className="relative z-10 max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-semibold backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>Campus SafeTrade Verified Network</span>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                Campus Lost &amp; Found Board
+              </h1>
+
+              <p className="text-sm text-slate-600 dark:text-twilight-300 leading-relaxed">
+                Misplaced your student ID, calculator, keys, or study gear? Found an item on campus?
+                Turn it in or file a report. Items turned into campus library desks and security gates are safe and ready for owner verification.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  onClick={() => handleOpenReportModal("FOUND")}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-all shadow-xs cursor-pointer active:scale-98"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  <span>I Found an Item (Turn In)</span>
+                </button>
+
+                <button
+                  onClick={() => handleOpenReportModal("LOST")}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-300 dark:border-twilight-600 bg-transparent hover:bg-slate-100 dark:hover:bg-twilight-750 text-slate-900 dark:text-white font-semibold text-xs transition-all cursor-pointer active:scale-98"
+                >
+                  <Search className="w-4 h-4 text-amber-500" />
+                  <span>I Lost Something (Report Missing)</span>
+                </button>
+              </div>
             </div>
 
-            <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
-              Campus Lost &amp; Found Desk
-            </h1>
-            <p className="text-sm md:text-base text-slate-300 max-w-2xl leading-relaxed">
-              Lost your student ID, calculator, keys, or tech gear? Found an essential item on campus?
-              Report it here. Every report is audited by campus representatives and held securely at safe gates.
-            </p>
-
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <button
-                onClick={() => handleOpenReportModal("FOUND")}
-                className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-sm shadow-lg shadow-emerald-500/25 transition-all transform active:scale-95 cursor-pointer"
-              >
-                <PlusCircle className="w-4 h-4" />
-                <span>I Found an Item (Turn In)</span>
-              </button>
-
-              <button
-                onClick={() => handleOpenReportModal("LOST")}
-                className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold text-sm shadow-lg shadow-amber-500/25 transition-all transform active:scale-95 cursor-pointer"
-              >
-                <Search className="w-4 h-4" />
-                <span>I Lost Something (Report Missing)</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Quick Stats Badges */}
-          <div className="relative z-10 grid grid-cols-3 gap-3 md:gap-6 mt-8 pt-6 border-t border-white/10">
-            <div className="flex flex-col">
-              <span className="text-2xl md:text-3xl font-extrabold text-emerald-400">{foundCount}</span>
-              <span className="text-xs text-slate-300 font-medium">Found &amp; Awaiting Owner</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-2xl md:text-3xl font-extrabold text-amber-400">{lostCount}</span>
-              <span className="text-xs text-slate-300 font-medium">Items Being Searched</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-2xl md:text-3xl font-extrabold text-blue-400">{recoveredCount}</span>
-              <span className="text-xs text-slate-300 font-medium">Successfully Reunited</span>
+            {/* Clean Stats Overview Cards (Shadcn style) */}
+            <div className="grid grid-cols-3 lg:grid-cols-1 gap-3 shrink-0 lg:w-64">
+              <div className="flex flex-col p-3 rounded-2xl bg-slate-50 dark:bg-twilight-750 border border-slate-200/60 dark:border-twilight-700">
+                <span className="text-xs text-slate-500 dark:text-twilight-400 font-medium">At Campus Hub</span>
+                <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{foundCount} Items</span>
+              </div>
+              <div className="flex flex-col p-3 rounded-2xl bg-slate-50 dark:bg-twilight-750 border border-slate-200/60 dark:border-twilight-700">
+                <span className="text-xs text-slate-500 dark:text-twilight-400 font-medium">Reported Lost</span>
+                <span className="text-xl font-bold text-amber-600 dark:text-amber-400 mt-0.5">{lostCount} Items</span>
+              </div>
+              <div className="flex flex-col p-3 rounded-2xl bg-slate-50 dark:bg-twilight-750 border border-slate-200/60 dark:border-twilight-700">
+                <span className="text-xs text-slate-500 dark:text-twilight-400 font-medium">Reunited</span>
+                <span className="text-xl font-bold text-blue-600 dark:text-blue-400 mt-0.5">{recoveredCount} Returned</span>
+              </div>
             </div>
           </div>
         </div>
@@ -525,37 +526,31 @@ export default function LostFoundPage() {
                     </div>
                   )}
 
-                  {/* Badges */}
-                  <div className="absolute top-3 left-3 flex items-center gap-2">
-                    <span
-                      className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider shadow-md ${
-                        item.type === "FOUND"
-                          ? "bg-emerald-500 text-white"
-                          : "bg-amber-500 text-white"
-                      }`}
-                    >
-                      {item.type}
-                    </span>
-                    <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-mono">
-                      {item.reportNumber}
+                  {/* Clean Shadcn Tag & Status */}
+                  <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                    <SectionTypeTag className={item.type === "FOUND" ? "bg-emerald-600 text-white border-transparent" : "bg-amber-600 text-white border-transparent"}>
+                      {item.type === "FOUND" ? "Found Item" : "Missing Item"}
+                    </SectionTypeTag>
+                    <span className="px-2 py-0.5 rounded-md bg-slate-950/70 backdrop-blur-sm text-slate-200 text-[10px] font-mono">
+                      #{item.reportNumber.replace("EST-LF-2026-", "").replace("EST-LF-", "")}
                     </span>
                   </div>
 
-                  {/* Status Indicator */}
-                  <div className="absolute top-3 right-3">
-                    {item.status === "CLAIM_SUBMITTED" ? (
-                      <span className="px-2.5 py-1 rounded-full bg-purple-500 text-white text-[10px] font-bold shadow-md">
-                        Claim Pending
-                      </span>
-                    ) : item.status === "VERIFIED_RECOVERED" ? (
-                      <span className="px-2.5 py-1 rounded-full bg-blue-500 text-white text-[10px] font-bold shadow-md">
-                        Reunited ✓
-                      </span>
-                    ) : (
-                      <span className="px-2.5 py-1 rounded-full bg-emerald-600/90 text-white text-[10px] font-bold shadow-md">
-                        Active Hub
-                      </span>
-                    )}
+                  {/* Clean Status Indicator */}
+                  <div className="absolute top-3 right-3 bg-slate-950/80 backdrop-blur-sm px-2.5 py-1 rounded-md border border-white/10">
+                    <StatusBadge
+                      status={item.status}
+                      label={
+                        item.status === "CLAIM_SUBMITTED"
+                          ? "In Review"
+                          : item.status === "VERIFIED_RECOVERED"
+                          ? "Reunited"
+                          : item.type === "FOUND"
+                          ? "At Campus Desk"
+                          : "Still Missing"
+                      }
+                      className="text-[11px] text-white"
+                    />
                   </div>
                 </div>
 
@@ -600,7 +595,7 @@ export default function LostFoundPage() {
                   <div className="pt-2">
                     {item.type === "FOUND" ? (
                       item.status === "VERIFIED_RECOVERED" ? (
-                        <div className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-twilight-900 text-slate-400 text-xs font-bold text-center">
+                        <div className="w-full py-2 rounded-xl bg-slate-100 dark:bg-twilight-900 text-muted-foreground text-xs font-medium text-center">
                           Returned to Owner ✓
                         </div>
                       ) : (
@@ -609,10 +604,10 @@ export default function LostFoundPage() {
                             setSelectedItemToClaim(item);
                             setIsClaimModalOpen(true);
                           }}
-                          className="w-full py-2.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                          className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-98"
                         >
                           <ShieldCheck className="w-4 h-4" />
-                          <span>This is Mine • Claim Item</span>
+                          <span>Claim This Item</span>
                         </button>
                       )
                     ) : (
@@ -620,7 +615,7 @@ export default function LostFoundPage() {
                         onClick={() => {
                           showToast(`Contact info: ${item.contactPhone || "+251911223344"}. Also notify campus security desk.`);
                         }}
-                        className="w-full py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md shadow-amber-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                        className="w-full py-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 font-medium text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                       >
                         <Phone className="w-4 h-4" />
                         <span>I Found This • Contact Student</span>

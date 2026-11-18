@@ -25,7 +25,7 @@ export function MobileHeader({
   onProfilePress,
   onAuthPress,
 }: MobileHeaderProps) {
-  const { colors, t, checkForUpdates } = useApp();
+  const { colors, t, checkForUpdates, isLiveConnected } = useApp();
   const isDark = colors.mode === "dark";
 
   return (
@@ -48,16 +48,15 @@ export function MobileHeader({
         <ChevronDown size={12} color={colors.textMuted} />
       </TouchableOpacity>
 
-      {/* Right: Quick Update Pill, Notifications & Avatar */}
+      {/* Right: Sync, Notifications & Avatar */}
       <View style={styles.rightSection}>
-        {/* Quick Update Button (Top Header shortcut) */}
-        <TouchableOpacity
-          onPress={checkForUpdates}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          style={[styles.updatePill, { backgroundColor: isDark ? "rgba(245, 158, 11, 0.2)" : "#FEF3C7" }]}
-        >
-          <Sparkles size={13} color="#F59E0B" />
-        </TouchableOpacity>
+        {/* Live Sync Status Indicator */}
+        <View style={styles.syncStatusPill}>
+          <View style={[styles.syncStatusDot, { backgroundColor: isLiveConnected ? "#10B981" : "#F59E0B" }]} />
+          <Text style={[styles.syncStatusText, { color: isLiveConnected ? "#10B981" : "#D97706" }]}>
+            {isLiveConnected ? "LIVE" : "SYNC"}
+          </Text>
+        </View>
 
         {/* Notifications Bell */}
         <TouchableOpacity
@@ -188,5 +187,26 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 11,
     fontWeight: "700",
+  },
+  syncStatusPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(16, 185, 129, 0.08)",
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(16, 185, 129, 0.2)",
+  },
+  syncStatusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  syncStatusText: {
+    fontSize: 9,
+    fontWeight: "900",
+    letterSpacing: 0.3,
   },
 });

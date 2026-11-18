@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { SlidersHorizontal, ArrowUpDown, MapPin, ShieldCheck } from "lucide-react-native";
@@ -24,11 +25,19 @@ export function ExploreScreen() {
     setLostFoundModalVisible,
     colors,
     t,
+    refreshLiveProducts,
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState<"featured" | "price_asc" | "rating">("featured");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setIsRefreshing(true);
+    await refreshLiveProducts();
+    setIsRefreshing(false);
+  };
 
   // Filter products
   const filteredProducts = products.filter((item) => {
@@ -58,6 +67,14 @@ export function ExploreScreen() {
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={onRefresh}
+          tintColor={colors.primary}
+          colors={[colors.primary]}
+        />
+      }
     >
       {/* Top Banner with Animation */}
       <Animatable.View animation="fadeInDown" duration={450} style={styles.topBanner}>
