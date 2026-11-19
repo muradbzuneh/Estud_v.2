@@ -42,6 +42,7 @@ import {
   getApiBaseUrl,
   setCustomApiBaseUrl,
   pingBackendServer,
+  normalizeApiUrl,
 } from "../utils/api";
 
 export function ProfileScreen() {
@@ -94,10 +95,12 @@ export function ProfileScreen() {
     const trimmed = serverUrlInput.trim();
     if (!trimmed) return;
     setCustomApiBaseUrl(trimmed);
+    const resolved = getApiBaseUrl();
+    setServerUrlInput(resolved);
     setServerModalOpen(false);
     showSuccessToast(
       language === "am" ? "ሰርቨር ተዘምኗል" : "Server Endpoint Saved",
-      `Connecting to ${trimmed}`
+      `Connecting to ${resolved}`
     );
     handleTestConnection();
   };
@@ -307,101 +310,79 @@ export function ProfileScreen() {
             </View>
             <View>
               <Text style={[styles.prefTitle, { color: colors.textPrimary }]}>{t.appVersionTitle}</Text>
-              <Text style={[styles.prefSub, { color: colors.textSecondary }]}>{appVersion} &bull; SafeTrade Release</Text>
+              <Text style={[styles.prefSub, { color: colors.textSecondary }]}>Version {appVersion}</Text>
             </View>
           </View>
           <View
             style={[
               styles.verifiedTag,
               {
-                backgroundColor: isLiveConnected ? "rgba(16, 185, 129, 0.15)" : "rgba(245, 158, 11, 0.15)",
-                borderColor: isLiveConnected ? "#10B981" : "#F59E0B",
+                backgroundColor: isLiveConnected ? "rgba(16, 185, 129, 0.12)" : "rgba(245, 158, 11, 0.12)",
+                borderColor: isLiveConnected ? "rgba(16, 185, 129, 0.3)" : "rgba(245, 158, 11, 0.3)",
               },
             ]}
           >
             <View
               style={{
-                width: 7,
-                height: 7,
-                borderRadius: 4,
+                width: 6,
+                height: 6,
+                borderRadius: 3,
                 backgroundColor: isLiveConnected ? "#10B981" : "#F59E0B",
-                marginRight: 4,
+                marginRight: 5,
               }}
             />
             <Text style={[styles.verifiedTagText, { color: isLiveConnected ? "#10B981" : "#D97706" }]}>
-              {isLiveConnected ? "Live" : "Local Sync"}
+              {isLiveConnected ? "Live" : "Connecting"}
             </Text>
           </View>
         </View>
 
-        {/* Real-time Backend Host Endpoint & Diagnostic Ping */}
-        <View
+        {/* Server Connection Row */}
+        <TouchableOpacity
+          onPress={() => {
+            setServerUrlInput(getApiBaseUrl());
+            setServerModalOpen(true);
+          }}
+          activeOpacity={0.7}
           style={{
-            marginTop: 12,
-            padding: 10,
-            borderRadius: 10,
-            backgroundColor: isDark ? "rgba(255, 255, 255, 0.04)" : "#F1F5F9",
+            marginTop: 10,
+            paddingVertical: 10,
+            paddingHorizontal: 12,
+            borderRadius: 12,
+            backgroundColor: isDark ? "rgba(255, 255, 255, 0.03)" : "#F8FAFC",
             borderWidth: 1,
             borderColor: colors.border,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-              <Server size={12} color={colors.primary} />
-              <Text style={{ fontSize: 10, color: colors.textMuted, fontWeight: "700", textTransform: "uppercase" }}>
-                Backend Server
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: isDark ? "rgba(59, 130, 246, 0.15)" : "#EFF6FF", alignItems: "center", justifyContent: "center" }}>
+              <Server size={14} color={colors.primary} />
+            </View>
+            <View>
+              <Text style={{ fontSize: 12, fontWeight: "700", color: colors.textPrimary }}>
+                Server Connection
+              </Text>
+              <Text numberOfLines={1} style={{ fontSize: 10, color: colors.textSecondary, marginTop: 1, maxWidth: 200 }}>
+                {getApiBaseUrl()}
               </Text>
             </View>
-            <TouchableOpacity
-              onPress={() => {
-                setServerUrlInput(getApiBaseUrl());
-                setServerModalOpen(true);
-              }}
-              style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
-            >
-              <Edit3 size={11} color={colors.primary} />
-              <Text style={{ fontSize: 11, fontWeight: "600", color: colors.primary }}>Edit</Text>
-            </TouchableOpacity>
           </View>
-
-          <Text numberOfLines={1} style={{ fontSize: 12, fontWeight: "600", color: colors.textPrimary, marginBottom: 8 }}>
-            {getApiBaseUrl()}
-          </Text>
-
-          <TouchableOpacity
-            onPress={handleTestConnection}
-            disabled={isTestingPing}
-            activeOpacity={0.8}
-            style={{
-              paddingVertical: 7,
-              borderRadius: 6,
-              backgroundColor: isDark ? "rgba(59, 130, 246, 0.2)" : "#DBEAFE",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "row",
-              gap: 6,
-            }}
-          >
-            {isTestingPing ? (
-              <ActivityIndicator size="small" color={colors.primary} />
-            ) : (
-              <>
-                <Wifi size={13} color={colors.primary} />
-                <Text style={{ fontSize: 11, fontWeight: "700", color: colors.primary }}>
-                  Test Server Ping
-                </Text>
-              </>
-            )}
-          </TouchableOpacity>
-        </View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <Text style={{ fontSize: 11, fontWeight: "600", color: colors.primary }}>Configure</Text>
+            <ChevronRight size={14} color={colors.primary} />
+          </View>
+        </TouchableOpacity>
 
         {/* Dedicated Update Button */}
         <TouchableOpacity
           onPress={() => checkForUpdates(false)}
           activeOpacity={0.88}
-          style={[styles.updateBtn, { backgroundColor: colors.primary, marginTop: 12 }]}
+          style={[styles.updateBtn, { backgroundColor: colors.primary, marginTop: 10 }]}
         >
-          <RefreshCw size={14} color="#FFFFFF" />
+          <RefreshCw size={13} color="#FFFFFF" />
           <Text style={styles.updateBtnText}>{t.btnCheckUpdates}</Text>
         </TouchableOpacity>
       </Animatable.View>
@@ -422,13 +403,43 @@ export function ProfileScreen() {
               </Text>
             </View>
             <Text style={[styles.serverModalDesc, { color: colors.textSecondary }]}>
-              Enter your computer host IP (e.g. http://192.168.137.89:3000) or public deployment URL.
+              Enter your backend endpoint. Note that Next.js dev server runs on port :3000. For installed APKs, HTTPS (e.g. ngrok tunnel) is recommended to avoid Android cleartext blocks.
             </Text>
+
+            {/* Quick Suggestion Pills */}
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
+              <TouchableOpacity
+                onPress={() => setServerUrlInput("http://10.172.204.191:3000")}
+                style={{
+                  paddingHorizontal: 8,
+                  paddingVertical: 4,
+                  borderRadius: 6,
+                  backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "#E2E8F0",
+                }}
+              >
+                <Text style={{ fontSize: 10, color: colors.primary, fontWeight: "600" }}>
+                  Wi-Fi: 10.172.204.191:3000
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setServerUrlInput("http://192.168.137.89:3000")}
+                style={{
+                  paddingHorizontal: 8,
+                  paddingVertical: 4,
+                  borderRadius: 6,
+                  backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "#E2E8F0",
+                }}
+              >
+                <Text style={{ fontSize: 10, color: colors.textSecondary, fontWeight: "600" }}>
+                  Hotspot: 192.168.137.89:3000
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             <TextInput
               value={serverUrlInput}
               onChangeText={setServerUrlInput}
-              placeholder="http://192.168.137.89:3000"
+              placeholder="https://your-tunnel.ngrok-free.app or http://10.172.204.191:3000"
               placeholderTextColor={colors.textMuted}
               autoCapitalize="none"
               autoCorrect={false}
@@ -534,14 +545,7 @@ export function ProfileScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() =>
-            showSuccessToast(
-              t.safeTradeProtectionGuarantee,
-              language === "am"
-                ? "100% የገዢ ጥበቃ እና 0% የሻጭ ክፍያ በካምፓስ ዴስክ"
-                : "100% Buyer protection & 0% seller fee with campus desk handover"
-            )
-          }
+          activeOpacity={0.7}
           style={[styles.menuItem, { borderBottomColor: colors.border }]}
         >
           <View style={styles.menuItemLeft}>
@@ -553,7 +557,7 @@ export function ProfileScreen() {
                 {t.safeTradeProtectionGuarantee}
               </Text>
               <Text style={[styles.menuItemSubtitle, { color: colors.textSecondary }]}>
-                Verified Escrow guidelines
+                Verified Escrow guidelines &bull; 100% Buyer Protection
               </Text>
             </View>
           </View>
@@ -561,14 +565,7 @@ export function ProfileScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() =>
-            showInfoToast(
-              t.campusIntermediarySupport,
-              language === "am"
-                ? "የአዲስ አበባ ዩኒቨርሲቲ ወይም የአዳማ ሳይንስ ዴስክን ያነጋግሩ"
-                : "Visit your campus library intermediary desk or student runner"
-            )
-          }
+          activeOpacity={0.7}
           style={[styles.menuItem, { borderBottomColor: colors.border }]}
         >
           <View style={styles.menuItemLeft}>
@@ -580,7 +577,7 @@ export function ProfileScreen() {
                 {t.campusIntermediarySupport}
               </Text>
               <Text style={[styles.menuItemSubtitle, { color: colors.textSecondary }]}>
-                Contact verified campus runner
+                Library Intermediary Desk &bull; Student Runner Handover
               </Text>
             </View>
           </View>

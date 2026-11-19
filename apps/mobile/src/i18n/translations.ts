@@ -105,7 +105,7 @@ export const translations: Record<Language, Translations> = {
   en: {
     tabHome: "Home",
     tabExplore: "Explore",
-    tabSell: "Sell (0%)",
+    tabSell: "Sell",
     tabActivity: "Activity",
     tabProfile: "Profile",
 
@@ -196,7 +196,7 @@ export const translations: Record<Language, Translations> = {
   am: {
     tabHome: "መነሻ",
     tabExplore: "አስስ",
-    tabSell: "ሽጥ (0%)",
+    tabSell: "ሽጥ",
     tabActivity: "እንቅስቃሴ",
     tabProfile: "መገለጫ",
 
