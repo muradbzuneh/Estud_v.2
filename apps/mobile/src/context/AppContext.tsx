@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from "react";
 import { MobileProductItem } from "../components/MobileProductCard";
 import { ThemeMode, ColorPalette, getThemeColors } from "../theme/theme";
 import { Language, Translations, translations } from "../i18n/translations";
@@ -278,6 +278,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [appVersion, setAppVersion] = useState<string>("v2.3.1");
   const [serverRelease, setServerRelease] = useState<AppReleaseInfo | null>(null);
   const [isUpdateAvailable, setIsUpdateAvailable] = useState<boolean>(false);
+  const hasPromptedUpdateRef = useRef<boolean>(false);
 
   /**
    * Automatically queries server for new releases and shows update alert if available
@@ -293,21 +294,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const currentVer = appVersion.replace(/^v/, "").trim();
         const hasNewerVersion = serverVer !== currentVer;
 
-        if (hasNewerVersion || release.forceUpdate) {
+        if (hasNewerVersion) {
           setIsUpdateAvailable(true);
-          if (!silent || release.forceUpdate) {
+          if (!silent) {
             setUpdateModalVisible(true);
             showUpdateToast(
               language === "am" ? "አዲስ ዝመና ተገኝቷል!" : `New Update Available (${release.version})!`,
               release.title
             );
+          } else if (release.forceUpdate && !hasPromptedUpdateRef.current) {
+            hasPromptedUpdateRef.current = true;
+            setUpdateModalVisible(true);
           }
         } else {
           setIsUpdateAvailable(false);
           if (!silent) {
             showSuccessToast(
               language === "am" ? "የቅርብ ጊዜ ስሪት ነው" : "You are up to date!",
-              `Running Estud ${appVersion} LiveSync`
+              `Running Estud ${appVersion}`
             );
           }
         }
@@ -372,19 +376,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const updated = newVer || (serverRelease ? `v${serverRelease.version}` : "v2.3.1");
     setAppVersion(updated);
     setIsUpdateAvailable(false);
-    showSuccessToast(
-      language === "am" ? "ዝመናው ተጠናቋል!" : "App Upgraded Successfully!",
-      `Running Estud ${updated} Fluent LiveSync & Trust Edition`
-    );
   };
 
   const toggleTheme = () => {
     const nextTheme: ThemeMode = theme === "light" ? "dark" : "light";
     setThemeState(nextTheme);
-    showInfoToast(
-      nextTheme === "dark" ? "Dark Midnight Active" : "Light Mode Active",
-      nextTheme === "dark" ? "Dark navy palette enabled" : "Clean light palette enabled"
-    );
   };
 
   const setTheme = (newTheme: ThemeMode) => {
@@ -393,15 +389,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const setLanguage = (newLang: Language) => {
     setLanguageState(newLang);
-    showInfoToast(
-      newLang === "am" ? "ቋንቋ ወደ አማርኛ ተቀይሯል" : "Language set to English",
-      newLang === "am" ? "የኢስቱድ ካምፓስ መተግበሪያ" : "Campus marketplace updated"
-    );
   };
 
   const setCurrentCampus = (campus: string) => {
     setCurrentCampusState(campus);
-    showInfoToast("Campus Hub Selected", campus);
   };
 
   const login = (name: string, email: string, campus: string) => {
@@ -496,14 +487,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const toggleFavorite = (id: string) => {
-    const willBeFavorite = !favorites[id];
-    setFavorites((prev) => ({ ...prev, [id]: willBeFavorite }));
-    if (willBeFavorite) {
-      showSuccessToast(
-        language === "am" ? "ወደ የተቀመጡ ተጨምሯል" : "Added to Saved",
-        "View it anytime in your Profile tab"
-      );
-    }
+    setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   /**
