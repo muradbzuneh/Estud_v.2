@@ -1,9 +1,13 @@
 import { v2 as cloudinary } from "cloudinary";
 
+const cloud_name = process.env.CLOUDINARY_CLOUD_NAME?.trim();
+const api_key = process.env.CLOUDINARY_API_KEY?.trim();
+const api_secret = process.env.CLOUDINARY_API_SECRET?.trim();
+
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name,
+  api_key,
+  api_secret,
   secure: true,
 });
 
@@ -25,19 +29,23 @@ export function generateUploadSignature(
   const timestamp = Math.round(new Date().getTime() / 1000);
   const targetFolder = `estud/${folder}`;
 
+  const currentSecret = (process.env.CLOUDINARY_API_SECRET || api_secret || "dummy_secret_for_dev").trim();
+  const currentKey = (process.env.CLOUDINARY_API_KEY || api_key || "").trim();
+  const currentCloud = (process.env.CLOUDINARY_CLOUD_NAME || cloud_name || "").trim();
+
   const signature = cloudinary.utils.api_sign_request(
     {
       timestamp,
       folder: targetFolder,
     },
-    process.env.CLOUDINARY_API_SECRET || "dummy_secret_for_dev"
+    currentSecret
   );
 
   return {
     timestamp,
     signature,
-    apiKey: process.env.CLOUDINARY_API_KEY || "",
-    cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
+    apiKey: currentKey,
+    cloudName: currentCloud,
     folder: targetFolder,
   };
 }
