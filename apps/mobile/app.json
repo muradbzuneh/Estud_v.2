@@ -18,14 +18,12 @@
     "android": {
       "package": "com.muradbzuneh.estudmonorepo",
       "versionCode": 4,
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/logos/estud-app-icon-dark.jpg",
         "backgroundColor": "#070d1e"
       },
       "permissions": [
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"

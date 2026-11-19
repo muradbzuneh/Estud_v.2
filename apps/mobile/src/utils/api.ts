@@ -48,8 +48,39 @@ export interface AppReleaseInfo {
 
 let customApiBaseUrl: string | null = null;
 
+/**
+ * Normalizes input URL: ensures protocol (http/https), appends default port 3000 for local IPs if omitted,
+ * and removes trailing slashes.
+ */
+export function normalizeApiUrl(rawUrl: string): string {
+  let url = rawUrl.trim();
+  if (!url) return url;
+
+  // Add protocol if missing
+  if (!/^https?:\/\//i.test(url)) {
+    if (/^(localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/i.test(url)) {
+      url = `http://${url}`;
+    } else {
+      url = `https://${url}`;
+    }
+  }
+
+  // If it's an IP address or localhost without a port, append :3000
+  const ipOrLocalhostMatch = url.match(/^(https?:\/\/(?:localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}))(\/.*)?$/i);
+  if (ipOrLocalhostMatch) {
+    const origin = ipOrLocalhostMatch[1];
+    const pathAndQuery = ipOrLocalhostMatch[2] || "";
+    // If no port specified in origin
+    if (!/:\d+$/.test(origin)) {
+      url = `${origin}:3000${pathAndQuery}`;
+    }
+  }
+
+  return url.replace(/\/+$/, "");
+}
+
 export function setCustomApiBaseUrl(url: string | null) {
-  customApiBaseUrl = url;
+  customApiBaseUrl = url ? normalizeApiUrl(url) : null;
 }
 
 export function getCustomApiBaseUrl(): string | null {
@@ -61,7 +92,7 @@ export function getCustomApiBaseUrl(): string | null {
  */
 export function getApiBaseUrl(): string {
   if (customApiBaseUrl && customApiBaseUrl.trim().length > 0) {
-    return customApiBaseUrl.trim().replace(/\/+$/, "");
+    return normalizeApiUrl(customApiBaseUrl);
   }
 
   if (Platform.OS === "web") {
@@ -75,11 +106,11 @@ export function getApiBaseUrl(): string {
 
   // If env var is explicitly configured and not localhost on mobile hardware
   if (process.env.EXPO_PUBLIC_API_URL && !process.env.EXPO_PUBLIC_API_URL.includes("localhost")) {
-    return process.env.EXPO_PUBLIC_API_URL;
+    return normalizeApiUrl(process.env.EXPO_PUBLIC_API_URL);
   }
 
   // Physical Android/iOS mobile device connects to PC host IP on local Wi-Fi / Hotspot
-  return "http://192.168.137.89:3000";
+  return "http://10.172.204.191:3000";
 }
 
 /**
@@ -103,7 +134,47 @@ export async function pingBackendServer(): Promise<{ ok: boolean; statusText: st
     }
     return { ok: false, statusText: `HTTP ${res.status}`, url };
   } catch (err: any) {
-    return { ok: false, statusText: err?.message || "Unreachable", url };
+    const rawMsg = String(err?.message || "");
+
+    // Cleartext policy block (Android 9+ default for HTTP on standalone APKs)
+    if (rawMsg.includes("CLEARTEXT") || rawMsg.includes("network security policy")) {
+      return {
+        ok: false,
+        statusText:
+          "Android blocked HTTP (Cleartext). Use an HTTPS URL (e.g. ngrok tunnel) or rebuild APK with cleartext enabled",
+        url,
+      };
+    }
+
+    // Common virtual switch IP mistake
+    if (url.includes("192.168.16.1")) {
+      return {
+        ok: false,
+        statusText:
+          "192.168.16.1 is a PC internal virtual switch (Hyper-V). Use your PC's Wi-Fi IP (e.g. 10.172.204.191:3000) or an HTTPS tunnel",
+        url,
+      };
+    }
+
+    // Localhost on physical phone
+    if (url.includes("localhost") || url.includes("127.0.0.1")) {
+      return {
+        ok: false,
+        statusText:
+          "localhost points to your phone itself. Use your PC's Wi-Fi IP or an HTTPS tunnel",
+        url,
+      };
+    }
+
+    if (err?.name === "AbortError" || rawMsg.includes("aborted")) {
+      return {
+        ok: false,
+        statusText: "Connection timed out. Ensure PC & phone are on same Wi-Fi and port 3000 is running",
+        url,
+      };
+    }
+
+    return { ok: false, statusText: rawMsg || "Unreachable", url };
   }
 }
 
