@@ -65,7 +65,7 @@ let activeRelease: AppReleaseInfo = {
     "Android Cleartext Traffic Enabled: Seamless LAN connectivity to local development server",
     "Marketplace Security: Strict Verified Student gates for buying and selling, immutable inspection PINs",
   ],
-  downloadUrl: "https://expo.dev/artifacts/eas/PE-OqJTG-mu4ToINxvjGYuj7u49wEerq_1hKQ15wNPc.apk",
+  downloadUrl: "https://expo.dev/artifacts/eas/2yoG7801B6KV_pfgmcNpEXnTGx2Q1TwYva5d-qeVyA8.apk",
   forceUpdate: false,
 };
 
