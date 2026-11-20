@@ -2,14 +2,14 @@
   "expo": {
     "name": "Estud",
     "slug": "estud-monorepo",
-    "version": "2.3.3",
+    "version": "2.3.4",
     "orientation": "portrait",
     "icon": "./assets/logos/estud-app-icon-dark.jpg",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/logos/estud-app-icon-dark.jpg",
       "resizeMode": "contain",
-      "backgroundColor": "#070d1e"
+      "backgroundColor": "#0F172A"
     },
     "ios": {
       "supportsTablet": true,
@@ -17,11 +17,11 @@
     },
     "android": {
       "package": "com.muradbzuneh.estudmonorepo",
-      "versionCode": 5,
+      "versionCode": 7,
       "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/logos/estud-app-icon-dark.jpg",
-        "backgroundColor": "#070d1e"
+        "backgroundColor": "#0F172A"
       },
       "permissions": [
         "CAMERA",

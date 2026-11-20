@@ -1,7 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import Svg, { Path, Rect, Circle, G } from "react-native-svg";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { Banknote } from "lucide-react-native";
+
+export const TELEBIRR_LOGO_IMG = require("../../assets/logos/telebirr-official-trimmed.png");
+export const TELEBIRR_ICON_IMG = require("../../assets/logos/telebirr-icon-trimmed.png");
+export const CBE_LOGO_IMG = require("../../assets/logos/cbe-official-trimmed.png");
 
 interface LogoProps {
   size?: number;
@@ -9,75 +12,42 @@ interface LogoProps {
 }
 
 /**
- * Authentic Telebirr SuperApp Brand Icon & Logo
- * Vibrant Ethio Telecom Cyan & Warm Solar Gold
+ * Official Telebirr Brand Logo & Icon (Ethio Telecom official asset)
  */
-export function TelebirrLogo({ size = 26, showText = true }: LogoProps) {
-  return (
-    <View style={styles.container}>
-      <View
-        style={[
-          styles.tile,
-          {
-            width: size,
-            height: size,
-            borderRadius: Math.round(size * 0.28),
-            backgroundColor: "#0078D4",
-          },
-        ]}
-      >
-        <Svg width={size * 0.72} height={size * 0.72} viewBox="0 0 32 32" fill="none">
-          {/* Overlapping stylized dual-curve Telebirr diamond */}
-          <Path
-            d="M8 6L18 6C23 6 26 9.5 26 14C26 18.5 23 22 18 22L8 22V6Z"
-            fill="#FFCC00"
-          />
-          <Path
-            d="M6 10L15 10C19 10 22 12.5 22 16C22 19.5 19 22 15 22L6 22V10Z"
-            fill="#00B4D8"
-          />
-          <Circle cx="12" cy="16" r="3.5" fill="#FFFFFF" />
-        </Svg>
+export function TelebirrLogo({ size = 28, showText = true }: LogoProps) {
+  if (showText) {
+    return (
+      <View style={styles.container}>
+        <Image
+          source={TELEBIRR_LOGO_IMG}
+          style={{ width: Math.round(size * 3.4), height: size }}
+          resizeMode="contain"
+        />
       </View>
-      {showText && <Text style={styles.telebirrText}>telebirr</Text>}
-    </View>
+    );
+  }
+
+  return (
+    <Image
+      source={TELEBIRR_ICON_IMG}
+      style={{ width: size, height: size }}
+      resizeMode="contain"
+    />
   );
 }
 
 /**
- * Authentic Commercial Bank of Ethiopia (CBE) Brand Icon & Logo
- * Regal Imperial Purple & Pure Gold Emblem
+ * Official Commercial Bank of Ethiopia (CBE) Brand Logo (Official Gold Coin Emblem)
  */
-export function CbeLogo({ size = 26, showText = true }: LogoProps) {
+export function CbeLogo({ size = 28, showText = true }: LogoProps) {
   return (
     <View style={styles.container}>
-      <View
-        style={[
-          styles.tile,
-          {
-            width: size,
-            height: size,
-            borderRadius: Math.round(size * 0.28),
-            backgroundColor: "#58136A",
-          },
-        ]}
-      >
-        <Svg width={size * 0.72} height={size * 0.72} viewBox="0 0 32 32" fill="none">
-          {/* CBE Shield & Balance of Trust */}
-          <Path
-            d="M16 3L6 7V16C6 22.5 10.3 27.5 16 29C21.7 27.5 26 22.5 26 16V7L16 3Z"
-            fill="#FFB800"
-          />
-          <Path
-            d="M16 5.5L8 8.8V16C8 21.2 11.5 25.2 16 26.8C20.5 25.2 24 21.2 24 16V8.8L16 5.5Z"
-            fill="#58136A"
-          />
-          {/* Scales & Monogram */}
-          <Circle cx="16" cy="12" r="2.2" fill="#FFB800" />
-          <Path d="M12 16H20M13 16L11 20M19 16L21 20" stroke="#FFB800" strokeWidth="1.8" strokeLinecap="round" />
-        </Svg>
-      </View>
-      {showText && <Text style={styles.cbeText}>CBE Birr</Text>}
+      <Image
+        source={CBE_LOGO_IMG}
+        style={{ width: size, height: size }}
+        resizeMode="contain"
+      />
+      {showText && <Text style={styles.cbeText}>CBE Birr / Bank</Text>}
     </View>
   );
 }
@@ -85,7 +55,7 @@ export function CbeLogo({ size = 26, showText = true }: LogoProps) {
 /**
  * Clean Cash at Campus Desk Icon
  */
-export function CashDeskLogo({ size = 26, showText = true }: LogoProps) {
+export function CashDeskLogo({ size = 28, showText = true }: LogoProps) {
   return (
     <View style={styles.container}>
       <View
@@ -101,7 +71,7 @@ export function CashDeskLogo({ size = 26, showText = true }: LogoProps) {
       >
         <Banknote size={Math.round(size * 0.6)} color="#FFFFFF" />
       </View>
-      {showText && <Text style={styles.cashText}>Cash Desk</Text>}
+      {showText && <Text style={styles.cashText}>Cash at Desk</Text>}
     </View>
   );
 }
@@ -110,7 +80,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 7,
+    gap: 8,
   },
   tile: {
     alignItems: "center",
@@ -121,21 +91,15 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  telebirrText: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: "#0078D4",
-    letterSpacing: -0.2,
-  },
   cbeText: {
     fontSize: 12,
-    fontWeight: "900",
-    color: "#8B2F9E",
+    fontWeight: "800",
+    color: "#E5A93C",
     letterSpacing: 0.1,
   },
   cashText: {
     fontSize: 12,
     fontWeight: "800",
-    color: "#059669",
+    color: "#10B981",
   },
 });

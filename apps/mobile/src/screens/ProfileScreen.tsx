@@ -310,71 +310,93 @@ export function ProfileScreen() {
             </View>
             <View>
               <Text style={[styles.prefTitle, { color: colors.textPrimary }]}>{t.appVersionTitle}</Text>
-              <Text style={[styles.prefSub, { color: colors.textSecondary }]}>Version {appVersion}</Text>
+              <Text style={[styles.prefSub, { color: colors.textSecondary }]}>{appVersion} &bull; SafeTrade Release</Text>
             </View>
           </View>
           <View
             style={[
               styles.verifiedTag,
               {
-                backgroundColor: isLiveConnected ? "rgba(16, 185, 129, 0.12)" : "rgba(245, 158, 11, 0.12)",
-                borderColor: isLiveConnected ? "rgba(16, 185, 129, 0.3)" : "rgba(245, 158, 11, 0.3)",
+                backgroundColor: isLiveConnected ? "rgba(16, 185, 129, 0.15)" : "rgba(245, 158, 11, 0.15)",
+                borderColor: isLiveConnected ? "#10B981" : "#F59E0B",
               },
             ]}
           >
             <View
               style={{
-                width: 6,
-                height: 6,
-                borderRadius: 3,
+                width: 7,
+                height: 7,
+                borderRadius: 4,
                 backgroundColor: isLiveConnected ? "#10B981" : "#F59E0B",
-                marginRight: 5,
+                marginRight: 4,
               }}
             />
             <Text style={[styles.verifiedTagText, { color: isLiveConnected ? "#10B981" : "#D97706" }]}>
-              {isLiveConnected ? "Live" : "Connecting"}
+              {isLiveConnected ? "Live" : "Local Sync"}
             </Text>
           </View>
         </View>
 
-        {/* Server Connection Row */}
-        <TouchableOpacity
-          onPress={() => {
-            setServerUrlInput(getApiBaseUrl());
-            setServerModalOpen(true);
-          }}
-          activeOpacity={0.7}
+        {/* Real-time Backend Host Endpoint & Diagnostic Ping */}
+        <View
           style={{
-            marginTop: 10,
-            paddingVertical: 10,
-            paddingHorizontal: 12,
-            borderRadius: 12,
-            backgroundColor: isDark ? "rgba(255, 255, 255, 0.03)" : "#F8FAFC",
+            marginTop: 12,
+            padding: 10,
+            borderRadius: 10,
+            backgroundColor: isDark ? "rgba(255, 255, 255, 0.04)" : "#F1F5F9",
             borderWidth: 1,
             borderColor: colors.border,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
           }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: isDark ? "rgba(59, 130, 246, 0.15)" : "#EFF6FF", alignItems: "center", justifyContent: "center" }}>
-              <Server size={14} color={colors.primary} />
-            </View>
-            <View>
-              <Text style={{ fontSize: 12, fontWeight: "700", color: colors.textPrimary }}>
-                Server Connection
-              </Text>
-              <Text numberOfLines={1} style={{ fontSize: 10, color: colors.textSecondary, marginTop: 1, maxWidth: 200 }}>
-                {getApiBaseUrl()}
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <Server size={12} color={colors.primary} />
+              <Text style={{ fontSize: 10, color: colors.textMuted, fontWeight: "700", textTransform: "uppercase" }}>
+                Backend Server
               </Text>
             </View>
+            <TouchableOpacity
+              onPress={() => {
+                setServerUrlInput(getApiBaseUrl());
+                setServerModalOpen(true);
+              }}
+              style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
+            >
+              <Edit3 size={11} color={colors.primary} />
+              <Text style={{ fontSize: 11, fontWeight: "600", color: colors.primary }}>Edit</Text>
+            </TouchableOpacity>
           </View>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-            <Text style={{ fontSize: 11, fontWeight: "600", color: colors.primary }}>Configure</Text>
-            <ChevronRight size={14} color={colors.primary} />
-          </View>
-        </TouchableOpacity>
+
+          <Text numberOfLines={1} style={{ fontSize: 12, fontWeight: "600", color: colors.textPrimary, marginBottom: 8, fontFamily: "monospace" }}>
+            {getApiBaseUrl()}
+          </Text>
+
+          <TouchableOpacity
+            onPress={handleTestConnection}
+            disabled={isTestingPing}
+            activeOpacity={0.8}
+            style={{
+              paddingVertical: 7,
+              borderRadius: 6,
+              backgroundColor: isDark ? "rgba(56, 189, 248, 0.2)" : "#DBEAFE",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "row",
+              gap: 6,
+            }}
+          >
+            {isTestingPing ? (
+              <ActivityIndicator size="small" color={colors.primary} />
+            ) : (
+              <>
+                <Wifi size={13} color={colors.primary} />
+                <Text style={{ fontSize: 11, fontWeight: "700", color: colors.primary }}>
+                  Test Server Ping
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
 
         {/* Dedicated Update Button */}
         <TouchableOpacity

@@ -54,16 +54,16 @@ const liveBroadcastsStore: CampusBroadcast[] = [
 ];
 
 let activeRelease: AppReleaseInfo = {
-  version: "2.3.3",
-  versionCode: 6,
+  version: "2.3.4",
+  versionCode: 7,
   releaseDate: new Date().toISOString(),
-  title: "Estud v2.3.3 Formal Marketplace & Product Detail Edition",
+  title: "Estud v2.3.4 Official Brand & Slate Theme Edition",
   releaseNotes: [
-    "Product Detail Overview: Dedicated product view with high-res photos, verified seller profile, and specifications before checkout",
-    "Verified Student Gating: Guest users must sign in with a verified student account before buying or selling",
-    "Immutable Inspection PIN: Fixed, tamper-proof escrow inspection PIN for audit and campus desk validation",
-    "Professional Payment Channels: Stacked full-width cards with authentic Telebirr, CBE, and Cash Desk options",
-    "Pure Dark Midnight Theme: Unified dark styling across all modals, forms, and cards with high contrast text",
+    "Restored Confirmed Soft Slate Dark Theme: Cohesive Slate #0F172A background with #1E293B cards and #38BDF8 sky blue accents",
+    "Official Telebirr & Commercial Bank of Ethiopia (CBE) Brand Logos: Trimmed high-res brand emblems on payment methods",
+    "Direct Backend Server Configuration & Diagnostic Ping on Profile Screen",
+    "Android Cleartext Traffic Enabled: Seamless LAN connectivity to local development server",
+    "Marketplace Security: Strict Verified Student gates for buying and selling, immutable inspection PINs",
   ],
   downloadUrl: "https://expo.dev/artifacts/eas/PE-OqJTG-mu4ToINxvjGYuj7u49wEerq_1hKQ15wNPc.apk",
   forceUpdate: false,
