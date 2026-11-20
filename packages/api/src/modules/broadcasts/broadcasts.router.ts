@@ -54,20 +54,19 @@ const liveBroadcastsStore: CampusBroadcast[] = [
 ];
 
 let activeRelease: AppReleaseInfo = {
-  version: "2.3.1",
+  version: "2.3.2",
   versionCode: 5,
   releaseDate: new Date().toISOString(),
-  title: "Estud v2.3.1 Admin Review & Live Trust Edition",
+  title: "Estud v2.3.2 Dark Midnight & SafeTrade Escrow Edition",
   releaseNotes: [
-    "Admin Listing Review Desk: All items submitted by students now undergo quality & valuation review before appearing on the public feed",
-    "Real-time Admin Approval: Approved items automatically appear live on Web & Mobile marketplace without manual reload",
-    "Direct LAN / Wi-Fi Sync: Mobile devices now automatically route to host IP for seamless phone connectivity",
-    "Upload from Device: Pick photos directly from device storage or snap with camera",
-    "Payment Screenshot Proof: Attach Telebirr & CBE transfer slips for instant escrow approval",
-    "Time-limited Secret PIN: 48-hour security expiration window with in-app PIN refresh",
+    "Full Dark Midnight Theme: Consistent dark mode across Profile, Sell, Checkout and Modals",
+    "Streamlined UI: Clean, concise labels without cluttered helper paragraphs",
+    "Authentic Payment Logos: Official Telebirr and CBE badges for safe escrow checkout",
+    "Android Cleartext HTTP Traffic: Native support enabled for local Wi-Fi backend connectivity",
+    "Non-intrusive Updates: Silent background sync without interrupting user actions",
   ],
-  downloadUrl: "https://expo.dev/artifacts/eas/uuqMvjcZXGx4UEVJ97jHpuEvM4vVCl6fBgklW443JWI.apk",
-  forceUpdate: true,
+  downloadUrl: "https://expo.dev/artifacts/eas/fL8Ak13f9oAemgJ_4IqY5oapekFo2YasGeBxHG7QhTs.apk",
+  forceUpdate: false,
 };
 
 export const broadcastsRouter = router({

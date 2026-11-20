@@ -39,18 +39,18 @@ const SAMPLE_PHOTO_PRESETS = [
 ];
 
 const CATEGORY_OPTIONS = [
-  { id: "laptops", label: "Laptops & Electronics" },
-  { id: "phones", label: "Phones & Gadgets" },
-  { id: "books", label: "Books & Study Materials" },
-  { id: "fashion", label: "Fashion & Backpacks" },
-  { id: "sports", label: "Dorm & Living" },
+  { id: "laptops", label: "Laptops" },
+  { id: "phones", label: "Phones" },
+  { id: "books", label: "Books" },
+  { id: "fashion", label: "Fashion" },
+  { id: "sports", label: "Dorm" },
 ];
 
 const CONDITION_OPTIONS = [
-  "Brand New • Sealed",
-  "Used • Like New",
-  "Used • Good Condition",
-  "Used • Fair",
+  "Brand New",
+  "Like New",
+  "Good",
+  "Fair",
 ];
 
 export function SellScreen() {
@@ -244,7 +244,7 @@ export function SellScreen() {
         <TouchableOpacity
           onPress={handleResetForm}
           activeOpacity={0.8}
-          style={[styles.actionBtnSecondary, { backgroundColor: isDark ? "#293548" : "#F1F5F9" }]}
+          style={[styles.actionBtnSecondary, { backgroundColor: isDark ? colors.cardElevated : "#F1F5F9" }]}
         >
           <Text style={[styles.actionBtnSecondaryText, { color: colors.textSecondary }]}>
             {language === "am" ? "ሌላ ዕቃ ለመሸጥ ይለጥፉ" : "List Another Item"}
@@ -259,12 +259,6 @@ export function SellScreen() {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}
     >
-      {/* 0% Fee Banner with Animation */}
-      <Animatable.View animation="fadeInDown" duration={400} style={styles.feeBanner}>
-        <Sparkles size={16} color="#B45309" />
-        <Text style={styles.feeBannerText}>{t.sellBannerText}</Text>
-      </Animatable.View>
-
       <Text style={[styles.screenTitle, { color: colors.textPrimary }]}>{t.sellTitle}</Text>
       <Text style={[styles.screenSubtitle, { color: colors.textSecondary }]}>{t.sellSubtitle}</Text>
 
@@ -284,15 +278,15 @@ export function SellScreen() {
         </View>
 
         {photos.length === 0 ? (
-          <View style={[styles.photoEmptyDropZone, { backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "#F8FAFC", borderColor: colors.border }]}>
+          <View style={[styles.photoEmptyDropZone, { backgroundColor: isDark ? colors.cardElevated : "#F8FAFC", borderColor: colors.border }]}>
             <View style={[styles.photoEmptyIconCircle, { backgroundColor: colors.primaryLight }]}>
               <Upload size={22} color={colors.primary} />
             </View>
             <Text style={[styles.photoEmptyTitle, { color: colors.textPrimary }]}>
-              {language === "am" ? "የዕቃውን ፎቶ ያያይዙ *" : "Upload Item Photos *"}
+              {language === "am" ? "የዕቃ ፎቶ ያያይዙ" : "Upload Photos"}
             </Text>
             <Text style={[styles.photoEmptySub, { color: colors.textSecondary }]}>
-              {language === "am" ? "ቢያንስ 1 ፎቶ ያስፈልጋል (እስከ 5)" : "At least 1 photo required (up to 5)"}
+              {language === "am" ? "1 እስከ 5 ፎቶዎች" : "1 to 5 photos"}
             </Text>
             <View style={styles.uploadActionsRow}>
               <TouchableOpacity
@@ -302,13 +296,13 @@ export function SellScreen() {
               >
                 <Upload size={14} color={colors.primary} />
                 <Text style={[styles.uploadActionText, { color: colors.primary }]}>
-                  {language === "am" ? "ከመሳሪያ ምረጥ" : "Upload from Device"}
+                  {language === "am" ? "መሳሪያ" : "Device"}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleCameraSnap}
                 activeOpacity={0.85}
-                style={[styles.uploadActionButton, { backgroundColor: isDark ? "rgba(255,255,255,0.06)" : "#F1F5F9", borderColor: colors.border }]}
+                style={[styles.uploadActionButton, { backgroundColor: isDark ? colors.cardElevated : "#F1F5F9", borderColor: colors.border }]}
               >
                 <Camera size={14} color={colors.textPrimary} />
                 <Text style={[styles.uploadActionText, { color: colors.textPrimary }]}>
@@ -347,14 +341,14 @@ export function SellScreen() {
                 >
                   <Upload size={14} color={colors.primary} />
                   <Text style={[styles.uploadActionText, { color: colors.primary }]}>
-                    {language === "am" ? "ፎቶ ጨምር" : "Add More"}
+                    {language === "am" ? "መሳሪያ" : "Device"}
                   </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={handleCameraSnap}
                   activeOpacity={0.85}
-                  style={[styles.uploadActionButton, { backgroundColor: isDark ? "rgba(255,255,255,0.06)" : "#F1F5F9", borderColor: colors.border }]}
+                  style={[styles.uploadActionButton, { backgroundColor: isDark ? colors.cardElevated : "#F1F5F9", borderColor: colors.border }]}
                 >
                   <Camera size={14} color={colors.textPrimary} />
                   <Text style={[styles.uploadActionText, { color: colors.textPrimary }]}>
@@ -385,7 +379,7 @@ export function SellScreen() {
         <TextInput
           value={title}
           onChangeText={setTitle}
-          placeholder="e.g. Dell Inspiron 15 (16GB RAM) or Organic Chemistry 8th Ed"
+          placeholder={language === "am" ? "ለምሳሌ፡ ላፕቶፕ ወይም መጽሐፍ" : "e.g. Dell Laptop or Textbook"}
           placeholderTextColor={colors.textMuted}
           style={[styles.inputField, { backgroundColor: colors.inputBg, borderColor: colors.border, color: colors.textPrimary }]}
         />
@@ -475,7 +469,7 @@ export function SellScreen() {
         </View>
       </Animatable.View>
 
-      {/* Step 3: Pricing & Guaranteed Payout Calculator */}
+      {/* Step 3: Pricing */}
       <Animatable.View
         animation="fadeInUp"
         duration={550}
@@ -492,36 +486,25 @@ export function SellScreen() {
         <TextInput
           value={price}
           onChangeText={setPrice}
-          placeholder="e.g. 2500"
+          placeholder="2500"
           placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
           style={[styles.priceInputField, { backgroundColor: colors.inputBg, borderColor: colors.primary, color: colors.primary }]}
         />
 
-        {/* Live Guaranteed Payout Box */}
-        <View style={[styles.payoutBox, { backgroundColor: isDark ? "#293548" : "#F8FAFC", borderColor: colors.border }]}>
+        {/* Clean Payout Box */}
+        <View style={[styles.payoutBox, { backgroundColor: isDark ? colors.cardElevated : "#F8FAFC", borderColor: colors.border }]}>
           <View style={styles.payoutRow}>
-            <Text style={[styles.payoutLabel, { color: colors.textSecondary }]}>Your Asking Price:</Text>
-            <Text style={[styles.payoutValue, { color: colors.textPrimary }]}>ETB {numericPrice.toLocaleString()}</Text>
+            <Text style={[styles.payoutLabel, { color: colors.textSecondary }]}>{t.guaranteedPayoutLabel}</Text>
+            <Text style={[styles.payoutHighlightValue, { color: colors.accent }]}>ETB {numericPrice.toLocaleString()}</Text>
           </View>
-          <View style={styles.payoutRow}>
-            <Text style={[styles.payoutLabel, { color: colors.textSecondary }]}>Seller Platform Fee (0%):</Text>
-            <Text style={[styles.payoutValue, { color: "#10B981" }]}>ETB 0 (FREE)</Text>
-          </View>
-          <View style={styles.payoutRow}>
-            <Text style={[styles.payoutLabel, { color: colors.textSecondary }]}>Buyer Escrow Fee (+5%):</Text>
-            <Text style={[styles.payoutValue, { color: colors.textSecondary }]}>+ETB {buyerEscrowFee.toLocaleString()}</Text>
-          </View>
-          <View style={[styles.payoutRow, styles.payoutHighlightRow, { borderTopColor: colors.border }]}>
-            <Text style={[styles.payoutHighlightLabel, { color: colors.textPrimary }]}>
-              {t.guaranteedPayoutLabel}
-            </Text>
-            <Text style={styles.payoutHighlightValue}>ETB {numericPrice.toLocaleString()}</Text>
-          </View>
+          <Text style={{ fontSize: 11, color: "#10B981", fontWeight: "700", marginTop: 4 }}>
+            ✓ 0% Seller Fee &bull; 100% Payout
+          </Text>
         </View>
       </Animatable.View>
 
-      {/* Step 4: Barter / Exchange Option */}
+      {/* Step 4: Barter Option */}
       <Animatable.View
         animation="fadeInUp"
         duration={600}
@@ -548,12 +531,12 @@ export function SellScreen() {
         {isBarterOpen && (
           <View style={styles.barterInputBox}>
             <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>
-              What would you exchange this for? (Optional)
+              {language === "am" ? "የልውውጥ ምርጫ (አማራጭ)" : "Trade Item (Optional)"}
             </Text>
             <TextInput
               value={barterPreference}
               onChangeText={setBarterPreference}
-              placeholder="e.g. Willing to trade for iPad 9th Gen or iPhone 11"
+              placeholder={language === "am" ? "ለምሳሌ፡ iPad ወይም ስልክ" : "e.g. iPad, iPhone, or Calculator"}
               placeholderTextColor={colors.textMuted}
               style={[styles.inputField, { backgroundColor: colors.inputBg, borderColor: colors.border, color: colors.textPrimary }]}
             />

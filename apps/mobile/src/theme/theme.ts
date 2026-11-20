@@ -54,28 +54,28 @@ export const lightColors: ColorPalette = {
 
 export const darkColors: ColorPalette = {
   mode: "dark",
-  background: "#0F172A",    // Soft Slate 900 (gentle, light dark mode)
-  card: "#1E293B",          // Elevated Slate 800
-  cardElevated: "#2D3B4F",  // Subtle Elevated Layer
-  border: "rgba(255, 255, 255, 0.09)",
-  borderStrong: "rgba(255, 255, 255, 0.18)",
-  textPrimary: "#F8FAFC",   // Crisp Slate 50
-  textSecondary: "#94A3B8", // Gentle Slate 400
+  background: "#070d1e",    // Rich Dark Midnight Navy (Profile screen reference)
+  card: "#0f1a36",          // Clean elevated midnight card
+  cardElevated: "#142247",  // Nested subcard / input layer
+  border: "rgba(255, 255, 255, 0.08)",
+  borderStrong: "rgba(255, 255, 255, 0.16)",
+  textPrimary: "#F8FAFC",   // Crisp White
+  textSecondary: "#94A3B8", // Gentle Slate
   textMuted: "#64748B",
-  primary: "#38BDF8",       // Bright Sky Blue (high contrast & attractive)
-  primaryLight: "rgba(56, 189, 248, 0.14)",
-  primaryDark: "#0284C7",
-  accent: "#FBBF24",        // Warm Golden Amber
-  accentLight: "rgba(251, 191, 36, 0.16)",
-  success: "#34D399",
-  successLight: "rgba(52, 211, 153, 0.16)",
-  danger: "#F87171",
-  dangerLight: "rgba(248, 113, 113, 0.16)",
-  inputBg: "#162032",
-  headerBg: "#0F172A",
-  tabBarBg: "#0F172A",
+  primary: "#2563EB",       // Electric Royal Blue (60-30-10 palette)
+  primaryLight: "rgba(37, 99, 235, 0.16)",
+  primaryDark: "#1D4ED8",
+  accent: "#FE9901",        // Signature Estud Amber
+  accentLight: "rgba(254, 153, 1, 0.16)",
+  success: "#10B981",
+  successLight: "rgba(16, 185, 129, 0.16)",
+  danger: "#EF4444",
+  dangerLight: "rgba(239, 68, 68, 0.16)",
+  inputBg: "#0B132B",
+  headerBg: "#070d1e",
+  tabBarBg: "#070d1e",
   tabBarBorder: "rgba(255, 255, 255, 0.08)",
-  heroNavy: "#1E293B",
+  heroNavy: "#0B1739",
 };
 
 export function getThemeColors(mode: ThemeMode): ColorPalette {

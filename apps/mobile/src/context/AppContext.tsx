@@ -252,7 +252,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeMode>("light");
+  const [theme, setThemeState] = useState<ThemeMode>("dark");
   const [language, setLanguageState] = useState<Language>("en");
 
   const [user, setUser] = useState<StudentUser | null>(DEFAULT_USER);
@@ -275,13 +275,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const colors = getThemeColors(theme);
   const t = translations[language];
-  const [appVersion, setAppVersion] = useState<string>("v2.3.1");
+  const [appVersion, setAppVersion] = useState<string>("v2.3.2");
   const [serverRelease, setServerRelease] = useState<AppReleaseInfo | null>(null);
   const [isUpdateAvailable, setIsUpdateAvailable] = useState<boolean>(false);
-  const hasPromptedUpdateRef = useRef<boolean>(false);
 
   /**
-   * Automatically queries server for new releases and shows update alert if available
+   * Automatically queries server for new releases without interrupting the user.
+   * Modal only opens when explicitly requested by user (silent === false).
    */
   const checkForUpdates = useCallback(async (silent = false) => {
     try {
@@ -296,21 +296,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         if (hasNewerVersion) {
           setIsUpdateAvailable(true);
+          // Only show modal when the user explicitly taps "Check for Updates"
           if (!silent) {
             setUpdateModalVisible(true);
             showUpdateToast(
-              language === "am" ? "አዲስ ዝመና ተገኝቷል!" : `New Update Available (${release.version})!`,
+              language === "am" ? "አዲስ ዝመና ተገኝቷል!" : `New Update (${release.version})`,
               release.title
             );
-          } else if (release.forceUpdate && !hasPromptedUpdateRef.current) {
-            hasPromptedUpdateRef.current = true;
-            setUpdateModalVisible(true);
           }
         } else {
           setIsUpdateAvailable(false);
           if (!silent) {
             showSuccessToast(
-              language === "am" ? "የቅርብ ጊዜ ስሪት ነው" : "You are up to date!",
+              language === "am" ? "የቅርብ ጊዜ ስሪት ነው" : "Up to Date",
               `Running Estud ${appVersion}`
             );
           }
@@ -373,7 +371,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [refreshLiveProducts, refreshLiveBroadcasts, checkForUpdates]);
 
   const upgradeAppVersion = (newVer?: string) => {
-    const updated = newVer || (serverRelease ? `v${serverRelease.version}` : "v2.3.1");
+    const updated = newVer || (serverRelease ? `v${serverRelease.version}` : "v2.3.2");
     setAppVersion(updated);
     setIsUpdateAvailable(false);
   };

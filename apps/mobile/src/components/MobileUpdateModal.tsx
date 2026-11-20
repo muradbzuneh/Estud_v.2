@@ -40,10 +40,10 @@ export function MobileUpdateModal() {
     setTimeout(() => {
       setIsUpdating(false);
       setUpdateFinished(true);
-      upgradeAppVersion(serverRelease?.version || "v2.3.1");
+      upgradeAppVersion(serverRelease?.version || "v2.3.2");
       showSuccessToast(
         language === "am" ? "ዝመናው ተጠናቋል!" : "App Upgraded Successfully!",
-        "Estud v2.3.1 LiveSync is active with screenshot proofs & admin review desk"
+        "Estud v2.3.2 Dark Midnight & LiveSync is active"
       );
     }, 1200);
   };
@@ -129,14 +129,14 @@ export function MobileUpdateModal() {
             </View>
 
             {/* Direct EAS Download Link indicator */}
-            <View style={[styles.statusBox, { backgroundColor: isDark ? "rgba(29, 107, 243, 0.15)" : "#EFF6FF", borderColor: colors.primary }]}>
+            <View style={[styles.statusBox, { backgroundColor: isDark ? "rgba(37, 99, 235, 0.15)" : "#EFF6FF", borderColor: colors.primary }]}>
               <Smartphone size={16} color={colors.primary} />
               <View style={{ flex: 1 }}>
                 <Text style={[styles.statusBoxText, { color: colors.primary }]}>
-                  Build Channel: Android Preview APK (Verified Signed)
+                  Android Preview APK ({appVersion})
                 </Text>
                 <Text style={{ fontSize: 9, color: colors.textSecondary, marginTop: 2 }}>
-                  Release URL: https://estud.et/download/estud-v2.3.0.apk
+                  Verified Signed • expo-updates enabled
                 </Text>
               </View>
             </View>
@@ -147,7 +147,7 @@ export function MobileUpdateModal() {
           <View style={{ gap: 8 }}>
             <TouchableOpacity
               onPress={() => {
-                Linking.openURL(serverRelease?.downloadUrl || "https://expo.dev/artifacts/eas/4UCXyoHPFAjNU9QGN8EsLq4Xhv19Wz1Pwnf25D6jkH4.apk").catch(() => {
+                Linking.openURL(serverRelease?.downloadUrl || "https://expo.dev/artifacts/eas/fL8Ak13f9oAemgJ_4IqY5oapekFo2YasGeBxHG7QhTs.apk").catch(() => {
                   Linking.openURL("https://expo.dev/accounts/muradbzuneh/projects/estud-monorepo/builds").catch(() => {
                     showSuccessToast("Download Link", "https://estud.et/download");
                   });
@@ -162,12 +162,12 @@ export function MobileUpdateModal() {
                 borderRadius: 14,
                 borderWidth: 1,
                 borderColor: colors.border,
-                backgroundColor: isDark ? "#293548" : "#F8FAFC",
+                backgroundColor: isDark ? "#142247" : "#F8FAFC",
               }}
             >
               <Download size={14} color={colors.primary} />
               <Text style={{ fontSize: 11, fontWeight: "700", color: colors.primary }}>
-                Download Signed APK (v2.3.0)
+                Download Signed APK ({appVersion})
               </Text>
             </TouchableOpacity>
 
@@ -191,14 +191,14 @@ export function MobileUpdateModal() {
                   <>
                     <ActivityIndicator size="small" color="#FFFFFF" />
                     <Text style={styles.actionBtnText}>
-                      {language === "am" ? "ዝመናው እየተጫነ ነው..." : "Applying Update (v2.3.0)..."}
+                      {language === "am" ? "ዝመናው እየተጫነ ነው..." : `Applying Update (${appVersion})...`}
                     </Text>
                   </>
                 ) : (
                   <>
                     <RefreshCw size={15} color="#FFFFFF" />
                     <Text style={styles.actionBtnText}>
-                      {language === "am" ? "የቅርብ ጊዜውን ስሪት ጫን (v2.3.0)" : "Apply & Refresh v2.3.0"}
+                      {language === "am" ? `የቅርብ ጊዜውን ስሪት ጫን (${appVersion})` : `Apply & Refresh ${appVersion}`}
                     </Text>
                   </>
                 )}

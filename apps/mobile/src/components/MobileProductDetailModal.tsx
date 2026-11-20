@@ -35,6 +35,7 @@ import {
 import { useApp } from "../context/AppContext";
 import { showErrorToast, showSuccessToast, showInfoToast } from "../utils/toast";
 import { pickImageFromDevice, takePhotoWithCamera, SAMPLE_PAYMENT_PROOFS } from "../utils/imagePicker";
+import { TelebirrLogo, CbeLogo, CashDeskLogo } from "./PaymentLogos";
 
 export function MobileProductDetailModal() {
   const { selectedProduct, setSelectedProduct, createOrder, setActiveTab, colors, language } = useApp();
@@ -390,65 +391,61 @@ export function MobileProductDetailModal() {
                 </TouchableOpacity>
               </View>
 
-              {/* Payment Method Selector */}
-              <Text style={[styles.sectionHeading, { color: colors.textPrimary }]}>Select Payment Wallet</Text>
+              {/* Payment Method Selector with Authentic Logos */}
+              <Text style={[styles.sectionHeading, { color: colors.textPrimary }]}>Payment Method</Text>
               <View style={styles.payMethodRow}>
                 <TouchableOpacity
                   onPress={() => setPaymentMethod("telebirr")}
                   style={[
                     styles.payChip,
                     {
-                      backgroundColor: paymentMethod === "telebirr" ? colors.primaryLight : (isDark ? colors.cardElevated : "#F8FAFC"),
-                      borderColor: paymentMethod === "telebirr" ? colors.primary : colors.border,
+                      backgroundColor: paymentMethod === "telebirr" ? (isDark ? "rgba(0, 120, 212, 0.2)" : colors.primaryLight) : (isDark ? colors.cardElevated : "#142247"),
+                      borderColor: paymentMethod === "telebirr" ? "#0078D4" : colors.border,
                     },
                   ]}
                 >
-                  <Text style={[styles.payChipText, { color: paymentMethod === "telebirr" ? colors.primary : colors.textSecondary }, paymentMethod === "telebirr" && { fontWeight: "800" }]}>
-                    Telebirr SuperApp
-                  </Text>
+                  <TelebirrLogo size={22} showText={true} />
                 </TouchableOpacity>
+
                 <TouchableOpacity
                   onPress={() => setPaymentMethod("cbe")}
                   style={[
                     styles.payChip,
                     {
-                      backgroundColor: paymentMethod === "cbe" ? colors.primaryLight : (isDark ? colors.cardElevated : "#F8FAFC"),
-                      borderColor: paymentMethod === "cbe" ? colors.primary : colors.border,
+                      backgroundColor: paymentMethod === "cbe" ? (isDark ? "rgba(88, 19, 106, 0.25)" : colors.primaryLight) : (isDark ? colors.cardElevated : "#142247"),
+                      borderColor: paymentMethod === "cbe" ? "#8B2F9E" : colors.border,
                     },
                   ]}
                 >
-                  <Text style={[styles.payChipText, { color: paymentMethod === "cbe" ? colors.primary : colors.textSecondary }, paymentMethod === "cbe" && { fontWeight: "800" }]}>
-                    CBE Birr / Bank
-                  </Text>
+                  <CbeLogo size={22} showText={true} />
                 </TouchableOpacity>
+
                 <TouchableOpacity
                   onPress={() => setPaymentMethod("cash")}
                   style={[
                     styles.payChip,
                     {
-                      backgroundColor: paymentMethod === "cash" ? colors.primaryLight : (isDark ? colors.cardElevated : "#F8FAFC"),
-                      borderColor: paymentMethod === "cash" ? colors.primary : colors.border,
+                      backgroundColor: paymentMethod === "cash" ? (isDark ? "rgba(5, 150, 105, 0.2)" : colors.primaryLight) : (isDark ? colors.cardElevated : "#142247"),
+                      borderColor: paymentMethod === "cash" ? "#10B981" : colors.border,
                     },
                   ]}
                 >
-                  <Text style={[styles.payChipText, { color: paymentMethod === "cash" ? colors.primary : colors.textSecondary }, paymentMethod === "cash" && { fontWeight: "800" }]}>
-                    Cash at Desk
-                  </Text>
+                  <CashDeskLogo size={22} showText={true} />
                 </TouchableOpacity>
               </View>
 
-              {/* Formal Realistic Transfer Details Card */}
+              {/* Clean Transfer Details Card */}
               {paymentMethod !== "cash" && (
-                <View style={[styles.accountCard, { backgroundColor: isDark ? colors.cardElevated : "#F1F5F9", borderColor: colors.border }]}>
+                <View style={[styles.accountCard, { backgroundColor: isDark ? colors.cardElevated : "#142247", borderColor: colors.border }]}>
                   <View style={styles.accountCardHeader}>
                     <Text style={[styles.accountLabel, { color: colors.textSecondary }]}>
-                      Transfer to Estud Escrow:
+                      {paymentMethod === "telebirr" ? "Telebirr Merchant" : "CBE Account"}:
                     </Text>
                     <TouchableOpacity
                       onPress={() => handleCopyAccount(currentAccountNumber)}
-                      style={[styles.copyBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
+                      style={[styles.copyBtn, { backgroundColor: isDark ? colors.card : "#0F1A36", borderColor: colors.border }]}
                     >
-                      {copiedAccount ? <Check size={12} color="#10B981" /> : <Copy size={12} color={colors.primary} />}
+                      {copiedAccount ? <Check size={11} color="#10B981" /> : <Copy size={11} color={colors.primary} />}
                       <Text style={[styles.copyBtnText, { color: copiedAccount ? "#10B981" : colors.primary }]}>
                         {copiedAccount ? "Copied" : "Copy"}
                       </Text>
@@ -462,15 +459,15 @@ export function MobileProductDetailModal() {
                     {currentAccountName}
                   </Text>
 
-                  {/* SMS Reference Code Input Box */}
+                  {/* Transaction Reference Input */}
                   <View style={styles.refInputGroup}>
                     <Text style={[styles.refInputLabel, { color: colors.textPrimary }]}>
-                      SMS Transaction Reference Code *
+                      Reference Code *
                     </Text>
                     <TextInput
                       value={transactionRef}
                       onChangeText={setTransactionRef}
-                      placeholder={paymentMethod === "telebirr" ? "e.g. 7GA829104 or FT260948" : "e.g. CBE-84920194"}
+                      placeholder={paymentMethod === "telebirr" ? "e.g. 7GA829104" : "e.g. CBE-84920194"}
                       placeholderTextColor={colors.textMuted}
                       style={[
                         styles.refTextInput,
@@ -482,38 +479,32 @@ export function MobileProductDetailModal() {
                       ]}
                       autoCapitalize="characters"
                     />
-                    <Text style={[styles.refHelperText, { color: colors.textSecondary }]}>
-                      Enter the confirmation code from your {paymentMethod === "telebirr" ? "Telebirr" : "CBE"} SMS receipt.
-                    </Text>
                   </View>
 
-                  {/* Transfer Screenshot Proof Uploader */}
+                  {/* Payment Receipt Proof */}
                   <View style={styles.proofUploadBox}>
                     <View style={styles.proofHeaderRow}>
                       <Text style={[styles.refInputLabel, { color: colors.textPrimary }]}>
-                        {language === "am" ? "የባንክ/ቴሌብር ደረሰኝ ስክሪንሽት *" : "Transfer Receipt Screenshot Proof *"}
+                        Receipt Screenshot *
                       </Text>
                       <View style={styles.verifiedTagPill}>
                         <ShieldCheck size={11} color="#10B981" />
-                        <Text style={styles.verifiedTagPillText}>Admin Verified</Text>
+                        <Text style={styles.verifiedTagPillText}>Escrow Proof</Text>
                       </View>
                     </View>
 
                     {screenshotProof ? (
-                      <View style={[styles.proofPreviewCard, { backgroundColor: isDark ? colors.card : "#FFFFFF", borderColor: colors.border }]}>
+                      <View style={[styles.proofPreviewCard, { backgroundColor: isDark ? colors.card : "#0F1A36", borderColor: colors.border }]}>
                         <Image source={{ uri: screenshotProof }} style={styles.proofThumb} />
                         <View style={styles.proofMetaInfo}>
                           <View style={styles.proofAttachedBadge}>
                             <CheckCircle2 size={12} color="#10B981" />
-                            <Text style={styles.proofAttachedBadgeText}>Screenshot Proof Attached</Text>
+                            <Text style={styles.proofAttachedBadgeText}>Screenshot Attached</Text>
                           </View>
-                          <Text style={[styles.proofFileName, { color: colors.textSecondary }]}>
-                            Queued for Admin Payments Desk verification
-                          </Text>
                           <View style={styles.proofActionsRow}>
                             <TouchableOpacity onPress={handlePickProofFromDevice} style={styles.proofActionPill}>
                               <Upload size={11} color={colors.primary} />
-                              <Text style={[styles.proofActionPillText, { color: colors.primary }]}>From Device</Text>
+                              <Text style={[styles.proofActionPillText, { color: colors.primary }]}>Device</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={handleCameraSnapProof} style={styles.proofActionPill}>
                               <Camera size={11} color={colors.primary} />
@@ -524,20 +515,17 @@ export function MobileProductDetailModal() {
                       </View>
                     ) : (
                       <View style={styles.proofEmptyCard}>
-                        <Text style={[styles.proofEmptyNotice, { color: colors.textSecondary }]}>
-                          Upload transfer slip screenshot for instant escrow verification.
-                        </Text>
                         <View style={styles.proofButtonsRow}>
                           <TouchableOpacity
                             onPress={handlePickProofFromDevice}
                             style={[styles.proofBtnPrimary, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
                           >
                             <Upload size={13} color={colors.primary} />
-                            <Text style={[styles.proofBtnPrimaryText, { color: colors.primary }]}>Pick from Device</Text>
+                            <Text style={[styles.proofBtnPrimaryText, { color: colors.primary }]}>Pick Screenshot</Text>
                           </TouchableOpacity>
                           <TouchableOpacity
                             onPress={handleCameraSnapProof}
-                            style={[styles.proofBtnSecondary, { borderColor: colors.border }]}
+                            style={[styles.proofBtnSecondary, { borderColor: colors.border, backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#F1F5F9" }]}
                           >
                             <Camera size={13} color={colors.textPrimary} />
                             <Text style={[styles.proofBtnSecondaryText, { color: colors.textPrimary }]}>Camera</Text>
@@ -549,24 +537,24 @@ export function MobileProductDetailModal() {
                 </View>
               )}
 
-              {/* Math Escrow Breakdown */}
-              <View style={[styles.breakdownBox, { backgroundColor: isDark ? colors.cardElevated : "#F8FAFC", borderColor: colors.border }]}>
+              {/* Clean Pricing Breakdown */}
+              <View style={[styles.breakdownBox, { backgroundColor: isDark ? colors.cardElevated : "#142247", borderColor: colors.border }]}>
                 <View style={styles.breakdownRow}>
-                  <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>Item Price:</Text>
+                  <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>Price:</Text>
                   <Text style={[styles.breakdownVal, { color: colors.textPrimary }]}>ETB {itemPrice.toLocaleString()}</Text>
                 </View>
                 <View style={styles.breakdownRow}>
-                  <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>Buyer Protection Fee (5%):</Text>
+                  <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>Escrow Protection (5%):</Text>
                   <Text style={[styles.breakdownVal, { color: colors.textPrimary }]}>+ETB {escrowFee.toLocaleString()}</Text>
                 </View>
                 {collectionMethod === "runner" && (
                   <View style={styles.breakdownRow}>
-                    <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>Dorm Runner Delivery:</Text>
+                    <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>Runner Delivery:</Text>
                     <Text style={[styles.breakdownVal, { color: colors.textPrimary }]}>+ETB {runnerFee}</Text>
                   </View>
                 )}
                 <View style={[styles.breakdownRow, styles.breakdownTotal, { borderTopColor: colors.border }]}>
-                  <Text style={[styles.totalLabel, { color: colors.textPrimary }]}>Total Amount to Transfer:</Text>
+                  <Text style={[styles.totalLabel, { color: colors.textPrimary }]}>Total:</Text>
                   <Text style={[styles.totalVal, { color: colors.primary }]}>ETB {totalAmount.toLocaleString()}</Text>
                 </View>
               </View>
@@ -579,7 +567,7 @@ export function MobileProductDetailModal() {
               >
                 <ShieldCheck size={18} color="#FFFFFF" />
                 <Text style={styles.checkoutBtnText}>
-                  Confirm & Pay ETB {totalAmount.toLocaleString()} with Buyer Protection
+                  Pay ETB {totalAmount.toLocaleString()}
                 </Text>
               </TouchableOpacity>
             </ScrollView>

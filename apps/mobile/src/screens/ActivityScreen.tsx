@@ -61,7 +61,7 @@ export function ActivityScreen() {
       </Animatable.View>
 
       {/* Tabs: Active vs Completed */}
-      <View style={[styles.tabToggle, { backgroundColor: isDark ? "#293548" : "#F1F5F9" }]}>
+      <View style={[styles.tabToggle, { backgroundColor: isDark ? colors.cardElevated : "#F1F5F9" }]}>
         <TouchableOpacity
           onPress={() => setFilter("active")}
           style={[
@@ -361,7 +361,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 12,
-    backgroundColor: "#F1F5F9",
   },
   productInfo: {
     flex: 1,
