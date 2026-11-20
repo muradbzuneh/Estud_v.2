@@ -65,7 +65,7 @@ let activeRelease: AppReleaseInfo = {
     "Android Cleartext HTTP Traffic: Native support enabled for local Wi-Fi backend connectivity",
     "Non-intrusive Updates: Silent background sync without interrupting user actions",
   ],
-  downloadUrl: "https://expo.dev/artifacts/eas/fL8Ak13f9oAemgJ_4IqY5oapekFo2YasGeBxHG7QhTs.apk",
+  downloadUrl: "https://expo.dev/artifacts/eas/8hTK9sjA1R2KNNH0Gk2GOmdNokpvU5KWJ2qPaG7po0M.apk",
   forceUpdate: false,
 };
 
