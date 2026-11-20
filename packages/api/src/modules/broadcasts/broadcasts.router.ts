@@ -54,16 +54,16 @@ const liveBroadcastsStore: CampusBroadcast[] = [
 ];
 
 let activeRelease: AppReleaseInfo = {
-  version: "2.3.2",
-  versionCode: 5,
+  version: "2.3.3",
+  versionCode: 6,
   releaseDate: new Date().toISOString(),
-  title: "Estud v2.3.2 Dark Midnight & SafeTrade Escrow Edition",
+  title: "Estud v2.3.3 Formal Marketplace & Product Detail Edition",
   releaseNotes: [
-    "Full Dark Midnight Theme: Consistent dark mode across Profile, Sell, Checkout and Modals",
-    "Streamlined UI: Clean, concise labels without cluttered helper paragraphs",
-    "Authentic Payment Logos: Official Telebirr and CBE badges for safe escrow checkout",
-    "Android Cleartext HTTP Traffic: Native support enabled for local Wi-Fi backend connectivity",
-    "Non-intrusive Updates: Silent background sync without interrupting user actions",
+    "Product Detail Overview: Dedicated product view with high-res photos, verified seller profile, and specifications before checkout",
+    "Verified Student Gating: Guest users must sign in with a verified student account before buying or selling",
+    "Immutable Inspection PIN: Fixed, tamper-proof escrow inspection PIN for audit and campus desk validation",
+    "Professional Payment Channels: Stacked full-width cards with authentic Telebirr, CBE, and Cash Desk options",
+    "Pure Dark Midnight Theme: Unified dark styling across all modals, forms, and cards with high contrast text",
   ],
   downloadUrl: "https://expo.dev/artifacts/eas/8hTK9sjA1R2KNNH0Gk2GOmdNokpvU5KWJ2qPaG7po0M.apk",
   forceUpdate: false,

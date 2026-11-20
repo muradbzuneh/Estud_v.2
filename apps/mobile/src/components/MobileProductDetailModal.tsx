@@ -21,24 +21,37 @@ import {
   Star,
   MapPin,
   Clock,
-  Sparkles,
   ArrowRight,
+  ArrowLeft,
   Copy,
   Check,
   Navigation,
-  ExternalLink,
   Upload,
   Camera,
-  Image as ImageIcon,
-  AlertCircle,
+  Heart,
+  ChevronRight,
+  Info,
 } from "lucide-react-native";
 import { useApp } from "../context/AppContext";
 import { showErrorToast, showSuccessToast, showInfoToast } from "../utils/toast";
-import { pickImageFromDevice, takePhotoWithCamera, SAMPLE_PAYMENT_PROOFS } from "../utils/imagePicker";
+import { pickImageFromDevice, takePhotoWithCamera } from "../utils/imagePicker";
 import { TelebirrLogo, CbeLogo, CashDeskLogo } from "./PaymentLogos";
 
 export function MobileProductDetailModal() {
-  const { selectedProduct, setSelectedProduct, createOrder, setActiveTab, colors, language } = useApp();
+  const {
+    selectedProduct,
+    setSelectedProduct,
+    createOrder,
+    setActiveTab,
+    colors,
+    language,
+    isAuthenticated,
+    setAuthModalVisible,
+    favorites,
+    toggleFavorite,
+  } = useApp();
+
+  const [viewMode, setViewMode] = useState<"detail" | "checkout">("detail");
   const [collectionMethod, setCollectionMethod] = useState<"hub" | "runner">("hub");
   const [paymentMethod, setPaymentMethod] = useState<"telebirr" | "cbe" | "cash">("telebirr");
   const [transactionRef, setTransactionRef] = useState("");
@@ -55,6 +68,7 @@ export function MobileProductDetailModal() {
   const runnerFee = collectionMethod === "runner" ? 75 : 0;
   const totalAmount = itemPrice + escrowFee + runnerFee;
   const isDark = colors.mode === "dark";
+  const isFav = !!favorites[selectedProduct.id];
 
   const handleClose = () => {
     setCreatedOrderPin(null);
@@ -62,7 +76,22 @@ export function MobileProductDetailModal() {
     setConfirmedScreenshot(null);
     setScreenshotProof(null);
     setTransactionRef("");
+    setViewMode("detail");
     setSelectedProduct(null);
+  };
+
+  const handleProceedToCheckout = () => {
+    if (!isAuthenticated) {
+      showErrorToast(
+        language === "am" ? "መግባት ያስፈልጋል" : "Sign In Required",
+        language === "am"
+          ? "ዕቃ በሴፍ ትሬድ ኤስክሮው ለመግዛት እባክዎ አስቀድመው ይግቡ"
+          : "Please sign in with your verified student account to purchase with escrow protection."
+      );
+      setAuthModalVisible(true);
+      return;
+    }
+    setViewMode("checkout");
   };
 
   const handlePickProofFromDevice = async () => {
@@ -91,7 +120,7 @@ export function MobileProductDetailModal() {
     setCopiedAccount(true);
     showSuccessToast(
       language === "am" ? "የሂሳብ ቁጥር ተቀድቷል" : "Account Number Copied",
-      "Open your banking app to transfer ETB " + totalAmount.toLocaleString()
+      "Transfer ETB " + totalAmount.toLocaleString()
     );
     setTimeout(() => setCopiedAccount(false), 2500);
   };
@@ -102,6 +131,11 @@ export function MobileProductDetailModal() {
   };
 
   const handleConfirmEscrow = () => {
+    if (!isAuthenticated) {
+      setAuthModalVisible(true);
+      return;
+    }
+
     if (paymentMethod !== "cash") {
       const cleanRef = transactionRef.trim();
       if (!cleanRef || cleanRef.length < 3) {
@@ -147,7 +181,6 @@ export function MobileProductDetailModal() {
     setConfirmedScreenshot(finalProof || null);
     setCreatedOrderPin(order.secretPin);
 
-    // Live alert dispatch simulation
     showSuccessToast(
       language === "am" ? "ክፍያዎ ለኤስክሮው ተልኳል!" : "Payment Sent to Escrow Desk!",
       language === "am"
@@ -174,16 +207,32 @@ export function MobileProductDetailModal() {
       <View style={styles.overlay}>
         <Animatable.View
           animation="fadeInUp"
-          duration={350}
+          duration={300}
           style={[styles.modalCard, { backgroundColor: colors.card, borderColor: colors.border }]}
         >
-          {/* Close Button */}
-          <TouchableOpacity
-            onPress={handleClose}
-            style={[styles.closeBtn, { backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "#F1F5F9" }]}
-          >
-            <X size={18} color={colors.textSecondary} />
-          </TouchableOpacity>
+          {/* Header Row */}
+          <View style={styles.headerBar}>
+            {viewMode === "checkout" && !createdOrderPin ? (
+              <TouchableOpacity
+                onPress={() => setViewMode("detail")}
+                style={[styles.backBtn, { backgroundColor: colors.cardElevated, borderColor: colors.border }]}
+              >
+                <ArrowLeft size={16} color={colors.textPrimary} />
+                <Text style={[styles.backBtnText, { color: colors.textPrimary }]}>
+                  {language === "am" ? "ተመለስ" : "Back"}
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={{ flex: 1 }} />
+            )}
+
+            <TouchableOpacity
+              onPress={handleClose}
+              style={[styles.closeBtn, { backgroundColor: colors.cardElevated, borderColor: colors.border }]}
+            >
+              <X size={18} color={colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
 
           {createdOrderPin ? (
             /* Order Placed & Verification Pending View */
@@ -193,7 +242,7 @@ export function MobileProductDetailModal() {
               </Animatable.View>
 
               <Text style={[styles.successTitle, { color: colors.textPrimary }]}>
-                {language === "am" ? "ክፍያዎ ወደ ኤስክሮው ገብቷል!" : "Payment Sent with Safe Protection!"}
+                {language === "am" ? "ክፍያዎ ወደ ኤስክሮው ገብቷል!" : "Funds Locked in Safe Protection!"}
               </Text>
               <Text style={[styles.successSubtitle, { color: colors.textSecondary }]}>
                 {language === "am"
@@ -202,9 +251,9 @@ export function MobileProductDetailModal() {
               </Text>
 
               {/* Verified Reference Banner */}
-              <View style={[styles.refBanner, { backgroundColor: isDark ? colors.cardElevated : "#F1F5F9", borderColor: colors.border }]}>
+              <View style={[styles.refBanner, { backgroundColor: colors.cardElevated, borderColor: colors.border }]}>
                 <Text style={[styles.refLabel, { color: colors.textSecondary }]}>
-                  {language === "am" ? "የባንክ/ቴሌብር ማረጋገጫ ኮድ:" : "Bank / Telebirr Reference Code:"}
+                  {language === "am" ? "የባንክ/ቴሌብር ማረጋገጫ ቁጥር" : "Transaction Reference"}
                 </Text>
                 <Text style={[styles.refCodeText, { color: colors.primary }]}>{confirmedRef}</Text>
                 <View style={styles.pendingBadge}>
@@ -212,34 +261,22 @@ export function MobileProductDetailModal() {
                 </View>
               </View>
 
-              {/* Secret Inspection PIN Box */}
-              <Animatable.View
-                animation="pulse"
-                iterationCount="infinite"
-                duration={2500}
-                style={[
-                  styles.pinBox,
-                  {
-                    backgroundColor: isDark ? "rgba(56, 189, 248, 0.12)" : "#EFF6FF",
-                    borderColor: colors.primary,
-                  },
-                ]}
-              >
+              {/* Secret Inspection PIN Box - Immutable */}
+              <View style={[styles.pinBox, { backgroundColor: "rgba(37, 99, 235, 0.12)", borderColor: colors.primary }]}>
                 <View style={styles.pinHeader}>
                   <Lock size={15} color={colors.primary} />
                   <Text style={[styles.pinHeaderTitle, { color: colors.primary }]}>
-                    {language === "am" ? "ሚስጥራዊ ባለ 4-ዲጂት መፈተሻ ፒን" : "Secret 4-Digit Pickup PIN"}
+                    {language === "am" ? "የመፈተሻ ፒን (የማይለወጥ)" : "Fixed Inspection PIN"}
                   </Text>
                 </View>
                 <Text style={[styles.pinCode, { color: colors.textPrimary }]}>{createdOrderPin}</Text>
 
-                {/* Expiration Notice Badge */}
                 <View style={styles.pinExpireBadge}>
                   <Clock size={12} color="#F59E0B" />
                   <Text style={styles.pinExpireText}>
                     {language === "am"
-                      ? "የሚያበቃበት ጊዜ: 48 ሰዓታት (ካለቀ በእንቅስቃሴ ገጽ ያድሱ)"
-                      : "Security Notice: Valid for 48 Hours (Extendable in Activity)"}
+                      ? "የደህንነት ማስታወሻ: ለ 48 ሰዓታት የሚቆይ"
+                      : "Security Proof: Valid for 48 Hours"}
                   </Text>
                 </View>
 
@@ -248,38 +285,22 @@ export function MobileProductDetailModal() {
                     ? "ዕቃውን በአካል በካምፓስ ዴስክ ፈትሸው ካላረጋገጡ በስተቀር ይህን ፒን ለማንም ሰው አያጋሩ!"
                     : "Do NOT share this code until you physically test and inspect your item at the campus hub!"}
                 </Text>
-              </Animatable.View>
+              </View>
 
               {/* Screenshot Delivered Proof Summary */}
               {confirmedScreenshot && (
-                <View style={[styles.confirmedScreenshotCard, { backgroundColor: isDark ? colors.cardElevated : "#F1F5F9", borderColor: colors.border }]}>
+                <View style={[styles.confirmedScreenshotCard, { backgroundColor: colors.cardElevated, borderColor: colors.border }]}>
                   <View style={styles.confirmedScreenshotHeader}>
                     <ShieldCheck size={14} color="#10B981" />
                     <Text style={[styles.confirmedScreenshotTitle, { color: colors.textPrimary }]}>
-                      {language === "am" ? "የክፍያ ማረጋገጫ ሰነድ ለአስተዳዳሪው ተልኳል" : "Payment Proof Delivered to Admin Desk"}
+                      {language === "am" ? "የክፍያ ማረጋገጫ ሰነድ" : "Payment Proof Uploaded"}
                     </Text>
                   </View>
                   <Image source={{ uri: confirmedScreenshot }} style={styles.confirmedScreenshotImage} resizeMode="cover" />
                 </View>
               )}
 
-              {/* Handover Steps */}
-              <View style={[styles.instructionCard, { backgroundColor: isDark ? colors.cardElevated : "#F8FAFC", borderColor: colors.border }]}>
-                <View style={styles.stepRow}>
-                  <View style={[styles.stepNum, { backgroundColor: colors.primary }]}><Text style={styles.stepNumText}>1</Text></View>
-                  <Text style={[styles.stepText, { color: colors.textSecondary }]}>Seller delivers item to {selectedProduct.location}.</Text>
-                </View>
-                <View style={styles.stepRow}>
-                  <View style={[styles.stepNum, { backgroundColor: colors.primary }]}><Text style={styles.stepNumText}>2</Text></View>
-                  <Text style={[styles.stepText, { color: colors.textSecondary }]}>You test the item thoroughly at the desk.</Text>
-                </View>
-                <View style={styles.stepRow}>
-                  <View style={[styles.stepNum, { backgroundColor: colors.primary }]}><Text style={styles.stepNumText}>3</Text></View>
-                  <Text style={[styles.stepText, { color: colors.textSecondary }]}>Provide this 4-digit PIN to release money to the seller.</Text>
-                </View>
-              </View>
-
-              {/* Action Buttons */}
+              {/* Action Button */}
               <TouchableOpacity
                 onPress={handleGoToActivity}
                 activeOpacity={0.88}
@@ -291,8 +312,8 @@ export function MobileProductDetailModal() {
                 <ArrowRight size={15} color="#FFFFFF" />
               </TouchableOpacity>
             </ScrollView>
-          ) : (
-            /* Product Details & Checkout View */
+          ) : viewMode === "detail" ? (
+            /* VIEW 1: Formal Product Detail Overview */
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
               {/* Product Header Image */}
               <View style={styles.imageWrapper}>
@@ -303,16 +324,35 @@ export function MobileProductDetailModal() {
                 />
                 <View style={styles.escrowBadgeTop}>
                   <ShieldCheck size={12} color="#FFFFFF" />
-                  <Text style={styles.escrowBadgeTopText}>100% Buyer Protection</Text>
+                  <Text style={styles.escrowBadgeTopText}>100% SafeTrade Escrow</Text>
                 </View>
               </View>
 
-              {/* Title & Price Row */}
+              {/* Title & Price Section */}
               <View style={styles.titleSection}>
-                <Text style={[styles.conditionPill, { color: colors.primary }]}>{selectedProduct.condition}</Text>
-                <Text style={[styles.productTitle, { color: colors.textPrimary }]}>{selectedProduct.title}</Text>
+                <View style={styles.tagsRow}>
+                  <View style={[styles.tagPill, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
+                    <Text style={[styles.tagPillText, { color: colors.primary }]}>
+                      {selectedProduct.condition}
+                    </Text>
+                  </View>
+                  {selectedProduct.category && (
+                    <View style={[styles.tagPill, { backgroundColor: colors.cardElevated, borderColor: colors.border }]}>
+                      <Text style={[styles.tagPillText, { color: colors.textSecondary }]}>
+                        {selectedProduct.category.toUpperCase()}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+
+                <Text style={[styles.productTitle, { color: colors.textPrimary }]}>
+                  {selectedProduct.title}
+                </Text>
+
                 <View style={styles.priceRow}>
-                  <Text style={[styles.priceText, { color: colors.primary }]}>ETB {selectedProduct.price.toLocaleString()}</Text>
+                  <Text style={[styles.priceText, { color: colors.primary }]}>
+                    ETB {selectedProduct.price.toLocaleString()}
+                  </Text>
                   {selectedProduct.originalPrice && (
                     <Text style={[styles.origPriceText, { color: colors.textMuted }]}>
                       ETB {selectedProduct.originalPrice.toLocaleString()}
@@ -321,35 +361,116 @@ export function MobileProductDetailModal() {
                 </View>
               </View>
 
-              {/* Campus Location & Seller (Clickable Google Map Navigator) */}
-              <View style={[styles.sellerCard, { backgroundColor: isDark ? colors.cardElevated : "#F8FAFC", borderColor: colors.border }]}>
+              {/* Verified Seller Profile Card */}
+              <View style={[styles.sellerCard, { backgroundColor: colors.cardElevated, borderColor: colors.border }]}>
                 <View style={styles.sellerLeft}>
                   <View style={[styles.sellerAvatar, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
-                    <Text style={[styles.sellerAvatarText, { color: colors.primary }]}>ST</Text>
+                    <Text style={[styles.sellerAvatarText, { color: colors.primary }]}>
+                      {(selectedProduct.sellerName || "ST").slice(0, 2).toUpperCase()}
+                    </Text>
                   </View>
                   <View>
-                    <Text style={[styles.sellerName, { color: colors.textPrimary }]}>Verified Student Seller</Text>
-                    {/* Clickable Map Location Pill */}
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+                      <Text style={[styles.sellerName, { color: colors.textPrimary }]}>
+                        {selectedProduct.sellerName || "Verified Student Seller"}
+                      </Text>
+                      <ShieldCheck size={13} color="#10B981" />
+                    </View>
                     <TouchableOpacity
                       onPress={() => handleOpenGoogleMaps(selectedProduct.location)}
                       style={styles.locationMeta}
                       activeOpacity={0.7}
                     >
-                      <MapPin size={12} color={colors.primary} />
-                      <Text style={[styles.locationMetaText, { color: colors.primary, textDecorationLine: "underline" }]}>
+                      <MapPin size={11} color={colors.primary} />
+                      <Text style={[styles.locationMetaText, { color: colors.primary }]}>
                         {selectedProduct.location}
                       </Text>
-                      <Navigation size={10} color={colors.primary} style={{ marginLeft: 3 }} />
+                      <Navigation size={10} color={colors.primary} />
                     </TouchableOpacity>
                   </View>
                 </View>
+
                 <View style={styles.trustScorePill}>
                   <Star size={11} color="#F59E0B" fill="#F59E0B" />
-                  <Text style={styles.trustScoreText}>99% Trust</Text>
+                  <Text style={styles.trustScoreText}>
+                    {selectedProduct.sellerTrust || 99}% Trust
+                  </Text>
                 </View>
               </View>
 
-              {/* Collection Method Picker */}
+              {/* Item Specifications & Overview Card */}
+              <View style={[styles.specsCard, { backgroundColor: colors.cardElevated, borderColor: colors.border }]}>
+                <Text style={[styles.sectionHeading, { color: colors.textPrimary }]}>
+                  {language === "am" ? "የዕቃው መግለጫና ሁኔታ" : "Item Specifications"}
+                </Text>
+                <View style={styles.specRow}>
+                  <Text style={[styles.specLabel, { color: colors.textSecondary }]}>Condition:</Text>
+                  <Text style={[styles.specValue, { color: colors.textPrimary }]}>{selectedProduct.condition}</Text>
+                </View>
+                <View style={styles.specRow}>
+                  <Text style={[styles.specLabel, { color: colors.textSecondary }]}>Location:</Text>
+                  <Text style={[styles.specValue, { color: colors.textPrimary }]}>{selectedProduct.location}</Text>
+                </View>
+                <View style={styles.specRow}>
+                  <Text style={[styles.specLabel, { color: colors.textSecondary }]}>Inspection Desk:</Text>
+                  <Text style={[styles.specValue, { color: "#10B981" }]}>Campus Intermediary Hub</Text>
+                </View>
+              </View>
+
+              {/* SafeTrade Escrow Protection Guarantee */}
+              <View style={[styles.guaranteeBox, { backgroundColor: "rgba(16, 185, 129, 0.08)", borderColor: "rgba(16, 185, 129, 0.25)" }]}>
+                <ShieldCheck size={20} color="#10B981" />
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.guaranteeTitle, { color: "#10B981" }]}>
+                    {language === "am" ? "የሴፍ ትሬድ ዋስትና ጥበቃ" : "100% SafeTrade Escrow Protection"}
+                  </Text>
+                  <Text style={[styles.guaranteeSub, { color: colors.textSecondary }]}>
+                    {language === "am"
+                      ? "ገንዘብዎ በኢስቱድ ደህንነቱ ተጠብቆ ይቆያል። እቃውን በካምፓስ ዴስክ ፈትሸው እስኪያረጋግጡ ድረስ ለሻጩ አይለቀቅም።"
+                      : "Your money stays safe with Estud. The seller is only paid after you physically inspect and accept the item at the campus hub."}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Primary Action Button */}
+              <View style={styles.bottomBar}>
+                <TouchableOpacity
+                  onPress={() => toggleFavorite(selectedProduct.id)}
+                  style={[styles.favBtn, { backgroundColor: colors.cardElevated, borderColor: colors.border }]}
+                >
+                  <Heart
+                    size={20}
+                    color={isFav ? "#EF4444" : colors.textMuted}
+                    fill={isFav ? "#EF4444" : "transparent"}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={handleProceedToCheckout}
+                  activeOpacity={0.88}
+                  style={[styles.buyBtn, { backgroundColor: colors.primary }]}
+                >
+                  <ShieldCheck size={18} color="#FFFFFF" />
+                  <Text style={styles.buyBtnText}>
+                    {language === "am" ? "በሴፍ ትሬድ ኤስክሮው ግዛ" : "Buy with SafeTrade Escrow"}
+                  </Text>
+                  <ArrowRight size={16} color="#FFFFFF" />
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          ) : (
+            /* VIEW 2: SafeTrade Escrow Checkout */
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+              <View style={styles.checkoutHeader}>
+                <Text style={[styles.checkoutTitle, { color: colors.textPrimary }]}>
+                  {language === "am" ? "የኤስክሮው ክፍያ ማረጋገጫ" : "SafeTrade Escrow Checkout"}
+                </Text>
+                <Text style={[styles.checkoutSub, { color: colors.textSecondary }]}>
+                  {selectedProduct.title} &bull; ETB {itemPrice.toLocaleString()}
+                </Text>
+              </View>
+
+              {/* Handover Method Picker */}
               <Text style={[styles.sectionHeading, { color: colors.textPrimary }]}>Choose Handover Method</Text>
               <View style={styles.methodRow}>
                 <TouchableOpacity
@@ -357,7 +478,7 @@ export function MobileProductDetailModal() {
                   style={[
                     styles.methodCard,
                     {
-                      backgroundColor: collectionMethod === "hub" ? colors.primaryLight : (isDark ? colors.cardElevated : "#F8FAFC"),
+                      backgroundColor: collectionMethod === "hub" ? colors.primaryLight : colors.cardElevated,
                       borderColor: collectionMethod === "hub" ? colors.primary : colors.border,
                     },
                   ]}
@@ -376,7 +497,7 @@ export function MobileProductDetailModal() {
                   style={[
                     styles.methodCard,
                     {
-                      backgroundColor: collectionMethod === "runner" ? colors.primaryLight : (isDark ? colors.cardElevated : "#F8FAFC"),
+                      backgroundColor: collectionMethod === "runner" ? colors.primaryLight : colors.cardElevated,
                       borderColor: collectionMethod === "runner" ? colors.primary : colors.border,
                     },
                   ]}
@@ -391,59 +512,92 @@ export function MobileProductDetailModal() {
                 </TouchableOpacity>
               </View>
 
-              {/* Payment Method Selector with Authentic Logos */}
-              <Text style={[styles.sectionHeading, { color: colors.textPrimary }]}>Payment Method</Text>
-              <View style={styles.payMethodRow}>
+              {/* Professional Payment Method Selector */}
+              <Text style={[styles.sectionHeading, { color: colors.textPrimary }]}>Select Payment Channel</Text>
+              <View style={styles.payOptionsCol}>
+                {/* Option 1: Telebirr */}
                 <TouchableOpacity
                   onPress={() => setPaymentMethod("telebirr")}
+                  activeOpacity={0.8}
                   style={[
-                    styles.payChip,
+                    styles.payOptionCard,
                     {
-                      backgroundColor: paymentMethod === "telebirr" ? (isDark ? "rgba(0, 120, 212, 0.2)" : colors.primaryLight) : (isDark ? colors.cardElevated : "#142247"),
+                      backgroundColor: paymentMethod === "telebirr" ? "rgba(0, 120, 212, 0.12)" : colors.cardElevated,
                       borderColor: paymentMethod === "telebirr" ? "#0078D4" : colors.border,
                     },
                   ]}
                 >
-                  <TelebirrLogo size={22} showText={true} />
+                  <View style={styles.payOptionLeft}>
+                    <View style={[styles.radioCircle, paymentMethod === "telebirr" && { borderColor: "#0078D4" }]}>
+                      {paymentMethod === "telebirr" && <View style={[styles.radioDot, { backgroundColor: "#0078D4" }]} />}
+                    </View>
+                    <TelebirrLogo size={24} showText={false} />
+                    <View style={{ flex: 1 }}>
+                      <Text style={[styles.payOptionTitle, { color: colors.textPrimary }]}>Telebirr SuperApp</Text>
+                      <Text style={[styles.payOptionSub, { color: colors.textSecondary }]}>Official Estud Escrow Merchant</Text>
+                    </View>
+                  </View>
                 </TouchableOpacity>
 
+                {/* Option 2: CBE */}
                 <TouchableOpacity
                   onPress={() => setPaymentMethod("cbe")}
+                  activeOpacity={0.8}
                   style={[
-                    styles.payChip,
+                    styles.payOptionCard,
                     {
-                      backgroundColor: paymentMethod === "cbe" ? (isDark ? "rgba(88, 19, 106, 0.25)" : colors.primaryLight) : (isDark ? colors.cardElevated : "#142247"),
+                      backgroundColor: paymentMethod === "cbe" ? "rgba(88, 19, 106, 0.16)" : colors.cardElevated,
                       borderColor: paymentMethod === "cbe" ? "#8B2F9E" : colors.border,
                     },
                   ]}
                 >
-                  <CbeLogo size={22} showText={true} />
+                  <View style={styles.payOptionLeft}>
+                    <View style={[styles.radioCircle, paymentMethod === "cbe" && { borderColor: "#8B2F9E" }]}>
+                      {paymentMethod === "cbe" && <View style={[styles.radioDot, { backgroundColor: "#8B2F9E" }]} />}
+                    </View>
+                    <CbeLogo size={24} showText={false} />
+                    <View style={{ flex: 1 }}>
+                      <Text style={[styles.payOptionTitle, { color: colors.textPrimary }]}>Commercial Bank of Ethiopia (CBE)</Text>
+                      <Text style={[styles.payOptionSub, { color: colors.textSecondary }]}>Direct Account / CBE Birr</Text>
+                    </View>
+                  </View>
                 </TouchableOpacity>
 
+                {/* Option 3: Cash at Desk */}
                 <TouchableOpacity
                   onPress={() => setPaymentMethod("cash")}
+                  activeOpacity={0.8}
                   style={[
-                    styles.payChip,
+                    styles.payOptionCard,
                     {
-                      backgroundColor: paymentMethod === "cash" ? (isDark ? "rgba(5, 150, 105, 0.2)" : colors.primaryLight) : (isDark ? colors.cardElevated : "#142247"),
+                      backgroundColor: paymentMethod === "cash" ? "rgba(16, 185, 129, 0.12)" : colors.cardElevated,
                       borderColor: paymentMethod === "cash" ? "#10B981" : colors.border,
                     },
                   ]}
                 >
-                  <CashDeskLogo size={22} showText={true} />
+                  <View style={styles.payOptionLeft}>
+                    <View style={[styles.radioCircle, paymentMethod === "cash" && { borderColor: "#10B981" }]}>
+                      {paymentMethod === "cash" && <View style={[styles.radioDot, { backgroundColor: "#10B981" }]} />}
+                    </View>
+                    <CashDeskLogo size={24} showText={false} />
+                    <View style={{ flex: 1 }}>
+                      <Text style={[styles.payOptionTitle, { color: colors.textPrimary }]}>Cash at Campus Desk</Text>
+                      <Text style={[styles.payOptionSub, { color: colors.textSecondary }]}>Pay upon physical item inspection</Text>
+                    </View>
+                  </View>
                 </TouchableOpacity>
               </View>
 
-              {/* Clean Transfer Details Card */}
-              {paymentMethod !== "cash" && (
-                <View style={[styles.accountCard, { backgroundColor: isDark ? colors.cardElevated : "#142247", borderColor: colors.border }]}>
+              {/* Transfer Details Card */}
+              {paymentMethod !== "cash" ? (
+                <View style={[styles.accountCard, { backgroundColor: colors.cardElevated, borderColor: colors.border }]}>
                   <View style={styles.accountCardHeader}>
                     <Text style={[styles.accountLabel, { color: colors.textSecondary }]}>
-                      {paymentMethod === "telebirr" ? "Telebirr Merchant" : "CBE Account"}:
+                      {paymentMethod === "telebirr" ? "Telebirr Merchant Code" : "CBE Escrow Account"}:
                     </Text>
                     <TouchableOpacity
                       onPress={() => handleCopyAccount(currentAccountNumber)}
-                      style={[styles.copyBtn, { backgroundColor: isDark ? colors.card : "#0F1A36", borderColor: colors.border }]}
+                      style={[styles.copyBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
                     >
                       {copiedAccount ? <Check size={11} color="#10B981" /> : <Copy size={11} color={colors.primary} />}
                       <Text style={[styles.copyBtnText, { color: copiedAccount ? "#10B981" : colors.primary }]}>
@@ -455,7 +609,7 @@ export function MobileProductDetailModal() {
                   <Text style={[styles.accountNumberText, { color: colors.textPrimary }]}>
                     {currentAccountNumber}
                   </Text>
-                  <Text style={[styles.accountNameText, { color: colors.textMuted }]}>
+                  <Text style={[styles.accountNameText, { color: colors.textSecondary }]}>
                     {currentAccountName}
                   </Text>
 
@@ -494,7 +648,7 @@ export function MobileProductDetailModal() {
                     </View>
 
                     {screenshotProof ? (
-                      <View style={[styles.proofPreviewCard, { backgroundColor: isDark ? colors.card : "#0F1A36", borderColor: colors.border }]}>
+                      <View style={[styles.proofPreviewCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                         <Image source={{ uri: screenshotProof }} style={styles.proofThumb} />
                         <View style={styles.proofMetaInfo}>
                           <View style={styles.proofAttachedBadge}>
@@ -514,7 +668,7 @@ export function MobileProductDetailModal() {
                         </View>
                       </View>
                     ) : (
-                      <View style={styles.proofEmptyCard}>
+                      <View style={[styles.proofEmptyCard, { borderColor: colors.border }]}>
                         <View style={styles.proofButtonsRow}>
                           <TouchableOpacity
                             onPress={handlePickProofFromDevice}
@@ -525,7 +679,7 @@ export function MobileProductDetailModal() {
                           </TouchableOpacity>
                           <TouchableOpacity
                             onPress={handleCameraSnapProof}
-                            style={[styles.proofBtnSecondary, { borderColor: colors.border, backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#F1F5F9" }]}
+                            style={[styles.proofBtnSecondary, { borderColor: colors.border, backgroundColor: colors.card }]}
                           >
                             <Camera size={13} color={colors.textPrimary} />
                             <Text style={[styles.proofBtnSecondaryText, { color: colors.textPrimary }]}>Camera</Text>
@@ -535,10 +689,17 @@ export function MobileProductDetailModal() {
                     )}
                   </View>
                 </View>
+              ) : (
+                <View style={[styles.cashNoticeBox, { backgroundColor: colors.cardElevated, borderColor: colors.border }]}>
+                  <Info size={16} color="#10B981" />
+                  <Text style={[styles.cashNoticeText, { color: colors.textSecondary }]}>
+                    No advance payment required. Bring ETB {totalAmount.toLocaleString()} to the campus intermediary desk when physically inspecting the item.
+                  </Text>
+                </View>
               )}
 
               {/* Clean Pricing Breakdown */}
-              <View style={[styles.breakdownBox, { backgroundColor: isDark ? colors.cardElevated : "#142247", borderColor: colors.border }]}>
+              <View style={[styles.breakdownBox, { backgroundColor: colors.cardElevated, borderColor: colors.border }]}>
                 <View style={styles.breakdownRow}>
                   <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>Price:</Text>
                   <Text style={[styles.breakdownVal, { color: colors.textPrimary }]}>ETB {itemPrice.toLocaleString()}</Text>
@@ -567,7 +728,7 @@ export function MobileProductDetailModal() {
               >
                 <ShieldCheck size={18} color="#FFFFFF" />
                 <Text style={styles.checkoutBtnText}>
-                  Pay ETB {totalAmount.toLocaleString()}
+                  Pay ETB {totalAmount.toLocaleString()} (SafeTrade Escrow)
                 </Text>
               </TouchableOpacity>
             </ScrollView>
@@ -581,7 +742,7 @@ export function MobileProductDetailModal() {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.75)",
+    backgroundColor: "rgba(7, 13, 30, 0.85)",
     justifyContent: "flex-end",
   },
   modalCard: {
@@ -589,31 +750,49 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 28,
     borderWidth: 1,
     maxHeight: "92%",
-    paddingTop: 16,
+    paddingTop: 12,
     paddingBottom: 24,
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.35,
     shadowRadius: 14,
     elevation: 14,
   },
+  headerBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  backBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  backBtnText: {
+    fontSize: 11,
+    fontWeight: "700",
+  },
   closeBtn: {
-    alignSelf: "flex-end",
     padding: 6,
     borderRadius: 16,
-    marginBottom: 8,
+    borderWidth: 1,
   },
   scrollContent: {
     paddingBottom: 24,
   },
   imageWrapper: {
     width: "100%",
-    height: 180,
+    height: 190,
     borderRadius: 20,
     overflow: "hidden",
     position: "relative",
-    marginBottom: 14,
+    marginBottom: 12,
   },
   productImage: {
     width: "100%",
@@ -626,7 +805,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "rgba(16, 185, 129, 0.92)",
+    backgroundColor: "rgba(16, 185, 129, 0.95)",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 10,
@@ -634,21 +813,30 @@ const styles = StyleSheet.create({
   escrowBadgeTopText: {
     color: "#FFFFFF",
     fontSize: 10,
-    fontWeight: "700",
+    fontWeight: "800",
   },
   titleSection: {
     marginBottom: 12,
   },
-  conditionPill: {
-    fontSize: 11,
+  tagsRow: {
+    flexDirection: "row",
+    gap: 6,
+    marginBottom: 6,
+  },
+  tagPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  tagPillText: {
+    fontSize: 10,
     fontWeight: "700",
-    marginBottom: 4,
-    textTransform: "uppercase",
   },
   productTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "800",
-    lineHeight: 22,
+    lineHeight: 24,
     marginBottom: 6,
   },
   priceRow: {
@@ -657,7 +845,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   priceText: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "900",
   },
   origPriceText: {
@@ -671,7 +859,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 16,
     borderWidth: 1,
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sellerLeft: {
     flexDirection: "row",
@@ -718,8 +906,85 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#F59E0B",
   },
-  sectionHeading: {
+  specsCard: {
+    padding: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    marginBottom: 12,
+    gap: 6,
+  },
+  specRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  specLabel: {
+    fontSize: 11,
+    fontWeight: "600",
+  },
+  specValue: {
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  guaranteeBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 14,
+  },
+  guaranteeTitle: {
     fontSize: 12,
+    fontWeight: "800",
+    marginBottom: 2,
+  },
+  guaranteeSub: {
+    fontSize: 10,
+    lineHeight: 14,
+  },
+  bottomBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 6,
+  },
+  favBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+  },
+  buyBtn: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    height: 48,
+    borderRadius: 16,
+  },
+  buyBtnText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "800",
+  },
+  checkoutHeader: {
+    marginBottom: 14,
+  },
+  checkoutTitle: {
+    fontSize: 18,
+    fontWeight: "900",
+  },
+  checkoutSub: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  sectionHeading: {
+    fontSize: 11,
     fontWeight: "800",
     marginBottom: 8,
     marginTop: 4,
@@ -751,22 +1016,41 @@ const styles = StyleSheet.create({
     fontSize: 9,
     marginTop: 1,
   },
-  payMethodRow: {
-    flexDirection: "row",
+  payOptionsCol: {
     gap: 8,
     marginBottom: 12,
   },
-  payChip: {
-    flex: 1,
+  payOptionCard: {
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1.5,
+  },
+  payOptionLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  radioCircle: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderColor: "#94A3B8",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 10,
-    borderRadius: 12,
-    borderWidth: 1,
   },
-  payChipText: {
-    fontSize: 11,
-    fontWeight: "600",
+  radioDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  payOptionTitle: {
+    fontSize: 12,
+    fontWeight: "800",
+  },
+  payOptionSub: {
+    fontSize: 10,
+    marginTop: 1,
   },
   accountCard: {
     padding: 14,
@@ -798,7 +1082,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   accountNumberText: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: "900",
     fontFamily: "monospace",
     letterSpacing: 0.5,
@@ -807,7 +1091,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "600",
     marginTop: 2,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   refInputGroup: {
     marginTop: 8,
@@ -826,14 +1110,23 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: "monospace",
     fontWeight: "700",
   },
-  refHelperText: {
-    fontSize: 10,
-    marginTop: 4,
-    lineHeight: 14,
+  cashNoticeBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    marginBottom: 14,
+  },
+  cashNoticeText: {
+    fontSize: 11,
+    lineHeight: 15,
+    flex: 1,
   },
   breakdownBox: {
     padding: 14,
@@ -865,7 +1158,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
   totalVal: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "900",
   },
   checkoutBtn: {
@@ -875,11 +1168,6 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 14,
     borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 3,
   },
   checkoutBtnText: {
     color: "#FFFFFF",
@@ -892,9 +1180,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   successIconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 68,
+    height: 68,
+    borderRadius: 34,
     backgroundColor: "rgba(16, 185, 129, 0.15)",
     alignItems: "center",
     justifyContent: "center",
@@ -978,50 +1266,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     maxWidth: 280,
     lineHeight: 14,
-  },
-  instructionCard: {
-    width: "100%",
-    borderWidth: 1,
-    borderRadius: 16,
-    padding: 14,
-    gap: 10,
-    marginBottom: 16,
-  },
-  stepRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  stepNum: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  stepNumText: {
-    color: "#FFFFFF",
-    fontSize: 11,
-    fontWeight: "800",
-  },
-  stepText: {
-    fontSize: 11,
-    flex: 1,
-    lineHeight: 15,
-  },
-  activityButton: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    paddingVertical: 14,
-    borderRadius: 16,
-  },
-  activityButtonText: {
-    color: "#FFFFFF",
-    fontSize: 13,
-    fontWeight: "800",
   },
   pinExpireBadge: {
     flexDirection: "row",
@@ -1110,9 +1354,6 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#10B981",
   },
-  proofFileName: {
-    fontSize: 10,
-  },
   proofActionsRow: {
     flexDirection: "row",
     gap: 8,
@@ -1135,13 +1376,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderStyle: "dashed",
-    borderColor: "#CBD5E1",
     padding: 12,
     gap: 8,
-  },
-  proofEmptyNotice: {
-    fontSize: 11,
-    lineHeight: 15,
   },
   proofButtonsRow: {
     flexDirection: "row",
@@ -1174,5 +1410,19 @@ const styles = StyleSheet.create({
   proofBtnSecondaryText: {
     fontSize: 11,
     fontWeight: "700",
+  },
+  activityButton: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: 16,
+  },
+  activityButtonText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "800",
   },
 });

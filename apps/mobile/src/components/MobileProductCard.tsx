@@ -108,15 +108,6 @@ export function MobileProductCard({
 
       {/* Details */}
       <View style={styles.content}>
-        {/* Condition & Escrow Badge */}
-        <View style={styles.conditionRow}>
-          <Text style={[styles.conditionText, { color: colors.textSecondary }]}>{product.condition}</Text>
-          <View style={styles.escrowBadge}>
-            <ShieldCheck size={10} color="#10B981" />
-            <Text style={styles.escrowText}>Escrow</Text>
-          </View>
-        </View>
-
         {/* Title */}
         <Text numberOfLines={2} style={[styles.title, { color: colors.textPrimary }]}>
           {product.title}
@@ -134,28 +125,16 @@ export function MobileProductCard({
           )}
         </View>
 
-        {/* Rating & Action Button */}
-        <View style={styles.metaRow}>
-          <View style={styles.ratingBox}>
-            <Star size={11} color="#F59E0B" fill="#F59E0B" />
-            <Text style={[styles.ratingText, { color: colors.textSecondary }]}>{product.rating}</Text>
-            <Text style={[styles.reviewCount, { color: colors.textMuted }]}>({product.reviewCount})</Text>
+        {/* Campus & Condition Meta */}
+        <View style={styles.bottomMetaRow}>
+          <View style={styles.campusTag}>
+            <MapPin size={10} color={colors.textSecondary} />
+            <Text numberOfLines={1} style={[styles.campusText, { color: colors.textSecondary }]}>
+              {product.location.split("(")[0].trim()}
+            </Text>
           </View>
-
-          <TouchableOpacity
-            onPress={onOrderPress || onPress}
-            hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-            style={[styles.actionButton, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
-          >
-            <ShoppingBag size={12} color={colors.primary} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Location Pin */}
-        <View style={styles.locationRow}>
-          <MapPin size={10} color={colors.textMuted} />
-          <Text numberOfLines={1} style={[styles.locationText, { color: colors.textMuted }]}>
-            {product.location}
+          <Text style={[styles.conditionShort, { color: colors.accent }]}>
+            {product.condition.replace(/Used • |Brand New • /g, "")}
           </Text>
         </View>
       </View>
@@ -260,40 +239,26 @@ const styles = StyleSheet.create({
     fontSize: 9,
     textDecorationLine: "line-through",
   },
-  metaRow: {
+  bottomMetaRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 6,
+    gap: 4,
   },
-  ratingBox: {
+  campusTag: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 2,
-  },
-  ratingText: {
-    fontSize: 10,
-    fontWeight: "700",
-  },
-  reviewCount: {
-    fontSize: 9,
-  },
-  actionButton: {
-    width: 26,
-    height: 26,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-  },
-  locationRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 2,
-    marginTop: 6,
-  },
-  locationText: {
-    fontSize: 9,
+    gap: 3,
     flex: 1,
+  },
+  campusText: {
+    fontSize: 10,
+    fontWeight: "500",
+  },
+  conditionShort: {
+    fontSize: 9,
+    fontWeight: "700",
+    textTransform: "uppercase",
   },
 });

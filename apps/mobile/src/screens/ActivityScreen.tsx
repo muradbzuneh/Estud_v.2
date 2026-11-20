@@ -24,7 +24,7 @@ import { useApp } from "../context/AppContext";
 import { showSuccessToast, showInfoToast } from "../utils/toast";
 
 export function ActivityScreen() {
-  const { orders, completeOrder, regenerateOrderPin, setActiveTab, colors, t, language } = useApp();
+  const { orders, completeOrder, setActiveTab, colors, t, language } = useApp();
   const [filter, setFilter] = useState<"active" | "completed">("active");
 
   const activeOrders = orders.filter((o) => o.status !== "completed");
@@ -206,16 +206,12 @@ export function ActivityScreen() {
                         {t.secretPinTitle}
                       </Text>
                     </View>
-                    <TouchableOpacity
-                      onPress={() => regenerateOrderPin(order.id)}
-                      hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                      style={styles.rotatePinButton}
-                    >
-                      <RefreshCw size={11} color={colors.primary} />
-                      <Text style={[styles.rotatePinText, { color: colors.primary }]}>
-                        {language === "am" ? "አድስ" : "Refresh"}
+                    <View style={styles.immutableBadge}>
+                      <ShieldCheck size={11} color="#10B981" />
+                      <Text style={styles.immutableBadgeText}>
+                        {language === "am" ? "የማይለወጥ ማስረጃ" : "Immutable"}
                       </Text>
-                    </TouchableOpacity>
+                    </View>
                   </View>
                   <Text style={[styles.pinCode, { color: colors.textPrimary }]}>{order.secretPin}</Text>
 
@@ -413,18 +409,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 5,
   },
-  rotatePinButton: {
+  immutableBadge: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "rgba(29, 107, 243, 0.1)",
+    backgroundColor: "rgba(16, 185, 129, 0.12)",
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
   },
-  rotatePinText: {
+  immutableBadgeText: {
     fontSize: 10,
-    fontWeight: "800",
+    fontWeight: "700",
+    color: "#10B981",
   },
   pinExpirationRow: {
     flexDirection: "row",

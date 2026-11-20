@@ -54,7 +54,7 @@ const CONDITION_OPTIONS = [
 ];
 
 export function SellScreen() {
-  const { addProduct, currentCampus, setActiveTab, colors, t, language } = useApp();
+  const { isAuthenticated, setAuthModalVisible, addProduct, currentCampus, setActiveTab, colors, t, language } = useApp();
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("laptops");
@@ -131,6 +131,10 @@ export function SellScreen() {
   };
 
   const handleSubmit = async () => {
+    if (!isAuthenticated) {
+      setAuthModalVisible(true);
+      return;
+    }
     if (photos.length === 0) {
       showErrorToast(
         language === "am" ? "ፎቶ ያስፈልጋል" : "Photo Required",
@@ -188,6 +192,40 @@ export function SellScreen() {
     setIsBarterOpen(false);
     setSubmittedProduct(null);
   };
+
+  if (!isAuthenticated) {
+    return (
+      <View style={[styles.authRequiredContainer, { backgroundColor: colors.background }]}>
+        <Animatable.View
+          animation="fadeInUp"
+          duration={500}
+          style={[styles.authRequiredCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+        >
+          <View style={[styles.authIconCircle, { backgroundColor: colors.primaryLight }]}>
+            <ShieldCheck size={38} color={colors.primary} />
+          </View>
+          <Text style={[styles.authRequiredTitle, { color: colors.textPrimary }]}>
+            {language === "am" ? "የተረጋገጠ የተማሪ መለያ ያስፈልጋል" : "Verified Student Account Required"}
+          </Text>
+          <Text style={[styles.authRequiredSub, { color: colors.textSecondary }]}>
+            {language === "am"
+              ? "የካምፓስ ገበያውን ደህንነትና የኤስክሮው ዋስትና ለመጠበቅ ዕቃዎችን ለመሸጥና ለመለጠፍ የተረጋገጠ የተማሪ መለያ መግባት አለበት።"
+              : "To protect student escrow funds and ensure safety, you must sign in with a verified student account to list items."}
+          </Text>
+          <TouchableOpacity
+            onPress={() => setAuthModalVisible(true)}
+            activeOpacity={0.88}
+            style={[styles.actionBtnPrimary, { backgroundColor: colors.primary, marginTop: 16 }]}
+          >
+            <Text style={styles.actionBtnPrimaryText}>
+              {language === "am" ? "ይግቡ ወይም ይመዝገቡ" : "Sign In to List Items"}
+            </Text>
+            <ArrowRight size={16} color="#FFFFFF" />
+          </TouchableOpacity>
+        </Animatable.View>
+      </View>
+    );
+  }
 
   if (submittedProduct) {
     return (
@@ -930,5 +968,42 @@ const styles = StyleSheet.create({
   actionBtnSecondaryText: {
     fontSize: 13,
     fontWeight: "700",
+  },
+  authRequiredContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 50,
+    justifyContent: "center",
+  },
+  authRequiredCard: {
+    borderRadius: 24,
+    borderWidth: 1,
+    padding: 24,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  authIconCircle: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
+  },
+  authRequiredTitle: {
+    fontSize: 18,
+    fontWeight: "800",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  authRequiredSub: {
+    fontSize: 13,
+    textAlign: "center",
+    lineHeight: 19,
+    marginBottom: 16,
   },
 });

@@ -275,7 +275,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const colors = getThemeColors(theme);
   const t = translations[language];
-  const [appVersion, setAppVersion] = useState<string>("v2.3.2");
+  const [appVersion, setAppVersion] = useState<string>("v2.3.3");
   const [serverRelease, setServerRelease] = useState<AppReleaseInfo | null>(null);
   const [isUpdateAvailable, setIsUpdateAvailable] = useState<boolean>(false);
 
@@ -371,7 +371,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [refreshLiveProducts, refreshLiveBroadcasts, checkForUpdates]);
 
   const upgradeAppVersion = (newVer?: string) => {
-    const updated = newVer || (serverRelease ? `v${serverRelease.version}` : "v2.3.2");
+    const updated = newVer || (serverRelease ? `v${serverRelease.version}` : "v2.3.3");
     setAppVersion(updated);
     setIsUpdateAvailable(false);
   };
