@@ -65,7 +65,7 @@ let activeRelease: AppReleaseInfo = {
     "Professional Payment Channels: Stacked full-width cards with authentic Telebirr, CBE, and Cash Desk options",
     "Pure Dark Midnight Theme: Unified dark styling across all modals, forms, and cards with high contrast text",
   ],
-  downloadUrl: "https://expo.dev/artifacts/eas/8hTK9sjA1R2KNNH0Gk2GOmdNokpvU5KWJ2qPaG7po0M.apk",
+  downloadUrl: "https://expo.dev/artifacts/eas/PE-OqJTG-mu4ToINxvjGYuj7u49wEerq_1hKQ15wNPc.apk",
   forceUpdate: false,
 };
 
