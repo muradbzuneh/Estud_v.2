@@ -1,0 +1,125 @@
+name: Estud Market Release & Deployment Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "EAS Build Profile"
+        required: true
+        default: "preview"
+        type: choice
+        options:
+          - preview
+          - production
+      submit_to_playstore:
+        description: "Submit directly to Google Play Store"
+        required: false
+        default: false
+        type: boolean
+  push:
+    tags:
+      - "v*.*.*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate Code & Monorepo Health
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun Runtime
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run Monorepo Typecheck
+        run: bun run typecheck
+
+  build_mobile_market:
+    name: Build Android for Market Release
+    needs: [validate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup EAS CLI
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Setup Bun Runtime
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build Android App (APK / AAB) via EAS
+        working-directory: ./apps/mobile
+        run: |
+          BUILD_PROFILE="${{ github.event.inputs.profile || 'preview' }}"
+          echo "Starting EAS build for Android profile: $BUILD_PROFILE"
+          eas build --platform android --profile "$BUILD_PROFILE" --non-interactive
+
+      - name: Auto-Submit to Google Play Store (Optional)
+        if: ${{ github.event.inputs.submit_to_playstore == 'true' || github.event.inputs.submit_to_playstore == true }}
+        working-directory: ./apps/mobile
+        run: |
+          echo "Submitting production build to Google Play Console..."
+          eas submit --platform android --profile production --non-interactive
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+
+  deploy_web_market:
+    name: Deploy Web Application
+    needs: [validate]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun Runtime
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build Web Application
+        run: bun run --filter @estud/web build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'https://estud.et' }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
