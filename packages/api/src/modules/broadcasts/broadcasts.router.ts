@@ -66,7 +66,7 @@ let activeRelease: AppReleaseInfo = {
     "Official Telebirr & CBE Brand Logos on Escrow Payment methods",
     "Silent Background Version Check: No intrusive update popups interrupting app usage",
   ],
-  downloadUrl: "https://expo.dev/artifacts/eas/2yoG7801B6KV_pfgmcNpEXnTGx2Q1TwYva5d-qeVyA8.apk",
+  downloadUrl: "https://expo.dev/artifacts/eas/ZQm875jEw-NCKYRd8EL_ZSsO9FIs5eV5M-Bvf_CVUNk.apk",
   forceUpdate: false,
 };
 
