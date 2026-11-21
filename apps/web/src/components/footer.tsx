@@ -113,7 +113,6 @@ export function Footer() {
               <li><Link href="#how-it-works" className="hover:text-brand-600 dark:hover:text-brand-400">Hub Handover Security</Link></li>
               <li><Link href="/sell" className="hover:text-brand-600 dark:hover:text-brand-400">0% Seller Fee Policy</Link></li>
               <li><Link href="/mobile" className="hover:text-brand-600 dark:hover:text-brand-400">Mobile App Guide</Link></li>
-              <li><Link href={"/download" as any} className="text-brand-600 dark:text-brand-400 font-semibold hover:underline flex items-center gap-1.5"><span>Download Mobile APK (v2.3.1)</span><span className="text-[9px] bg-brand-500/10 text-brand-600 dark:text-brand-400 px-1.5 py-0.5 rounded font-medium">Android</span></Link></li>
             </ul>
           </div>
         </div>

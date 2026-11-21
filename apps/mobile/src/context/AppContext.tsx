@@ -73,7 +73,7 @@ export const INITIAL_PRODUCTS: MobileProductItem[] = [
     reviewCount: 128,
     badge: "Best Seller",
     location: "AAU 4 Kilo (Science)",
-    imageUrl: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg",
   },
   {
     id: "prod-2",
@@ -86,7 +86,7 @@ export const INITIAL_PRODUCTS: MobileProductItem[] = [
     reviewCount: 95,
     badge: "Popular",
     location: "AAiT 5 Kilo (Technology)",
-    imageUrl: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205483/estud/products/vmgc9gbcyr8x8w2sej01.jpg",
   },
   {
     id: "prod-3",
@@ -99,7 +99,7 @@ export const INITIAL_PRODUCTS: MobileProductItem[] = [
     reviewCount: 64,
     badge: "New",
     location: "Hawassa University",
-    imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205482/estud/products/gm1mw2kvp0cdxfh0e6ib.jpg",
   },
   {
     id: "prod-4",
@@ -112,7 +112,7 @@ export const INITIAL_PRODUCTS: MobileProductItem[] = [
     reviewCount: 82,
     badge: "20% OFF",
     location: "ASTU Adama",
-    imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205485/estud/products/epqmnjm8x3mmsx90yx6f.jpg",
   },
   {
     id: "prod-5",
@@ -125,7 +125,7 @@ export const INITIAL_PRODUCTS: MobileProductItem[] = [
     reviewCount: 142,
     badge: "Best Seller",
     location: "AAU 4 Kilo (Science)",
-    imageUrl: "https://images.unsplash.com/photo-1587145820266-a5951ee6f620?w=500&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205488/estud/products/d0oj33bk0mas5z7m8kws.jpg",
   },
   {
     id: "prod-6",
@@ -138,7 +138,7 @@ export const INITIAL_PRODUCTS: MobileProductItem[] = [
     reviewCount: 38,
     badge: "Popular",
     location: "Jimma University",
-    imageUrl: "https://images.unsplash.com/photo-1586401100295-7a8096fd231a?w=500&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205491/estud/products/toucxz480xisroboew86.jpg",
   },
 ];
 
@@ -160,7 +160,7 @@ export const INITIAL_ORDERS: EscrowOrder[] = [
     productPrice: 18500,
     escrowFee: 925,
     totalAmount: 19425,
-    imageUrl: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg",
     campusHub: "AAU 4 Kilo - Science Faculty Intermediary Desk",
     sellerName: "Alazar T. (AAU CS Senior)",
     collectionMethod: "hub",
@@ -275,7 +275,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const colors = getThemeColors(theme);
   const t = translations[language];
-  const [appVersion, setAppVersion] = useState<string>("v2.3.4");
+  const [appVersion, setAppVersion] = useState<string>("v2.3.5");
   const [serverRelease, setServerRelease] = useState<AppReleaseInfo | null>(null);
   const [isUpdateAvailable, setIsUpdateAvailable] = useState<boolean>(false);
 
@@ -371,7 +371,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [refreshLiveProducts, refreshLiveBroadcasts, checkForUpdates]);
 
   const upgradeAppVersion = (newVer?: string) => {
-    const updated = newVer || (serverRelease ? `v${serverRelease.version}` : "v2.3.4");
+    const updated = newVer || (serverRelease ? `v${serverRelease.version}` : "v2.3.5");
     setAppVersion(updated);
     setIsUpdateAvailable(false);
   };
@@ -421,7 +421,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       studentId: "UGR/4921/14",
       trustScore: 100,
       tradesCompleted: 18,
-      avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      avatarUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205486/estud/products/rxwxchigrz0dw3njh8ig.jpg",
       isVerified: true,
     };
     setUser(googleUser);

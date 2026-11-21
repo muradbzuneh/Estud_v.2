@@ -77,7 +77,7 @@ async function seedMarketplace() {
       condition: "LIKE_NEW" as const,
       price: "18000.00",
       status: "APPROVED" as const,
-      imageUrl: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800&auto=format&fit=crop&q=80",
+      imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg",
     },
     {
       title: "Calculus Early Transcendentals (8th Edition)",
@@ -86,7 +86,7 @@ async function seedMarketplace() {
       condition: "GOOD" as const,
       price: "600.00",
       status: "APPROVED" as const,
-      imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=80",
+      imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205482/estud/products/gm1mw2kvp0cdxfh0e6ib.jpg",
     },
     {
       title: "Sony WH-1000XM4 Noise Canceling Headphones",
@@ -95,7 +95,7 @@ async function seedMarketplace() {
       condition: "LIKE_NEW" as const,
       price: "2500.00",
       status: "APPROVED" as const,
-      imageUrl: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80",
+      imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205483/estud/products/vmgc9gbcyr8x8w2sej01.jpg",
     },
     {
       title: "Waterproof Campus Laptop Backpack (Grey)",
@@ -104,7 +104,7 @@ async function seedMarketplace() {
       condition: "NEW" as const,
       price: "1200.00",
       status: "APPROVED" as const,
-      imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&auto=format&fit=crop&q=80",
+      imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205485/estud/products/epqmnjm8x3mmsx90yx6f.jpg",
     },
     {
       title: "Nike Air Max Campus Running Shoes (Size 42)",
@@ -113,7 +113,7 @@ async function seedMarketplace() {
       condition: "LIKE_NEW" as const,
       price: "3000.00",
       status: "APPROVED" as const,
-      imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80",
+      imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205486/estud/products/rxwxchigrz0dw3njh8ig.jpg",
     },
     {
       title: "Casio FX-991EX ClassWiz Advanced Scientific Calculator",
@@ -122,7 +122,7 @@ async function seedMarketplace() {
       condition: "LIKE_NEW" as const,
       price: "1850.00",
       status: "PENDING_VALUATION" as const,
-      imageUrl: "https://images.unsplash.com/photo-1587145820266-a5951ee6f620?w=800&auto=format&fit=crop&q=80",
+      imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205488/estud/products/d0oj33bk0mas5z7m8kws.jpg",
     },
   ];
 

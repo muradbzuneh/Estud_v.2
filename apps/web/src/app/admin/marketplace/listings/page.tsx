@@ -239,7 +239,7 @@ export default function AdminListingsPage() {
       day: "numeric",
       year: "numeric",
     }),
-    image: prod.images?.[0]?.imageUrl || "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=200",
+    image: prod.images?.[0]?.imageUrl || "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg",
   }));
 
   return (
@@ -601,7 +601,7 @@ export default function AdminListingsPage() {
                   condition: addCondition,
                   price: parseFloat(addPrice) || 0,
                   status: addStatus,
-                  images: addImages.length > 0 ? addImages : ["https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800"],
+                  images: addImages.length > 0 ? addImages : ["https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg"],
                   isExchangeEligible: addIsExchange,
                 });
               }}

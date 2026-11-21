@@ -101,7 +101,7 @@ export default function SellPage() {
         condition: conditionMap[condition] || "LIKE_NEW",
         proposedPrice: numericPrice,
         isExchangeEligible: allowExchange,
-        images: images.length > 0 ? images : ["https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800"],
+        images: images.length > 0 ? images : ["https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg"],
       });
 
       setIsSubmitting(false);

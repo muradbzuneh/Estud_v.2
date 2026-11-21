@@ -42,15 +42,15 @@ const FALLBACK_CATALOG: Record<string, any> = {
     createdAt: "Today",
     seller: {
       name: "Abel Kassa",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
+      avatar: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205486/estud/products/rxwxchigrz0dw3njh8ig.jpg",
       university: "AAU",
       department: "Software Engineering",
       rating: 4.9,
       completedOrders: 14,
     },
     images: [
-      { id: "1", imageUrl: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=900", isPrimary: true },
-      { id: "2", imageUrl: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=900" },
+      { id: "1", imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg", isPrimary: true },
+      { id: "2", imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205483/estud/products/vmgc9gbcyr8x8w2sej01.jpg" },
     ],
     description: "Fast 11th Gen Intel Core i5 laptop with 16GB RAM and pristine battery life. Ideal for coding and engineering software.",
     specs: [
@@ -101,7 +101,7 @@ export default function ProductDetailPage() {
         }),
         seller: {
           name: (dbProd as any).seller?.profile?.fullName || (dbProd as any).seller?.name || "Campus Student",
-          avatar: (dbProd as any).seller?.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
+          avatar: (dbProd as any).seller?.image || "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205486/estud/products/rxwxchigrz0dw3njh8ig.jpg",
           university: (dbProd as any).seller?.profile?.institution?.shortCode || "AAU",
           department: "Verified Student",
           rating: 4.9,
@@ -114,7 +114,7 @@ export default function ProductDetailPage() {
                 imageUrl: img.imageUrl,
                 isPrimary: img.isPrimary,
               }))
-            : [{ id: "1", imageUrl: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=900", isPrimary: true }],
+            : [{ id: "1", imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg", isPrimary: true }],
         description: dbProd.description,
         specs: [
           { label: "Item Condition", value: dbProd.condition },

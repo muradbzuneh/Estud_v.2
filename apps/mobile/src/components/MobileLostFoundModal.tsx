@@ -54,7 +54,7 @@ const INITIAL_MOBILE_ITEMS: Item[] = [
     date: "Today, 10:30 AM",
     description: "Turned over to Safe Hub Gate 1. ID card matches College of Natural Sciences.",
     status: "OPEN",
-    imageUrl: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=400&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205482/estud/products/gm1mw2kvp0cdxfh0e6ib.jpg",
   },
   {
     id: "m-lf-2",
@@ -66,7 +66,7 @@ const INITIAL_MOBILE_ITEMS: Item[] = [
     date: "Yesterday, 3:15 PM",
     description: "Lost during exam. Has a yellow periodic table sticker on the back cover.",
     status: "OPEN",
-    imageUrl: "https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?auto=format&fit=crop&w=400&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205488/estud/products/d0oj33bk0mas5z7m8kws.jpg",
   },
   {
     id: "m-lf-3",
@@ -78,7 +78,7 @@ const INITIAL_MOBILE_ITEMS: Item[] = [
     date: "Nov 04, 2026",
     description: "Pair of brass keys on a red circular tag held at Gate 1 office.",
     status: "OPEN",
-    imageUrl: "https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=400&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205485/estud/products/epqmnjm8x3mmsx90yx6f.jpg",
   },
 ];
 

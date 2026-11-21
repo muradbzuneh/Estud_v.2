@@ -47,7 +47,7 @@ export const SAMPLE_FEATURED_PRODUCTS: DisplayProduct[] = [
     reviewCount: 120,
     badge: "Best Seller",
     location: "Addis Ababa (4 Kilo)",
-    imageUrl: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg",
   },
   {
     id: "prod-2",
@@ -60,7 +60,7 @@ export const SAMPLE_FEATURED_PRODUCTS: DisplayProduct[] = [
     reviewCount: 95,
     badge: "Popular",
     location: "Addis Ababa (AAiT)",
-    imageUrl: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205483/estud/products/vmgc9gbcyr8x8w2sej01.jpg",
   },
   {
     id: "prod-3",
@@ -73,7 +73,7 @@ export const SAMPLE_FEATURED_PRODUCTS: DisplayProduct[] = [
     reviewCount: 64,
     badge: "New",
     location: "Hawassa University",
-    imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205482/estud/products/gm1mw2kvp0cdxfh0e6ib.jpg",
   },
   {
     id: "prod-4",
@@ -86,7 +86,7 @@ export const SAMPLE_FEATURED_PRODUCTS: DisplayProduct[] = [
     reviewCount: 78,
     badge: "20% OFF",
     location: "Mekelle University",
-    imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205485/estud/products/epqmnjm8x3mmsx90yx6f.jpg",
   },
   {
     id: "prod-5",
@@ -99,7 +99,7 @@ export const SAMPLE_FEATURED_PRODUCTS: DisplayProduct[] = [
     reviewCount: 142,
     badge: "Popular",
     location: "Addis Ababa (AAU 4 Kilo)",
-    imageUrl: "https://images.unsplash.com/photo-1587145820266-a5951ee6f620?w=600&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205488/estud/products/d0oj33bk0mas5z7m8kws.jpg",
   },
   {
     id: "prod-6",
@@ -112,7 +112,7 @@ export const SAMPLE_FEATURED_PRODUCTS: DisplayProduct[] = [
     reviewCount: 42,
     badge: "Best Seller",
     location: "Addis Ababa (6 Kilo)",
-    imageUrl: "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205489/estud/products/z6mrlwgjlclokysolrdg.jpg",
   },
   {
     id: "prod-7",
@@ -125,7 +125,7 @@ export const SAMPLE_FEATURED_PRODUCTS: DisplayProduct[] = [
     reviewCount: 39,
     badge: "20% OFF",
     location: "ASTU (Adama)",
-    imageUrl: "https://images.unsplash.com/photo-1586401100295-7a8096fd231a?w=600&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205491/estud/products/toucxz480xisroboew86.jpg",
   },
 ];
 
@@ -209,7 +209,7 @@ export function FeaturedProducts({
     location: "Addis Ababa (4 Kilo)",
     imageUrl:
       prod.images?.[0]?.imageUrl ||
-      "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&auto=format&fit=crop&q=80",
+      "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg",
   }));
 
   const allProductPool =
@@ -321,6 +321,10 @@ export function FeaturedProducts({
                   src={item.imageUrl}
                   alt={item.title}
                   className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg";
+                  }}
                 />
 
                 {/* Status Badge */}

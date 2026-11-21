@@ -184,7 +184,7 @@ export class OrdersService {
       uploaderId: buyerId,
       bankTransactionReference: input.bankTransactionReference,
       senderAccountOrPhone: input.senderAccountOrPhone || "Web Student Checkout",
-      screenshotUrl: input.screenshotUrl || "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600",
+      screenshotUrl: input.screenshotUrl || "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205488/estud/products/d0oj33bk0mas5z7m8kws.jpg",
       notes: input.notes || `Direct Escrow Checkout (${input.deliveryMethod === "runner" ? "Student Runner" : "Campus Hub Pickup"})`,
       verificationStatus: "PENDING",
     });

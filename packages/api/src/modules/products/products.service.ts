@@ -25,6 +25,7 @@ import {
   type EstudDatabase,
 } from "@estud/db";
 import { recordAuditLog } from "../../core/audit";
+import { cloudinary } from "../../core/cloudinary";
 import type { z } from "zod";
 import type {
   listProductsFilterSchema,
@@ -44,10 +45,23 @@ import type {
   adminDeleteProductSchema,
 } from "./products.schema";
 
+interface CacheEntry {
+  data: any;
+  timestamp: number;
+}
+const listCache = new Map<string, CacheEntry>();
+const CACHE_TTL_MS = 25000; // 25 seconds in-memory TTL
+
 export class ProductsService {
   constructor(private db: EstudDatabase) {}
 
   async list(input: z.infer<typeof listProductsFilterSchema>) {
+    const cacheKey = JSON.stringify(input);
+    const cached = listCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return cached.data;
+    }
+
     const conditions = [eq(products.status, "APPROVED")];
 
     if (input.search && input.search.trim().length > 0) {
@@ -82,10 +96,13 @@ export class ProductsService {
       },
     });
 
-    return {
+    const result = {
       items,
       nextCursor: items.length === input.limit ? input.cursor + input.limit : null,
     };
+    listCache.set(cacheKey, { data: result, timestamp: Date.now() });
+
+    return result;
   }
 
   /**
@@ -162,26 +179,44 @@ export class ProductsService {
       })
       .returning();
 
-    // 5. Insert Image(s)
-    const imagesToInsert: string[] = [];
+    // 5. Insert Image(s) with Cloudinary upload for base64
+    const rawImagesToInsert: string[] = [];
     if (input.imageUrl && input.imageUrl.trim()) {
-      imagesToInsert.push(input.imageUrl.trim());
+      rawImagesToInsert.push(input.imageUrl.trim());
     }
     if (input.images && input.images.length > 0) {
       input.images.forEach((img) => {
-        if (img && !imagesToInsert.includes(img)) {
-          imagesToInsert.push(img);
+        if (img && !rawImagesToInsert.includes(img)) {
+          rawImagesToInsert.push(img);
         }
       });
     }
-    if (imagesToInsert.length === 0) {
-      imagesToInsert.push(
-        "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&auto=format&fit=crop&q=80"
+    if (rawImagesToInsert.length === 0) {
+      rawImagesToInsert.push(
+        "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg"
       );
     }
 
+    const processedImages: string[] = [];
+    for (const img of rawImagesToInsert) {
+      if (img.startsWith("data:") || img.length > 500) {
+        try {
+          const uploadRes = await cloudinary.uploader.upload(img, {
+            folder: "estud/products",
+            transformation: [{ width: 1000, crop: "limit", quality: "auto" }],
+          });
+          processedImages.push(uploadRes.secure_url);
+        } catch (err) {
+          console.error("[ProductsService] Cloudinary upload failed:", err);
+          processedImages.push("https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg");
+        }
+      } else {
+        processedImages.push(img);
+      }
+    }
+
     await this.db.insert(productImages).values(
-      imagesToInsert.map((url, index) => ({
+      processedImages.map((url, index) => ({
         productId: newProduct.id,
         imageUrl: url,
         isPrimary: index === 0,
@@ -218,9 +253,11 @@ export class ProductsService {
       },
     });
 
+    listCache.clear();
+
     return {
       ...newProduct,
-      images: imagesToInsert.map((url, i) => ({ imageUrl: url, isPrimary: i === 0 })),
+      images: processedImages.map((url, i) => ({ imageUrl: url, isPrimary: i === 0 })),
       category,
     };
   }
@@ -383,6 +420,8 @@ export class ProductsService {
       .update(products)
       .set({ status: "APPROVED" })
       .where(eq(products.id, input.productId));
+
+    listCache.clear();
 
     await this.db.insert(listingApprovals).values({
       productId: input.productId,
@@ -895,6 +934,8 @@ export class ProductsService {
       metadata: { title: input.title, price: input.price, status: input.status },
     });
 
+    listCache.clear();
+
     return newProduct;
   }
 
@@ -950,6 +991,8 @@ export class ProductsService {
         .delete(products)
         .where(eq(products.id, input.productId))
         .returning();
+
+      listCache.clear();
 
       await recordAuditLog({
         db: this.db,

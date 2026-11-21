@@ -68,7 +68,7 @@ export default function AdminPaymentsPage() {
       createdAt: "Nov 03, 2026 10:20 AM",
       buyer: { name: "Kirubel Haile", handle: "@kirubel_h" },
       bankRef: "TRX-TEL-982341",
-      screenshotUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop",
+      screenshotUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205488/estud/products/d0oj33bk0mas5z7m8kws.jpg",
       itemTitle: "HP Laptop 15",
     },
     {
@@ -81,7 +81,7 @@ export default function AdminPaymentsPage() {
       createdAt: "Nov 03, 2026 11:45 AM",
       buyer: { name: "Selamawit Bekele", handle: "@selam_b" },
       bankRef: "FT2630799812",
-      screenshotUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop",
+      screenshotUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205488/estud/products/d0oj33bk0mas5z7m8kws.jpg",
       itemTitle: "Calculus Textbook",
     },
     {
@@ -94,7 +94,7 @@ export default function AdminPaymentsPage() {
       createdAt: "Nov 02, 2026 03:10 PM",
       buyer: { name: "Biniam Girma", handle: "@biniam_g" },
       bankRef: "FT2630129034",
-      screenshotUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop",
+      screenshotUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205488/estud/products/d0oj33bk0mas5z7m8kws.jpg",
       itemTitle: "Wireless Earbuds",
     },
   ];

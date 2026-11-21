@@ -40,10 +40,10 @@ export function MobileUpdateModal() {
     setTimeout(() => {
       setIsUpdating(false);
       setUpdateFinished(true);
-      upgradeAppVersion(serverRelease?.version || "v2.3.4");
+      upgradeAppVersion(serverRelease?.version || "v2.3.5");
       showSuccessToast(
         language === "am" ? "ዝመናው ተጠናቋል!" : "App Upgraded Successfully!",
-        "Estud v2.3.4 SafeTrade & Slate Theme is active"
+        "Estud v2.3.5 SafeTrade & Cloudinary CDN is active"
       );
     }, 1200);
   };

@@ -54,16 +54,17 @@ const liveBroadcastsStore: CampusBroadcast[] = [
 ];
 
 let activeRelease: AppReleaseInfo = {
-  version: "2.3.4",
-  versionCode: 7,
+  version: "2.3.5",
+  versionCode: 8,
   releaseDate: new Date().toISOString(),
-  title: "Estud v2.3.4 Official Brand & Slate Theme Edition",
+  title: "Estud v2.3.5 Cloudinary CDN & High-Performance Fetch Edition",
   releaseNotes: [
-    "Restored Confirmed Soft Slate Dark Theme: Cohesive Slate #0F172A background with #1E293B cards and #38BDF8 sky blue accents",
-    "Official Telebirr & Commercial Bank of Ethiopia (CBE) Brand Logos: Trimmed high-res brand emblems on payment methods",
-    "Direct Backend Server Configuration & Diagnostic Ping on Profile Screen",
-    "Android Cleartext Traffic Enabled: Seamless LAN connectivity to local development server",
-    "Marketplace Security: Strict Verified Student gates for buying and selling, immutable inspection PINs",
+    "100% Cloudinary CDN Assets: All product, lost & found, and payment proof images migrated to reliable high-speed CDN",
+    "High-Performance Database Fetch: In-memory list cache and optimized queries for instant listings loading",
+    "Automated Cloudinary Upload: New mobile listings upload photos directly to Cloudinary",
+    "Restored Soft Slate Dark Theme: Cohesive Slate #0F172A background with #1E293B cards and #38BDF8 accents",
+    "Official Telebirr & CBE Brand Logos on Escrow Payment methods",
+    "Silent Background Version Check: No intrusive update popups interrupting app usage",
   ],
   downloadUrl: "https://expo.dev/artifacts/eas/2yoG7801B6KV_pfgmcNpEXnTGx2Q1TwYva5d-qeVyA8.apk",
   forceUpdate: false,

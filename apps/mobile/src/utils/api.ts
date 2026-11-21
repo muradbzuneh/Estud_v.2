@@ -120,7 +120,7 @@ export async function pingBackendServer(): Promise<{ ok: boolean; statusText: st
   const url = getApiBaseUrl();
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 4000);
+    const timeout = setTimeout(() => controller.abort(), 8000);
     const res = await fetch(
       `${url}/api/trpc/broadcasts.getLatestRelease?batch=1&input=%7B%220%22%3A%7B%22json%22%3Anull%7D%7D`,
       {
@@ -196,7 +196,7 @@ export async function checkoutWithEscrowMobile(payload: MobileCheckoutPayload) {
         bankTransactionReference: payload.bankTransactionReference,
         screenshotUrl:
           payload.screenshotUrl ||
-          "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop",
+          "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205488/estud/products/d0oj33bk0mas5z7m8kws.jpg",
         senderAccountOrPhone: payload.senderAccountOrPhone || "Mobile Student User",
         notes: payload.notes || "Escrow Order submitted from Estud Mobile App",
       },
@@ -278,7 +278,7 @@ export async function fetchLiveProductsMobile(): Promise<MobileProductItem[] | n
     const endpoint = `${baseUrl}/api/trpc/products.list?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22limit%22%3A20%7D%7D%7D`;
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     const response = await fetch(endpoint, {
       signal: controller.signal,
@@ -295,9 +295,9 @@ export async function fetchLiveProductsMobile(): Promise<MobileProductItem[] | n
       return items.map((p: any) => {
         const rawPrice = Number(p.approvedItemValue || p.proposedPrice || 0);
         let img = p.images?.[0]?.imageUrl || p.images?.[0]?.url;
-        // If image is a giant raw base64 string (>50KB), replace with high-res unsplash fallback so mobile remains smooth
+        // If image is a giant raw base64 string (>50KB), replace with high-res Cloudinary fallback
         if (!img || (typeof img === "string" && img.startsWith("data:") && img.length > 50000)) {
-          img = "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&auto=format&fit=crop&q=80";
+          img = "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg";
         }
         return {
           id: p.id,
@@ -330,7 +330,7 @@ export async function fetchLiveBroadcastsMobile(): Promise<CampusBroadcastItem[]
     const endpoint = `${baseUrl}/api/trpc/broadcasts.listLive?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%7D%7D%7D`;
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     const response = await fetch(endpoint, {
       signal: controller.signal,
@@ -360,7 +360,7 @@ export async function fetchLatestReleaseMobile(): Promise<AppReleaseInfo | null>
     const endpoint = `${baseUrl}/api/trpc/broadcasts.getLatestRelease?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%7D%7D%7D`;
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     const response = await fetch(endpoint, {
       signal: controller.signal,

@@ -56,7 +56,7 @@ const MOBILE_PRODUCTS = [
     reviewCount: 120,
     badge: "Best Seller",
     location: "Addis Ababa",
-    imageUrl: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg",
   },
   {
     id: "mob-2",
@@ -69,7 +69,7 @@ const MOBILE_PRODUCTS = [
     reviewCount: 95,
     badge: "Popular",
     location: "Addis Ababa",
-    imageUrl: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205483/estud/products/vmgc9gbcyr8x8w2sej01.jpg",
   },
   {
     id: "mob-3",
@@ -82,7 +82,7 @@ const MOBILE_PRODUCTS = [
     reviewCount: 64,
     badge: "New",
     location: "Hawassa",
-    imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205482/estud/products/gm1mw2kvp0cdxfh0e6ib.jpg",
   },
   {
     id: "mob-4",
@@ -95,7 +95,7 @@ const MOBILE_PRODUCTS = [
     reviewCount: 78,
     badge: "20% OFF",
     location: "Mekelle",
-    imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205485/estud/products/epqmnjm8x3mmsx90yx6f.jpg",
   },
   {
     id: "mob-5",
@@ -108,7 +108,7 @@ const MOBILE_PRODUCTS = [
     reviewCount: 35,
     badge: "Popular",
     location: "ASTU (Adama)",
-    imageUrl: "https://images.unsplash.com/photo-1586401100295-7a8096fd231a?w=500&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205491/estud/products/toucxz480xisroboew86.jpg",
   },
   {
     id: "mob-6",
@@ -121,7 +121,7 @@ const MOBILE_PRODUCTS = [
     reviewCount: 142,
     badge: "Best Seller",
     location: "AAU (4 Kilo)",
-    imageUrl: "https://images.unsplash.com/photo-1587145820266-a5951ee6f620?w=500&auto=format&fit=crop&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205488/estud/products/d0oj33bk0mas5z7m8kws.jpg",
   },
 ];
 

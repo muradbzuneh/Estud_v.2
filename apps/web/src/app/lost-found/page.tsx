@@ -57,7 +57,7 @@ const INITIAL_FALLBACK_ITEMS: LostFoundItem[] = [
     status: "OPEN",
     reporterName: "Campus Gate 1 Rep (Biruk)",
     contactPhone: "+251911223344",
-    imageUrl: "https://images.unsplash.com/photo-1576267423445-b2e0074d68a4?auto=format&fit=crop&w=600&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205482/estud/products/gm1mw2kvp0cdxfh0e6ib.jpg",
   },
   {
     id: "lf-mock-2",
@@ -72,7 +72,7 @@ const INITIAL_FALLBACK_ITEMS: LostFoundItem[] = [
     status: "OPEN",
     reporterName: "Natnael T.",
     contactPhone: "+251922334455",
-    imageUrl: "https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?auto=format&fit=crop&w=600&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205488/estud/products/d0oj33bk0mas5z7m8kws.jpg",
   },
   {
     id: "lf-mock-3",
@@ -87,7 +87,7 @@ const INITIAL_FALLBACK_ITEMS: LostFoundItem[] = [
     status: "OPEN",
     reporterName: "Library Admin Desk",
     contactPhone: "+251933445566",
-    imageUrl: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=600&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205483/estud/products/vmgc9gbcyr8x8w2sej01.jpg",
   },
   {
     id: "lf-mock-4",
@@ -102,7 +102,7 @@ const INITIAL_FALLBACK_ITEMS: LostFoundItem[] = [
     status: "CLAIM_SUBMITTED",
     reporterName: "Abebe G.",
     contactPhone: "+251944556677",
-    imageUrl: "https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=600&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205485/estud/products/epqmnjm8x3mmsx90yx6f.jpg",
   },
   {
     id: "lf-mock-5",
@@ -117,7 +117,7 @@ const INITIAL_FALLBACK_ITEMS: LostFoundItem[] = [
     status: "OPEN",
     reporterName: "Selamawit B.",
     contactPhone: "+251955667788",
-    imageUrl: "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=600&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205486/estud/products/rxwxchigrz0dw3njh8ig.jpg",
   },
   {
     id: "lf-mock-6",
@@ -131,7 +131,7 @@ const INITIAL_FALLBACK_ITEMS: LostFoundItem[] = [
     approximateDate: "Nov 03, 2026",
     status: "VERIFIED_RECOVERED",
     reporterName: "Campus Safe Hub Rep",
-    imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
+    imageUrl: "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205482/estud/products/gm1mw2kvp0cdxfh0e6ib.jpg",
   },
 ];
 
@@ -808,7 +808,7 @@ export default function LostFoundPage() {
               {/* Photo Upload Widget */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-700 dark:text-twilight-200">
-                  Attach Photo (Cloudinary CDN)
+                  Attach Photo
                 </label>
                 <ImageUploader
                   folder="lost-found"
@@ -899,7 +899,7 @@ export default function LostFoundPage() {
                 <textarea
                   rows={3}
                   required
-                  placeholder="Provide identifying proof that only the real owner knows (e.g. Student ID number, device password/wallpaper, unique scratches, contents of wallet/bag)..."
+                  placeholder="Provide identifying proof that only the real owner knows"
                   value={claimProof}
                   onChange={(e) => setClaimProof(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-twilight-900 border border-slate-200 dark:border-twilight-700 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
