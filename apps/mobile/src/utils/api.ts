@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import Constants from "expo-constants";
 import { MobileProductItem } from "../components/MobileProductCard";
 
 export interface MobileCheckoutPayload {
@@ -104,13 +105,25 @@ export function getApiBaseUrl(): string {
     return "http://localhost:3000";
   }
 
-  // If env var is explicitly configured and not localhost on mobile hardware
+  // 1. Auto-detect host from Expo development server / Metro bundler
+  const hostUri =
+    Constants.expoConfig?.hostUri ||
+    (Constants as any).manifest2?.extra?.expoClient?.hostUri ||
+    (Constants as any).manifest?.debuggerHost;
+  if (hostUri) {
+    const host = hostUri.split(":")[0];
+    if (host && host !== "localhost" && host !== "127.0.0.1") {
+      return `http://${host}:3000`;
+    }
+  }
+
+  // 2. If env var is explicitly configured
   if (process.env.EXPO_PUBLIC_API_URL && !process.env.EXPO_PUBLIC_API_URL.includes("localhost")) {
     return normalizeApiUrl(process.env.EXPO_PUBLIC_API_URL);
   }
 
-  // Physical Android/iOS mobile device connects to PC host IP on local Wi-Fi / Hotspot
-  return "http://10.172.204.202:3000";
+  // 3. Fallback to current host IP
+  return "http://192.168.137.26:3000";
 }
 
 /**
