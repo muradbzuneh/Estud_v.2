@@ -327,7 +327,7 @@ export function Navbar({
                       className="flex items-center gap-2 rounded-xl px-3 py-2 text-slate-700 dark:text-twilight-200 hover:bg-slate-50 dark:hover:bg-twilight-750 transition"
                     >
                       <ActivityIcon className="h-3.5 w-3.5 text-slate-400" />
-                      <span>My Activity & Escrow</span>
+                      <span>My Orders & SafeTrade</span>
                     </Link>
 
                     {isAdmin && (

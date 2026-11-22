@@ -223,8 +223,8 @@ export function SellScreen() {
           </Text>
           <Text style={[styles.authRequiredSub, { color: colors.textSecondary }]}>
             {language === "am"
-              ? "የካምፓስ ገበያውን ደህንነትና የኤስክሮው ዋስትና ለመጠበቅ ዕቃዎችን ለመሸጥና ለመለጠፍ የተረጋገጠ የተማሪ መለያ መግባት አለበት።"
-              : "To protect student escrow funds and ensure safety, you must sign in with a verified student account to list items."}
+              ? "የካምፓስ ገበያውን ደህንነትና የገዢዎችን ዋስትና ለመጠበቅ ዕቃዎችን ለመሸጥና ለመለጠፍ የተረጋገጠ የተማሪ መለያ መግባት አለበት።"
+              : "To protect student buyers and ensure safety, you must sign in with a verified student account to list items."}
           </Text>
           <TouchableOpacity
             onPress={() => setAuthModalVisible(true)}
@@ -274,7 +274,7 @@ export function SellScreen() {
               ETB {submittedProduct.price.toLocaleString()}
             </Text>
             <View style={styles.sellerFeeHighlight}>
-              <Text style={styles.sellerFeeHighlightText}>0% Seller Fee - 100% Payout Upon Escrow Release</Text>
+              <Text style={styles.sellerFeeHighlightText}>0% Seller Fee - 100% Payout Upon Handover Release</Text>
             </View>
           </View>
         </Animatable.View>

@@ -142,7 +142,7 @@ export function MobileAuthModal() {
               </Text>
               <Text style={[styles.brandSubtitle, { color: colors.textSecondary }]}>
                 {mode === "signin"
-                  ? (language === "am" ? "የካምፓስ ዕቃዎችን እና የኤስክሮው ፒኖችን ይመልከቱ" : "Access your verified campus escrow listings & pickup PINs")
+                  ? (language === "am" ? "የካምፓስ ዕቃዎችን እና የመቀበያ ፒኖችን ይመልከቱ" : "Access your verified campus listings & pickup PINs")
                   : (language === "am" ? "በኢትዮጵያ ዩኒቨርሲቲዎች ከሚነግዱ በሺዎች የሚቆጠሩ ተማሪዎች ጋር ይቀላቀሉ" : "Join thousands of students trading securely across Ethiopia")}
               </Text>
             </View>
@@ -414,7 +414,7 @@ export function MobileAuthModal() {
               <Text style={[styles.securityText, { color: colors.textSecondary }]}>
                 {language === "am"
                   ? "የካምፓስ ደላላ እና 100% የኤስክሮው ጥበቃ ያለው"
-                  : "Protected by Estud SafeTrade Escrow & Verified Campus ID"}
+                  : "Protected by Estud SafeTrade & Verified Campus ID"}
               </Text>
             </View>
           </ScrollView>

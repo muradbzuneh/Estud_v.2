@@ -27,6 +27,7 @@ import { MobileAuthModal } from "../components/MobileAuthModal";
 import { MobileCampusModal } from "../components/MobileCampusModal";
 import { MobileUpdateModal } from "../components/MobileUpdateModal";
 import { MobileNotificationsModal } from "../components/MobileNotificationsModal";
+import { MobileSidebarDrawer } from "../components/MobileSidebarDrawer";
 import { MobileLostFoundModal } from "../components/MobileLostFoundModal";
 
 import { ExploreScreen } from "./ExploreScreen";
@@ -69,6 +70,7 @@ export function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isSidebarVisible, setSidebarVisible] = useState(false);
 
   const onRefresh = async () => {
     setIsRefreshing(true);
@@ -108,6 +110,7 @@ export function HomeScreen() {
         onNotificationsPress={() => setNotificationsModalVisible(true)}
         onProfilePress={() => setActiveTab("profile")}
         onAuthPress={() => setAuthModalVisible(true)}
+        onMenuPress={() => setSidebarVisible(true)}
       />
 
       {/* Screen Body depending on active tab */}
@@ -269,6 +272,10 @@ export function HomeScreen() {
       />
 
       {/* Global Modals */}
+      <MobileSidebarDrawer
+        visible={isSidebarVisible}
+        onClose={() => setSidebarVisible(false)}
+      />
       <MobileProductDetailModal />
       <MobileAuthModal />
       <MobileUpdateModal />

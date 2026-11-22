@@ -38,7 +38,7 @@ export function ActivityScreen() {
   const handleDispute = (orderNumber: string) => {
     showInfoToast(
       language === "am" ? "የሴፍ ትሬድ የገዢ ዋስትና" : "SafeTrade Buyer Protection",
-      `Order ${orderNumber} is under escrow protection. Contact campus desk.`
+      `Order ${orderNumber} is under buyer protection. Contact campus desk.`
     );
   };
 
@@ -113,8 +113,8 @@ export function ActivityScreen() {
           </Text>
           <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
             {language === "am"
-              ? "በካምፓስ ዕቃዎችን በኤስክሮው ለመግዛት መነሻ ወይም አስስ ገጽን ይመልከቱ።"
-              : "Browse student listings on the Home or Explore tab to buy with safe escrow."}
+              ? "በካምፓስ ዕቃዎችን በሴፍ ትሬድ ጥበቃ ለመግዛት መነሻ ወይም አስስ ገጽን ይመልከቱ።"
+              : "Browse student listings on the Home or Explore tab to buy with buyer protection."}
           </Text>
           <TouchableOpacity
             onPress={() => setActiveTab("home")}
@@ -182,7 +182,7 @@ export function ActivityScreen() {
                   </Text>
                   <Text style={[styles.sellerName, { color: colors.textSecondary }]}>Seller: {order.sellerName}</Text>
                   <Text style={[styles.priceTag, { color: colors.primary }]}>
-                    ETB {order.totalAmount.toLocaleString()} in Escrow
+                    ETB {order.totalAmount.toLocaleString()} Securely Held
                   </Text>
                 </View>
               </View>

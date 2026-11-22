@@ -98,7 +98,7 @@ export function MobileNotificationsModal() {
                   )}
                 </View>
                 <Text style={[styles.subtitle, { color: colors.textMuted }]}>
-                  {language === "am" ? "የቅርብ ጊዜ ዝመናዎች እና የኢስክሮው ማንቂያዎች" : "Recent orders, alerts & campus updates"}
+                  {language === "am" ? "የቅርብ ጊዜ ዝመናዎች እና የክፍያ ማንቂያዎች" : "Recent orders, alerts & campus updates"}
                 </Text>
               </View>
             </View>

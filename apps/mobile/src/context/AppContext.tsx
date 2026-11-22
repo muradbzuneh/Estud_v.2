@@ -296,7 +296,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<AppNotification[]>([
     {
       id: "notif-1",
-      title: "Escrow Payment Under Review",
+      title: "Protected Payment Under Review",
       message: "Admin desk is verifying transfer proof for order EST-84920.",
       time: "10 mins ago",
       type: "escrow",
@@ -329,7 +329,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const colors = getThemeColors(theme);
   const t = translations[language];
-  const [appVersion, setAppVersion] = useState<string>("v2.3.5");
+  const [appVersion, setAppVersion] = useState<string>("v2.4.0");
   const [serverRelease, setServerRelease] = useState<AppReleaseInfo | null>(null);
   const [isUpdateAvailable, setIsUpdateAvailable] = useState<boolean>(false);
 
@@ -425,7 +425,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [refreshLiveProducts, refreshLiveBroadcasts, checkForUpdates]);
 
   const upgradeAppVersion = (newVer?: string) => {
-    const updated = newVer || (serverRelease ? `v${serverRelease.version}` : "v2.3.5");
+    const updated = newVer || (serverRelease ? `v${serverRelease.version}` : "v2.4.0");
     setAppVersion(updated);
     setIsUpdateAvailable(false);
   };
@@ -580,7 +580,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setNotifications((prev) => [
       {
         id: "notif-" + Date.now(),
-        title: language === "am" ? "የክፍያ ማረጋገጫ ተልኳል" : "Escrow Payment Under Review",
+        title: language === "am" ? "የክፍያ ማረጋገጫ ተልኳል" : "Protected Payment Under Review",
         message:
           language === "am"
             ? `ለ${orderData.productTitle} የከፈሉት ማስረጃ በአድሚን እየተገመገመ ነው። ሲፈቀድ መፈተሻ ኮዱ ይከፈታል!`

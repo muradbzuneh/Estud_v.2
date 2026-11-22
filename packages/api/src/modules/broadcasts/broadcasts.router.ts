@@ -25,9 +25,9 @@ export interface AppReleaseInfo {
 // In-memory persistent broadcasts store initialized with official campus news
 const liveBroadcastsStore: CampusBroadcast[] = [
   {
-    id: "bc-update-v231",
-    title: "🚀 Official Estud v2.3.1 Release Available",
-    message: "New version is live with Admin Listing Review, device photo uploads, and payment proofs. Tap to update your app.",
+    id: "bc-update-v240",
+    title: "🚀 Official Estud v2.4.0 Release Available",
+    message: "New version is live with Hamburger Sidebar Menu, SafeTrade Buyer Protection, and cover photo selection.",
     targetAudience: "All Universities & Campuses (Ethiopia Nationwide)",
     priority: "URGENT",
     createdAt: new Date().toISOString(),
@@ -36,7 +36,7 @@ const liveBroadcastsStore: CampusBroadcast[] = [
   {
     id: "bc-1",
     title: "AAU 4 Kilo SafeTrade Hub Open for Inspections",
-    message: "Verified Campus Reps are active at the Science Faculty Safe Desk until 6:00 PM for student escrow inspections.",
+    message: "Verified Campus Reps are active at the Science Faculty Safe Desk until 6:00 PM for student SafeTrade inspections.",
     targetAudience: "All Universities & Campuses (Ethiopia Nationwide)",
     priority: "UPDATE",
     createdAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
@@ -54,17 +54,17 @@ const liveBroadcastsStore: CampusBroadcast[] = [
 ];
 
 let activeRelease: AppReleaseInfo = {
-  version: "2.3.5",
-  versionCode: 8,
+  version: "2.4.0",
+  versionCode: 9,
   releaseDate: new Date().toISOString(),
-  title: "Estud v2.3.5 Cloudinary CDN & High-Performance Fetch Edition",
+  title: "Estud v2.4.0 SafeTrade & Campus Drawer Edition",
   releaseNotes: [
-    "100% Cloudinary CDN Assets: All product, lost & found, and payment proof images migrated to reliable high-speed CDN",
-    "High-Performance Database Fetch: In-memory list cache and optimized queries for instant listings loading",
-    "Automated Cloudinary Upload: New mobile listings upload photos directly to Cloudinary",
-    "Restored Soft Slate Dark Theme: Cohesive Slate #0F172A background with #1E293B cards and #38BDF8 accents",
-    "Official Telebirr & CBE Brand Logos on Escrow Payment methods",
-    "Silent Background Version Check: No intrusive update popups interrupting app usage",
+    "New Hamburger Navigation Drawer: Fast access to categories, orders, campus hubs, and preferences",
+    "100% SafeTrade Buyer Protection: Plain, student-friendly terms replacing confusing financial jargon",
+    "Locked Handover PIN: Protection PIN stays securely locked until Admin approves payment transfer proof",
+    "Customizable Cover Photo: Select any uploaded image as the main catalog cover photo",
+    "Real-Time Notification Hub: View and manage all order, verification, and broadcast alerts",
+    "High-Performance Database Sync: Instant listing and order confirmation with Neon PostgreSQL",
   ],
   downloadUrl: "https://expo.dev/artifacts/eas/ZQm875jEw-NCKYRd8EL_ZSsO9FIs5eV5M-Bvf_CVUNk.apk",
   forceUpdate: false,

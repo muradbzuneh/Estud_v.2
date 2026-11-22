@@ -40,10 +40,10 @@ export function MobileUpdateModal() {
     setTimeout(() => {
       setIsUpdating(false);
       setUpdateFinished(true);
-      upgradeAppVersion(serverRelease?.version || "v2.3.5");
+      upgradeAppVersion(serverRelease?.version || "v2.4.0");
       showSuccessToast(
         language === "am" ? "ዝመናው ተጠናቋል!" : "App Upgraded Successfully!",
-        "Estud v2.3.5 SafeTrade & Cloudinary CDN is active"
+        "Estud v2.4.0 SafeTrade & Campus Drawer Edition is active"
       );
     }, 1200);
   };
@@ -114,7 +114,7 @@ export function MobileUpdateModal() {
                 <Text style={[styles.featureText, { color: colors.textSecondary }]}>
                   {language === "am"
                     ? "የባንክ/ቴሌብር ደረሰኝ ስክሪንሽት ማረጋገጫ (Payment Screenshot Proof)"
-                    : "Bank & Telebirr Transfer Screenshot Proof for trusted escrow release"}
+                    : "Bank & Telebirr Transfer Screenshot Proof for verified payment release"}
                 </Text>
               </View>
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { MapPin, Bell, User, LogIn, ChevronDown, Sparkles } from "lucide-react-native";
+import { MapPin, Bell, User, LogIn, ChevronDown, Sparkles, Menu } from "lucide-react-native";
 import { EstudLogo } from "./EstudLogo";
 import { useApp } from "../context/AppContext";
 
@@ -13,6 +13,7 @@ interface MobileHeaderProps {
   onNotificationsPress?: () => void;
   onProfilePress?: () => void;
   onAuthPress?: () => void;
+  onMenuPress?: () => void;
 }
 
 export function MobileHeader({
@@ -24,15 +25,24 @@ export function MobileHeader({
   onNotificationsPress,
   onProfilePress,
   onAuthPress,
+  onMenuPress,
 }: MobileHeaderProps) {
   const { colors, t, checkForUpdates, isLiveConnected } = useApp();
   const isDark = colors.mode === "dark";
 
   return (
     <View style={[styles.container, { backgroundColor: colors.headerBg, borderBottomColor: colors.border }]}>
-      {/* Left: Official Estud Ribbon Logo */}
+      {/* Left: Hamburger Sidebar Toggle + Official Estud Ribbon Logo */}
       <View style={styles.leftSection}>
-        <EstudLogo size={28} showText={true} variant={isDark ? "dark" : "light"} />
+        <TouchableOpacity
+          onPress={onMenuPress}
+          activeOpacity={0.7}
+          style={styles.menuBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Menu size={22} color={colors.textPrimary} />
+        </TouchableOpacity>
+        <EstudLogo size={26} showText={true} variant={isDark ? "dark" : "light"} />
       </View>
 
       {/* Center: Campus Hub Pill Button */}
@@ -111,6 +121,13 @@ const styles = StyleSheet.create({
   },
   leftSection: {
     flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  menuBtn: {
+    padding: 3,
+    marginRight: 2,
+    justifyContent: "center",
     alignItems: "center",
   },
   campusPill: {

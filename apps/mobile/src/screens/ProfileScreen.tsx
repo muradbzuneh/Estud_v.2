@@ -189,7 +189,7 @@ export function ProfileScreen() {
           <Text style={[styles.guestSubtitle, { color: colors.textSecondary }]}>
             {language === "am"
               ? "የ100% ሴፍ ትሬድ ኤስክሮው ጥበቃን ይክፈቱ እና ዕቃዎችን በካምፓስ ይሽጡ።"
-              : "Unlock 100% SafeTrade Escrow, create campus listings, and track your secret pickup PINs."}
+              : "Unlock 100% SafeTrade Buyer Protection, create campus listings, and track your secret pickup PINs."}
           </Text>
           <TouchableOpacity
             onPress={() => setAuthModalVisible(true)}
@@ -579,7 +579,7 @@ export function ProfileScreen() {
                 {t.safeTradeProtectionGuarantee}
               </Text>
               <Text style={[styles.menuItemSubtitle, { color: colors.textSecondary }]}>
-                Verified Escrow guidelines &bull; 100% Buyer Protection
+                Verified SafeTrade guidelines &bull; 100% Buyer Protection
               </Text>
             </View>
           </View>

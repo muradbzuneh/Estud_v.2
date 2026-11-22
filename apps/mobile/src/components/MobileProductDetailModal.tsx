@@ -85,8 +85,8 @@ export function MobileProductDetailModal() {
       showErrorToast(
         language === "am" ? "መግባት ያስፈልጋል" : "Sign In Required",
         language === "am"
-          ? "ዕቃ በሴፍ ትሬድ ኤስክሮው ለመግዛት እባክዎ አስቀድመው ይግቡ"
-          : "Please sign in with your verified student account to purchase with escrow protection."
+          ? "ዕቃ በሴፍ ትሬድ ለመግዛት እባክዎ አስቀድመው ይግቡ"
+          : "Please sign in with your verified student account to purchase with buyer protection."
       );
       setAuthModalVisible(true);
       return;
@@ -111,7 +111,7 @@ export function MobileProductDetailModal() {
       setScreenshotProof(uri);
       showSuccessToast(
         language === "am" ? "የደረሰኝ ፎቶ ተነስቷል" : "Receipt Photo Captured",
-        "Ready for safe escrow lock"
+        "Ready for payment verification"
       );
     }
   };
@@ -182,7 +182,7 @@ export function MobileProductDetailModal() {
     setCreatedOrderPin(order.secretPin);
 
     showSuccessToast(
-      language === "am" ? "ክፍያዎ ለኤስክሮው ተልኳል!" : "Payment Sent to Escrow Desk!",
+      language === "am" ? "የክፍያ ማረጋገጫ ተልኳል!" : "Payment Sent for Verification!",
       language === "am"
         ? `ማረጋገጫ: ${finalRef} • ዴስክ ኃላፊው አረጋግጦ ፒኑን ያጸናል`
         : `Ref: ${finalRef} • Sent to Admin queue for instant confirmation`
@@ -195,7 +195,7 @@ export function MobileProductDetailModal() {
   };
 
   const currentAccountNumber = paymentMethod === "telebirr" ? "0911 234 567" : "1000 4589 1234 5";
-  const currentAccountName = paymentMethod === "telebirr" ? "ESTUD ESCROW (Telebirr Merchant)" : "ESTUD TECHNOLOGIES PLC (CBE)";
+  const currentAccountName = paymentMethod === "telebirr" ? "ESTUD SAFETRADE (Telebirr Merchant)" : "ESTUD TECHNOLOGIES PLC (CBE)";
 
   return (
     <Modal
@@ -324,7 +324,7 @@ export function MobileProductDetailModal() {
                 />
                 <View style={styles.escrowBadgeTop}>
                   <ShieldCheck size={12} color="#FFFFFF" />
-                  <Text style={styles.escrowBadgeTopText}>100% SafeTrade Escrow</Text>
+                  <Text style={styles.escrowBadgeTopText}>100% SafeTrade Protection</Text>
                 </View>
               </View>
 
@@ -417,12 +417,12 @@ export function MobileProductDetailModal() {
                 </View>
               </View>
 
-              {/* SafeTrade Escrow Protection Guarantee */}
+              {/* SafeTrade Buyer Protection Guarantee */}
               <View style={[styles.guaranteeBox, { backgroundColor: "rgba(16, 185, 129, 0.08)", borderColor: "rgba(16, 185, 129, 0.25)" }]}>
                 <ShieldCheck size={20} color="#10B981" />
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.guaranteeTitle, { color: "#10B981" }]}>
-                    {language === "am" ? "የሴፍ ትሬድ ዋስትና ጥበቃ" : "100% SafeTrade Escrow Protection"}
+                    {language === "am" ? "የሴፍ ትሬድ የገዢ ጥበቃ" : "100% SafeTrade Buyer Protection"}
                   </Text>
                   <Text style={[styles.guaranteeSub, { color: colors.textSecondary }]}>
                     {language === "am"
@@ -452,18 +452,18 @@ export function MobileProductDetailModal() {
                 >
                   <ShieldCheck size={18} color="#FFFFFF" />
                   <Text style={styles.buyBtnText}>
-                    {language === "am" ? "በሴፍ ትሬድ ኤስክሮው ግዛ" : "Buy with SafeTrade Escrow"}
+                    {language === "am" ? "በሴፍ ትሬድ ጥበቃ ግዛ" : "Buy with SafeTrade Protection"}
                   </Text>
                   <ArrowRight size={16} color="#FFFFFF" />
                 </TouchableOpacity>
               </View>
             </ScrollView>
           ) : (
-            /* VIEW 2: SafeTrade Escrow Checkout */
+            /* VIEW 2: SafeTrade Checkout */
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
               <View style={styles.checkoutHeader}>
                 <Text style={[styles.checkoutTitle, { color: colors.textPrimary }]}>
-                  {language === "am" ? "የኤስክሮው ክፍያ ማረጋገጫ" : "SafeTrade Escrow Checkout"}
+                  {language === "am" ? "የተጠበቀ ክፍያ ማረጋገጫ" : "SafeTrade Secure Checkout"}
                 </Text>
                 <Text style={[styles.checkoutSub, { color: colors.textSecondary }]}>
                   {selectedProduct.title} &bull; ETB {itemPrice.toLocaleString()}
@@ -534,7 +534,7 @@ export function MobileProductDetailModal() {
                     <TelebirrLogo size={24} showText={false} />
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.payOptionTitle, { color: colors.textPrimary }]}>Telebirr SuperApp</Text>
-                      <Text style={[styles.payOptionSub, { color: colors.textSecondary }]}>Official Estud Escrow Merchant</Text>
+                      <Text style={[styles.payOptionSub, { color: colors.textSecondary }]}>Official Estud Verified Merchant</Text>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -593,7 +593,7 @@ export function MobileProductDetailModal() {
                 <View style={[styles.accountCard, { backgroundColor: colors.cardElevated, borderColor: colors.border }]}>
                   <View style={styles.accountCardHeader}>
                     <Text style={[styles.accountLabel, { color: colors.textSecondary }]}>
-                      {paymentMethod === "telebirr" ? "Telebirr Merchant Code" : "CBE Escrow Account"}:
+                      {paymentMethod === "telebirr" ? "Telebirr Merchant Code" : "CBE Secure Account"}:
                     </Text>
                     <TouchableOpacity
                       onPress={() => handleCopyAccount(currentAccountNumber)}
@@ -643,7 +643,7 @@ export function MobileProductDetailModal() {
                       </Text>
                       <View style={styles.verifiedTagPill}>
                         <ShieldCheck size={11} color="#10B981" />
-                        <Text style={styles.verifiedTagPillText}>Escrow Proof</Text>
+                        <Text style={styles.verifiedTagPillText}>Payment Proof</Text>
                       </View>
                     </View>
 
@@ -705,7 +705,7 @@ export function MobileProductDetailModal() {
                   <Text style={[styles.breakdownVal, { color: colors.textPrimary }]}>ETB {itemPrice.toLocaleString()}</Text>
                 </View>
                 <View style={styles.breakdownRow}>
-                  <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>Escrow Protection (5%):</Text>
+                  <Text style={[styles.breakdownLabel, { color: colors.textSecondary }]}>Buyer Protection (5%):</Text>
                   <Text style={[styles.breakdownVal, { color: colors.textPrimary }]}>+ETB {escrowFee.toLocaleString()}</Text>
                 </View>
                 {collectionMethod === "runner" && (
@@ -728,7 +728,7 @@ export function MobileProductDetailModal() {
               >
                 <ShieldCheck size={18} color="#FFFFFF" />
                 <Text style={styles.checkoutBtnText}>
-                  Pay ETB {totalAmount.toLocaleString()} (SafeTrade Escrow)
+                  Pay ETB {totalAmount.toLocaleString()} (SafeTrade Protected)
                 </Text>
               </TouchableOpacity>
             </ScrollView>

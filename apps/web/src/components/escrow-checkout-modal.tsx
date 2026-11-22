@@ -156,10 +156,10 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
 
             <div>
               <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Sign In Required to Pay with Escrow
+                Sign In Required for Buyer Protection
               </h3>
               <p className="mt-2 text-xs text-slate-600 dark:text-twilight-300 max-w-sm mx-auto leading-relaxed">
-                Estud SafeTrade Escrow protects your money by holding it securely until you inspect the item. Please sign in to link your order and receive your campus pickup PIN.
+                Estud SafeTrade protects your money by holding it securely until you inspect the item in person. Please sign in to link your order and receive your campus pickup PIN.
               </p>
             </div>
 
@@ -192,10 +192,10 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
             </div>
 
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-              Payment Submitted to Escrow!
+              Payment Submitted for Verification!
             </h3>
             <p className="mt-1.5 text-xs text-slate-600 dark:text-twilight-300 max-w-sm mx-auto">
-              Your payment of <strong className="text-slate-900 dark:text-white">ETB {totalAmount.toLocaleString()}</strong> has been locked in SafeTrade Escrow.
+              Your payment of <strong className="text-slate-900 dark:text-white">ETB {totalAmount.toLocaleString()}</strong> is held securely in SafeTrade Buyer Protection.
             </p>
 
             <div className="my-5 rounded-2xl bg-amber-50 dark:bg-amber-950/25 border border-amber-200/70 dark:border-amber-900/40 p-4 text-left">
@@ -458,10 +458,10 @@ export function EscrowCheckoutModal({ isOpen, onClose, product }: EscrowCheckout
                     {isSubmitting ? (
                       <span className="flex items-center gap-2">
                         <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                        Submitting to Escrow...
+                        Submitting Payment Proof...
                       </span>
                     ) : (
-                      "Confirm & Lock in Escrow"
+                      "Confirm & Lock in SafePay"
                     )}
                   </button>
                 </div>

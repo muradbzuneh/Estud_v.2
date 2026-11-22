@@ -2,7 +2,7 @@
   "expo": {
     "name": "Estud",
     "slug": "estud-monorepo",
-    "version": "2.3.5",
+    "version": "2.4.0",
     "orientation": "portrait",
     "icon": "./assets/logos/estud-app-icon-dark.jpg",
     "userInterfaceStyle": "automatic",
@@ -17,7 +17,7 @@
     },
     "android": {
       "package": "com.muradbzuneh.estudmonorepo",
-      "versionCode": 8,
+      "versionCode": 9,
       "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/logos/estud-app-icon-dark.jpg",

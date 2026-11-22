@@ -119,10 +119,10 @@ export const translations: Record<Language, Translations> = {
     heroTitle1: "Campus",
     heroTitle2: "Marketplace",
     heroTitleAccent: "Verified.",
-    heroSubtitle: "Buy, sell & trade safely with campus escrow.",
+    heroSubtitle: "Buy, sell & trade safely with campus buyer protection.",
     heroExploreBtn: "Explore",
     heroSellBtn: "Sell",
-    heroFeature1: "SafeTrade Escrow Protection",
+    heroFeature1: "SafeTrade Buyer Protection",
     heroFeature2: "Campus Intermediary Desks",
     heroFeature3: "0% Seller Fee • 100% Cash",
 
@@ -135,7 +135,7 @@ export const translations: Record<Language, Translations> = {
     catDorm: "Dorm",
     catMore: "More",
 
-    trustEscrowTitle: "Escrow Protection",
+    trustEscrowTitle: "Buyer Protection",
     trustEscrowSub: "Funds held safely until inspection",
     trustHubTitle: "Campus Hubs",
     trustHubSub: "Safe in-person pickup desks",
@@ -151,7 +151,7 @@ export const translations: Record<Language, Translations> = {
     sortTopRated: "Top Rated",
     itemsCount: "items",
 
-    sellBannerText: "0% Seller Fee • 100% Cash via SafeTrade Escrow",
+    sellBannerText: "0% Seller Fee • 100% Cash via SafeTrade",
     sellTitle: "List Item",
     sellSubtitle: "Post verified campus essentials for fellow students",
     step1Photo: "Photos",
@@ -168,8 +168,8 @@ export const translations: Record<Language, Translations> = {
     barterToggleSub: "Open for exchanges",
     submitListingBtn: "Submit Listing",
 
-    activityTitle: "Escrow Orders",
-    activitySubtitle: "Track active trades & inspection PINs",
+    activityTitle: "Protected Orders",
+    activitySubtitle: "Track active trades & pickup PINs",
     tabActiveEscrow: "Active",
     tabCompletedEscrow: "Completed",
     secretPinTitle: "Inspection PIN",
@@ -178,7 +178,7 @@ export const translations: Record<Language, Translations> = {
     btnReportIssue: "Report Issue",
 
     profileTitle: "Profile",
-    trustScoreLabel: "Escrow Trust Score",
+    trustScoreLabel: "SafeTrade Trust Score",
     safeTradesLabel: "Safe Trades",
     savedItemsLabel: "Saved Items",
     savedListingsTitle: "Saved Listings",
@@ -213,7 +213,7 @@ export const translations: Record<Language, Translations> = {
     heroSubtitle: "በሴፍ ትሬድ ዋስትና በደህንነት ይግዙ፣ ይሽጡ እና ይለውጡ።",
     heroExploreBtn: "ያስሱ",
     heroSellBtn: "ይሽጡ",
-    heroFeature1: "የሴፍ ትሬድ ዋስትና ጥበቃ",
+    heroFeature1: "የሴፍ ትሬድ የገዢ ጥበቃ",
     heroFeature2: "የካምፓስ ደላላ ዴስኮች",
     heroFeature3: "0% የሻጭ ክፍያ • 100% ገንዘብ",
 
@@ -226,8 +226,8 @@ export const translations: Record<Language, Translations> = {
     catDorm: "ዶርም",
     catMore: "ተጨማሪ",
 
-    trustEscrowTitle: "የዋስትና ጥበቃ",
-    trustEscrowSub: "ዕቃው እስኪፈተሽ ድረስ ገንዘብ ደህንነቱ የተጠበቀ ነው",
+    trustEscrowTitle: "የተጠበቀ ክፍያ",
+    trustEscrowSub: "ዕቃው በአካል እስኪፈተሽ ድረስ ክፍያው ደህንነቱ የተጠበቀ ነው",
     trustHubTitle: "የካምፓስ ዴስኮች",
     trustHubSub: "በአካል ተገናኝተው ለመረከብ",
     featuredTitle: "ተመራጭ ዕቃዎች",
@@ -259,8 +259,8 @@ export const translations: Record<Language, Translations> = {
     barterToggleSub: "ለልውውጥ ክፍት ነው",
     submitListingBtn: "ይለጥፉ",
 
-    activityTitle: "የትዕዛዝ እንቅስቃሴ",
-    activitySubtitle: "ንቁ ግብይቶች እና ሚስጥራዊ ፒን",
+    activityTitle: "የተጠበቁ ትዕዛዞች",
+    activitySubtitle: "የተጠበቁ ግብይቶች እና የመቀበያ ፒን",
     tabActiveEscrow: "በሂደት ላይ",
     tabCompletedEscrow: "የተጠናቀቁ",
     secretPinTitle: "የመፈተሻ ፒን",

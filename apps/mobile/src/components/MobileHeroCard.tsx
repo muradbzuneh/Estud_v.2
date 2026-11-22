@@ -101,7 +101,7 @@ export function MobileHeroCard({ onExplorePress, onSellPress }: MobileHeroCardPr
                 <ShieldCheck size={26} color="#FE9901" />
               </View>
               <Text style={styles.trustBadgeTitle}>SafeTrade</Text>
-              <Text style={styles.trustBadgeDesc}>100% Escrow Protection</Text>
+              <Text style={styles.trustBadgeDesc}>100% Buyer Protection</Text>
               <View style={styles.trustMiniPill}>
                 <CheckCircle2 size={10} color="#10B981" />
                 <Text style={styles.trustMiniPillText}>0% Seller Fee</Text>

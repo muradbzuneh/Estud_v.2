@@ -5,8 +5,8 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
 export const metadata = {
-  title: "Terms of Escrow Service | Estud Ethiopian Campus Marketplace",
-  description: "Official terms governing campus escrow payments, physical inspection PIN release, and dispute resolution.",
+  title: "Terms of SafeTrade Service | Estud Ethiopian Campus Marketplace",
+  description: "Official terms governing campus SafeTrade payments, physical inspection PIN release, and dispute resolution.",
 };
 
 export default function TermsOfServicePage() {
@@ -30,7 +30,7 @@ export default function TermsOfServicePage() {
             Binding Campus Agreement
           </div>
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Terms of Escrow Service
+            Terms of SafeTrade Service
           </h1>
           <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
             Last updated: November 2026 • Governing all student-to-student transactions across Ethiopian university hubs.
@@ -41,10 +41,10 @@ export default function TermsOfServicePage() {
         <div className="space-y-8 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Scale className="h-5 w-5 text-brand-500" /> 1. Campus Escrow Architecture
+              <Scale className="h-5 w-5 text-brand-500" /> 1. Campus SafeTrade Architecture
             </h2>
             <p>
-              Estud operates a dedicated campus escrow intermediary framework. When a buyer places an order and submits payment via Telebirr or Commercial Bank of Ethiopia (CBE), funds are held in secure escrow custody until the item is physically verified at an authorized campus hub.
+              Estud operates a dedicated campus SafeTrade buyer protection framework. When a buyer places an order and submits payment via Telebirr or Commercial Bank of Ethiopia (CBE), funds are held in secure protection custody until the item is physically verified at an authorized campus hub.
             </p>
           </section>
 
@@ -57,7 +57,7 @@ export default function TermsOfServicePage() {
             </p>
             <ul className="list-disc pl-5 space-y-2">
               <li>
-                <strong>Lock Rule:</strong> Neither buyer nor seller may release escrow funds or mark an order completed before administrator payment verification is finalized.
+                <strong>Lock Rule:</strong> Neither buyer nor seller may release protected funds or mark an order completed before administrator payment verification is finalized.
               </li>
               <li>
                 <strong>Physical Inspection:</strong> The buyer has 48 hours to inspect the item in person at the campus hub.
@@ -77,7 +77,7 @@ export default function TermsOfServicePage() {
             </p>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong>0% Seller Fees:</strong> University students list and sell items with zero commission deducted from listing revenue.</li>
-              <li><strong>Transparent Buyer Escrow Protection Fee:</strong> An optional 5% protection fee guarantees intermediary hub storage, anti-theft screening, and immediate refund if an item fails specification.</li>
+              <li><strong>Transparent Buyer Protection Fee:</strong> An optional 5% protection fee guarantees intermediary hub storage, anti-theft screening, and immediate refund if an item fails specification.</li>
             </ul>
           </section>
 
@@ -86,7 +86,7 @@ export default function TermsOfServicePage() {
               <ShieldAlert className="h-5 w-5 text-red-500" /> 4. Dispute &amp; Rejection Protocol
             </h2>
             <p>
-              If an item fails physical inspection (e.g., undisclosed laptop battery defect or broken textbook spine), the buyer reports rejection directly at the hub desk. Escrow funds are refunded in full to the buyer's original payment account within 24 business hours.
+              If an item fails physical inspection (e.g., undisclosed laptop battery defect or broken textbook spine), the buyer reports rejection directly at the hub desk. Protected funds are refunded in full to the buyer's original payment account within 24 business hours.
             </p>
           </section>
 
@@ -96,8 +96,8 @@ export default function TermsOfServicePage() {
             </h2>
             <p>
               These terms are governed by the commercial and consumer protection codes of the Federal Democratic Republic of Ethiopia. For support, contact{" "}
-              <a href="mailto:escrow@estud.et" className="text-brand-600 dark:text-brand-400 font-semibold underline">
-                escrow@estud.et
+              <a href="mailto:support@estud.et" className="text-brand-600 dark:text-brand-400 font-semibold underline">
+                support@estud.et
               </a>{" "}
               or contact your campus hub representative.
             </p>
