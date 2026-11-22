@@ -100,10 +100,14 @@ export class OrdersService {
   }
 
   async checkoutWithEscrow(buyerId: string, input: z.infer<typeof checkoutWithEscrowSchema>) {
-    // 1. Find product (with fallback for mobile demo IDs like prod-1)
-    let product = await this.db.query.products.findFirst({
-      where: eq(products.id, input.productId),
-    });
+    // 1. Find product (with resilient fallback for mobile demo IDs or invalid UUIDs)
+    const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    let product = null;
+    if (input.productId && UUID_REGEX.test(input.productId)) {
+      product = await this.db.query.products.findFirst({
+        where: eq(products.id, input.productId),
+      });
+    }
 
     if (!product) {
       // Find first approved listing in database so mobile orders always persist cleanly

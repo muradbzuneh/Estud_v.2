@@ -131,23 +131,38 @@ export class ProductsService {
       });
     }
 
-    // 2. Resolve Category (by slug or UUID)
+    // 2. Resolve Category (by slug or UUID with robust synonym mapping)
+    const normalizedCat = input.category.toLowerCase().trim();
+    const mappedCategorySlug =
+      normalizedCat.includes("laptop") || normalizedCat.includes("phone") || normalizedCat.includes("electronic")
+        ? "electronics"
+        : normalizedCat.includes("book")
+        ? "books"
+        : normalizedCat.includes("fashion") || normalizedCat.includes("wear") || normalizedCat.includes("gear")
+        ? "fashion"
+        : normalizedCat.includes("dorm") || normalizedCat.includes("sport")
+        ? "dorm"
+        : normalizedCat.includes("stat")
+        ? "stationery"
+        : normalizedCat.includes("perfume")
+        ? "perfume"
+        : normalizedCat.includes("food")
+        ? "food"
+        : normalizedCat;
+
+    const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     let category = await this.db.query.categories.findFirst({
       where: or(
-        eq(categories.slug, input.category.toLowerCase()),
+        eq(categories.slug, mappedCategorySlug),
+        eq(categories.slug, normalizedCat),
         ilike(categories.name, `%${input.category}%`)
       ),
     });
 
-    if (!category) {
-      // Try by UUID
-      try {
-        category = await this.db.query.categories.findFirst({
-          where: eq(categories.id, input.category as any),
-        });
-      } catch {
-        // Not a UUID
-      }
+    if (!category && UUID_REGEX.test(input.category)) {
+      category = await this.db.query.categories.findFirst({
+        where: eq(categories.id, input.category as any),
+      });
     }
 
     if (!category) {

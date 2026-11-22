@@ -110,7 +110,7 @@ export function getApiBaseUrl(): string {
   }
 
   // Physical Android/iOS mobile device connects to PC host IP on local Wi-Fi / Hotspot
-  return "http://10.172.204.191:3000";
+  return "http://10.172.204.202:3000";
 }
 
 /**
@@ -274,8 +274,8 @@ export async function submitProductMobile(payload: MobileProductSubmissionPayloa
 export async function fetchLiveProductsMobile(): Promise<MobileProductItem[] | null> {
   try {
     const baseUrl = getApiBaseUrl();
-    // Valid empty input object with limit 20 so zod parses cleanly
-    const endpoint = `${baseUrl}/api/trpc/products.list?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22limit%22%3A20%7D%7D%7D`;
+    // Valid input object with limit 50 so all live catalog listings load
+    const endpoint = `${baseUrl}/api/trpc/products.list?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22limit%22%3A50%7D%7D%7D`;
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -286,7 +286,10 @@ export async function fetchLiveProductsMobile(): Promise<MobileProductItem[] | n
     });
     clearTimeout(timeoutId);
 
-    if (!response.ok) return null;
+    if (!response.ok) {
+      console.warn(`[Mobile API] fetchLiveProducts HTTP ${response.status}`);
+      return null;
+    }
 
     const data = await response.json();
     const items = data?.[0]?.result?.data?.json?.items;
@@ -299,24 +302,28 @@ export async function fetchLiveProductsMobile(): Promise<MobileProductItem[] | n
         if (!img || (typeof img === "string" && img.startsWith("data:") && img.length > 50000)) {
           img = "https://res.cloudinary.com/dyq706cyi/image/upload/v1795205480/estud/products/i1rk4m8ywq8mccyfzuv1.jpg";
         }
+        let categorySlug = p.category?.slug || "general";
+        if (categorySlug === "electronics") {
+          categorySlug = "laptops";
+        }
         return {
           id: p.id,
           title: p.title,
-          category: p.category?.slug || "general",
-          condition: p.condition ? p.condition.replace("_", " ") : "Used • Good",
+          category: categorySlug,
+          condition: p.condition ? p.condition.replace(/_/g, " ") : "Used • Good",
           price: rawPrice,
           originalPrice: Math.round(rawPrice * 1.25),
           rating: 4.9,
           reviewCount: Math.floor(18 + Math.random() * 80),
           badge: (p.isExchangeEligible ? "Popular" : "New") as "Popular" | "New",
-          location: p.campus?.name || "Campus Safe Trade Hub",
+          location: p.campus?.name || p.institution?.name || "Campus Safe Trade Hub",
           imageUrl: img,
           sellerName: "Campus Verified Seller",
         };
       });
     }
-  } catch (err) {
-    console.warn("[Mobile API] fetchLiveProducts note:", err);
+  } catch (err: any) {
+    console.warn("[Mobile API] fetchLiveProducts note:", err?.message || err);
   }
   return null;
 }
