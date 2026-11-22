@@ -30,6 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/trpc/client";
+import { AdminPageWrapper } from "@/components/admin/page-wrapper";
 
 export default function AdminPaymentsPage() {
   const [activeTab, setActiveTab] = React.useState<"ALL" | "SUBMITTED" | "VERIFIED" | "REJECTED">("ALL");
@@ -128,28 +129,16 @@ export default function AdminPaymentsPage() {
     : fallbackPayments;
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
-      {/* Title & Breadcrumb */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shadow-sm">
-            <CreditCard className="h-5 w-5" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">Payment Verification Queue</h1>
-            <p className="text-xs text-muted-foreground">
-              Review and verify Telebirr & CBE bank transfer receipts for escrow orders
-            </p>
-          </div>
-        </div>
-
-        {/* Breadcrumb */}
-        <div className="text-xs text-muted-foreground flex items-center gap-1.5 font-medium">
-          <span className="hover:text-foreground cursor-pointer">Operations</span>
-          <span>/</span>
-          <span className="text-foreground">Payments</span>
-        </div>
-      </div>
+    <AdminPageWrapper
+      title="Payment Verification Queue"
+      subtitle="Review and verify Telebirr & CBE bank transfer receipts before releasing escrow PINs"
+      icon={CreditCard}
+      badge="Escrow Queue"
+      breadcrumbs={[
+        { label: "Operations", href: "/admin/operations/payments" },
+        { label: "Payments" },
+      ]}
+    >
 
       {/* Metric Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -434,6 +423,6 @@ export default function AdminPaymentsPage() {
           </div>
         </div>
       )}
-    </div>
+    </AdminPageWrapper>
   );
 }

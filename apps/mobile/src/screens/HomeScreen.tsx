@@ -26,6 +26,7 @@ import { MobileProductDetailModal } from "../components/MobileProductDetailModal
 import { MobileAuthModal } from "../components/MobileAuthModal";
 import { MobileCampusModal } from "../components/MobileCampusModal";
 import { MobileUpdateModal } from "../components/MobileUpdateModal";
+import { MobileNotificationsModal } from "../components/MobileNotificationsModal";
 import { MobileLostFoundModal } from "../components/MobileLostFoundModal";
 
 import { ExploreScreen } from "./ExploreScreen";
@@ -61,6 +62,8 @@ export function HomeScreen() {
     isUpdateAvailable,
     serverRelease,
     setUpdateModalVisible,
+    unreadNotificationsCount,
+    setNotificationsModalVisible,
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -98,11 +101,11 @@ export function HomeScreen() {
       {/* Persistent Top Mobile Header */}
       <MobileHeader
         campusName={currentCampus.split("(")[0].trim()}
-        unreadCount={activeOrdersCount}
+        unreadCount={unreadNotificationsCount}
         isAuthenticated={isAuthenticated}
         avatarUrl={user?.avatarUrl}
         onCampusPress={() => setCampusModalVisible(true)}
-        onNotificationsPress={() => setActiveTab("activity")}
+        onNotificationsPress={() => setNotificationsModalVisible(true)}
         onProfilePress={() => setActiveTab("profile")}
         onAuthPress={() => setAuthModalVisible(true)}
       />
@@ -269,6 +272,7 @@ export function HomeScreen() {
       <MobileProductDetailModal />
       <MobileAuthModal />
       <MobileUpdateModal />
+      <MobileNotificationsModal />
       <MobileLostFoundModal
         visible={isLostFoundModalVisible}
         onClose={() => setLostFoundModalVisible(false)}

@@ -41,6 +41,7 @@ import {
   ProductValuationModal,
   type ValuationModalProduct,
 } from "@/components/admin/product-valuation-modal";
+import { AdminPageWrapper } from "@/components/admin/page-wrapper";
 
 export default function AdminListingsPage() {
   const [activeTab, setActiveTab] = React.useState<"ALL" | "PENDING_REVIEW" | "ARCHIVED" | "PUBLISHED">("ALL");
@@ -63,6 +64,15 @@ export default function AdminListingsPage() {
   const [addUrlInput, setAddUrlInput] = React.useState("");
   const [addStatus, setAddStatus] = React.useState<"APPROVED" | "PENDING_VALUATION">("APPROVED");
   const [addIsExchange, setAddIsExchange] = React.useState(true);
+
+  const resetAddForm = () => {
+    setAddTitle("");
+    setAddPrice("");
+    setAddDescription("");
+    setAddImages([]);
+    setAddUrlInput("");
+    setIsAddModalOpen(false);
+  };
 
   // File upload and image ordering handler
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -243,26 +253,25 @@ export default function AdminListingsPage() {
   }));
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
-      {/* Title & Breadcrumb */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shadow-sm">
-            <Package className="h-5 w-5" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">Listings & Products</h1>
-            <p className="text-xs text-muted-foreground">Manage all marketplace items and listings</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span>/</span>
-          <span>Marketplace</span>
-          <span>/</span>
-          <span className="text-foreground font-medium">Listings</span>
-        </div>
-      </div>
+    <AdminPageWrapper
+      title="Listings & Products"
+      subtitle="Manage all marketplace items, seller submissions and catalog valuation"
+      icon={Package}
+      badge="Live Sync"
+      breadcrumbs={[
+        { label: "Marketplace", href: "/admin/marketplace/listings" },
+        { label: "Listings" },
+      ]}
+      actions={
+        <Button
+          onClick={() => setIsAddModalOpen(true)}
+          className="h-9 gap-1.5 text-xs font-semibold shadow-xs cursor-pointer"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Add Item</span>
+        </Button>
+      }
+    >
 
       {/* 4 Top Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -584,7 +593,7 @@ export default function AdminListingsPage() {
                 <Plus className="w-5 h-5 text-primary" /> Add New Marketplace Item
               </h3>
               <button
-                onClick={() => setIsAddModalOpen(false)}
+                onClick={resetAddForm}
                 className="p-1 rounded-lg text-muted-foreground hover:bg-muted"
               >
                 <X className="w-4 h-4" />
@@ -799,7 +808,7 @@ export default function AdminListingsPage() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setIsAddModalOpen(false)}
+                  onClick={resetAddForm}
                 >
                   Cancel
                 </Button>
@@ -933,6 +942,6 @@ export default function AdminListingsPage() {
           </div>
         </div>
       )}
-    </div>
+    </AdminPageWrapper>
   );
 }

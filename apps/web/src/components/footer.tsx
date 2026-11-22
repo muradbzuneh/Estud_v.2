@@ -122,9 +122,9 @@ export function Footer() {
             &copy; {new Date().getFullYear()} {t("footer.copyright")}
           </div>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-brand-600 dark:hover:text-brand-400">Privacy Policy</a>
-            <a href="#" className="hover:text-brand-600 dark:hover:text-brand-400">Terms of Escrow Service</a>
-            <a href="#" className="hover:text-brand-600 dark:hover:text-brand-400">Campus Agent Support</a>
+            <Link href="/privacy" className="hover:text-brand-600 dark:hover:text-brand-400">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-brand-600 dark:hover:text-brand-400">Terms of Escrow Service</Link>
+            <Link href="/lost-found" className="hover:text-brand-600 dark:hover:text-brand-400">Campus Agent Support</Link>
           </div>
         </div>
       </div>

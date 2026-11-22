@@ -95,6 +95,21 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
   const [isSuccess, setIsSuccess] = useState(false);
   const [unregisteredPrompt, setUnregisteredPrompt] = useState(false);
 
+  const clearInputs = () => {
+    setName("");
+    setEmail("");
+    setPhoneNumber("");
+    setPassword("");
+    setError(null);
+    setFieldErrors({});
+    setUnregisteredPrompt(false);
+  };
+
+  const handleClose = () => {
+    clearInputs();
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   const handleGoogleSignIn = async () => {
@@ -245,6 +260,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
             return;
           }
 
+          clearInputs();
           onClose();
           router.push("/admin");
           return;
@@ -266,6 +282,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
           return;
         }
 
+        clearInputs();
         onClose();
         if (callbackUrl && !callbackUrl.startsWith("/admin")) {
           router.push(callbackUrl as any);
@@ -293,7 +310,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
 
         {/* Close Button */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute right-5 top-5 p-2 rounded-full text-slate-400 dark:text-twilight-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-twilight-800 transition cursor-pointer"
         >
           <X className="h-5 w-5" />
@@ -310,7 +327,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "signin" }: AuthModal
             </p>
             <button
               onClick={() => {
-                onClose();
+                handleClose();
                 if (callbackUrl) router.push(callbackUrl as any);
               }}
               className="mt-6 w-full rounded-xl bg-gradient-to-r from-[#FF8738] via-[#FE9901] to-[#FFA05F] hover:from-[#FE9901] hover:to-[#FF8738] py-3 text-xs font-bold text-[#07152B] shadow-md shadow-[#FF8738]/25 hover:shadow-lg hover:shadow-[#FF8738]/35 transition cursor-pointer"

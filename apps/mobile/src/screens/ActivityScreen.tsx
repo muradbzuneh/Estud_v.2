@@ -24,7 +24,7 @@ import { useApp } from "../context/AppContext";
 import { showSuccessToast, showInfoToast } from "../utils/toast";
 
 export function ActivityScreen() {
-  const { orders, completeOrder, setActiveTab, colors, t, language } = useApp();
+  const { orders, completeOrder, approveOrderPayment, setActiveTab, colors, t, language } = useApp();
   const [filter, setFilter] = useState<"active" | "completed">("active");
 
   const activeOrders = orders.filter((o) => o.status !== "completed");
@@ -147,17 +147,27 @@ export function ActivityScreen() {
                     styles.statusBadge,
                     isCompleted
                       ? { backgroundColor: isDark ? "rgba(16, 185, 129, 0.2)" : "#ECFDF5", borderColor: "#A7F3D0" }
+                      : order.status === "payment_pending"
+                      ? { backgroundColor: isDark ? "rgba(245, 158, 11, 0.15)" : "#FEF3C7", borderColor: "#F59E0B" }
                       : { backgroundColor: colors.primaryLight, borderColor: colors.primary },
                   ]}
                 >
                   <Text
                     style={[
                       styles.statusBadgeText,
-                      { color: isCompleted ? "#10B981" : colors.primary },
+                      {
+                        color: isCompleted
+                          ? "#10B981"
+                          : order.status === "payment_pending"
+                          ? "#D97706"
+                          : colors.primary,
+                      },
                     ]}
                   >
                     {isCompleted
                       ? (language === "am" ? "መረከብ ተጠናቋል" : "Handover Completed")
+                      : order.status === "payment_pending"
+                      ? (language === "am" ? "የአድሚን ማረጋገጫ በመጠባበቅ ላይ" : "Admin Review Pending")
                       : (language === "am" ? "ለመፈተሽ ዝግጁ ነው" : "Ready for Inspection")}
                   </Text>
                 </View>
@@ -167,7 +177,7 @@ export function ActivityScreen() {
               <View style={styles.productRow}>
                 <Image source={{ uri: order.imageUrl }} style={styles.productThumb} />
                 <View style={styles.productInfo}>
-                  <Text style={[styles.productTitle, { color: colors.textPrimary }]} numberOfLines={2}>
+                  <Text style={[styles.productTitle, { color: colors.textPrimary }]}>
                     {order.productTitle}
                   </Text>
                   <Text style={[styles.sellerName, { color: colors.textSecondary }]}>Seller: {order.sellerName}</Text>
@@ -185,8 +195,67 @@ export function ActivityScreen() {
                 </Text>
               </View>
 
-              {/* Secret 4-Digit PIN Box with Animation & Expiration */}
-              {!isCompleted ? (
+              {/* PIN Box: Locked when awaiting Admin, Unlocked when Ready for Inspection */}
+              {isCompleted ? (
+                <View style={styles.completedNoticeBox}>
+                  <CheckCircle2 size={16} color="#10B981" />
+                  <Text style={styles.completedNoticeText}>
+                    {language === "am"
+                      ? "ክፍያው ለሻጩ ተለቋል። በደህንነት ስለነገዱ እናመሰግናለን!"
+                      : "Payout released to seller. Thank you for trading safely!"}
+                  </Text>
+                </View>
+              ) : order.status === "payment_pending" ? (
+                <View
+                  style={[
+                    styles.pinCard,
+                    {
+                      backgroundColor: isDark ? "rgba(245, 158, 11, 0.1)" : "#FFFBEB",
+                      borderColor: "#F59E0B",
+                    },
+                  ]}
+                >
+                  <View style={styles.pinHeader}>
+                    <View style={styles.pinHeaderLeft}>
+                      <Lock size={15} color="#F59E0B" />
+                      <Text style={[styles.pinHeaderTitle, { color: "#D97706" }]}>
+                        {language === "am" ? "መፈተሻ ፒን ተቆልፏል" : "Inspection PIN Locked"}
+                      </Text>
+                    </View>
+                    <View style={[styles.immutableBadge, { backgroundColor: "rgba(245, 158, 11, 0.15)", borderColor: "#F59E0B" }]}>
+                      <Clock size={11} color="#D97706" />
+                      <Text style={[styles.immutableBadgeText, { color: "#D97706" }]}>
+                        {language === "am" ? "በግምገማ ላይ" : "Verifying Slip"}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Text style={[styles.pinNotice, { color: colors.textSecondary, marginTop: 4 }]}>
+                    {language === "am"
+                      ? `የካምፓስ አድሚኑ የ${order.paymentMethod?.toUpperCase() || "ክፍያ"} ማስረጃዎን እያረጋገጠ ነው። ክፍያው እንደተረጋገጠ ሚስጥራዊ ፒኑ ወዲያውኑ ይከፈታል።`
+                      : `Campus Admin is confirming your ${order.paymentMethod?.toUpperCase() || "payment"} transfer receipt. PIN will unlock once approved.`}
+                  </Text>
+
+                  {/* Fast Admin Approval Simulation for Testing */}
+                  <TouchableOpacity
+                    onPress={() => approveOrderPayment(order.id)}
+                    style={{
+                      marginTop: 10,
+                      alignSelf: "flex-start",
+                      paddingHorizontal: 10,
+                      paddingVertical: 5,
+                      borderRadius: 8,
+                      backgroundColor: isDark ? "rgba(245, 158, 11, 0.2)" : "#FEF3C7",
+                      borderWidth: 1,
+                      borderColor: "#F59E0B",
+                    }}
+                  >
+                    <Text style={{ fontSize: 10, fontWeight: "800", color: "#D97706" }}>
+                      ⚡ {language === "am" ? "አድሚን ክፍያውን አጽድቅ (ሙከራ)" : "Simulate Admin Approval"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
                 <Animatable.View
                   animation="pulse"
                   iterationCount="infinite"
@@ -209,7 +278,7 @@ export function ActivityScreen() {
                     <View style={styles.immutableBadge}>
                       <ShieldCheck size={11} color="#10B981" />
                       <Text style={styles.immutableBadgeText}>
-                        {language === "am" ? "የማይለወጥ ማስረጃ" : "Immutable"}
+                        {language === "am" ? "የማይለወጥ ማስረጃ" : "Verified & Active"}
                       </Text>
                     </View>
                   </View>
@@ -227,28 +296,33 @@ export function ActivityScreen() {
                     {t.secretPinNotice}
                   </Text>
                 </Animatable.View>
-              ) : (
-                <View style={styles.completedNoticeBox}>
-                  <CheckCircle2 size={16} color="#10B981" />
-                  <Text style={styles.completedNoticeText}>
-                    {language === "am"
-                      ? "ክፍያው ለሻጩ ተለቋል። በደህንነት ስለነገዱ እናመሰግናለን!"
-                      : "Payout released to seller. Thank you for trading safely!"}
-                  </Text>
-                </View>
               )}
 
-              {/* Action Buttons */}
+              {/* Action Buttons: Only active when Ready for Inspection */}
               {!isCompleted && (
                 <View style={styles.actionBtnRow}>
-                  <TouchableOpacity
-                    onPress={() => handleConfirmInspection(order.id, order.orderNumber)}
-                    activeOpacity={0.88}
-                    style={[styles.confirmInspectBtn, { backgroundColor: colors.primary }]}
-                  >
-                    <CheckCircle2 size={15} color="#FFFFFF" />
-                    <Text style={styles.confirmInspectBtnText}>{t.btnConfirmInspection}</Text>
-                  </TouchableOpacity>
+                  {order.status === "ready_inspection" ? (
+                    <TouchableOpacity
+                      onPress={() => handleConfirmInspection(order.id, order.orderNumber)}
+                      activeOpacity={0.88}
+                      style={[styles.confirmInspectBtn, { backgroundColor: colors.primary }]}
+                    >
+                      <CheckCircle2 size={15} color="#FFFFFF" />
+                      <Text style={styles.confirmInspectBtnText}>{t.btnConfirmInspection}</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <View
+                      style={[
+                        styles.confirmInspectBtn,
+                        { backgroundColor: isDark ? colors.cardElevated : "#E2E8F0", opacity: 0.7 },
+                      ]}
+                    >
+                      <Clock size={14} color={colors.textMuted} />
+                      <Text style={[styles.confirmInspectBtnText, { color: colors.textMuted }]}>
+                        {language === "am" ? "ክፍያ እስኪረጋገጥ መጠበቅ" : "Awaiting Admin Verification"}
+                      </Text>
+                    </View>
+                  )}
 
                   <TouchableOpacity
                     onPress={() => handleDispute(order.orderNumber)}

@@ -64,6 +64,7 @@ export function SellScreen() {
   const [isBarterOpen, setIsBarterOpen] = useState(false);
   const [barterPreference, setBarterPreference] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
+  const [coverIndex, setCoverIndex] = useState<number>(0);
   const [submittedProduct, setSubmittedProduct] = useState<any | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -128,6 +129,11 @@ export function SellScreen() {
 
   const handleRemovePhoto = (index: number) => {
     setPhotos(photos.filter((_, i) => i !== index));
+    if (coverIndex === index) {
+      setCoverIndex(0);
+    } else if (coverIndex > index) {
+      setCoverIndex(coverIndex - 1);
+    }
   };
 
   const handleSubmit = async () => {
@@ -163,6 +169,7 @@ export function SellScreen() {
 
     setIsSubmitting(true);
 
+    const chosenCover = photos[coverIndex] || photos[0];
     const newProd = {
       title: title.trim(),
       category,
@@ -170,13 +177,20 @@ export function SellScreen() {
       price: numericPrice,
       originalPrice: Math.round(numericPrice * 1.25),
       location: campus,
-      imageUrl: photos[0],
+      imageUrl: chosenCover,
       badge: "New" as const,
     };
 
     try {
       await addProduct(newProd);
       setSubmittedProduct(newProd);
+      // Cleanly reset form inputs immediately
+      setTitle("");
+      setPrice("");
+      setPhotos([]);
+      setCoverIndex(0);
+      setBarterPreference("");
+      setIsBarterOpen(false);
     } catch {
       // Handled in addProduct
     } finally {
@@ -352,49 +366,78 @@ export function SellScreen() {
         ) : (
           <>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.photosScroll}>
-              {photos.map((uri, idx) => (
-                <View key={idx} style={[styles.photoThumbWrapper, { borderColor: colors.border }]}>
-                  <Image source={{ uri }} style={styles.photoThumb} />
+              {photos.map((uri, idx) => {
+                const isCover = idx === coverIndex;
+                return (
                   <TouchableOpacity
-                    onPress={() => handleRemovePhoto(idx)}
-                    style={styles.removePhotoBtn}
+                    key={idx}
+                    activeOpacity={0.88}
+                    onPress={() => setCoverIndex(idx)}
+                    style={[
+                      styles.photoThumbWrapper,
+                      { borderColor: isCover ? colors.primary : colors.border },
+                      isCover && { borderWidth: 2.5 },
+                    ]}
                   >
-                    <Trash2 size={12} color="#FFFFFF" />
+                    <Image source={{ uri }} style={styles.photoThumb} />
+                    <TouchableOpacity
+                      onPress={() => handleRemovePhoto(idx)}
+                      style={styles.removePhotoBtn}
+                    >
+                      <Trash2 size={12} color="#FFFFFF" />
+                    </TouchableOpacity>
+                    {isCover ? (
+                      <View style={[styles.primaryCoverBadge, { backgroundColor: colors.primary }]}>
+                        <Text style={styles.primaryCoverBadgeText}>★ Cover</Text>
+                      </View>
+                    ) : (
+                      <TouchableOpacity
+                        onPress={() => setCoverIndex(idx)}
+                        style={styles.makeCoverBadge}
+                      >
+                        <Text style={styles.makeCoverBadgeText}>Set Cover</Text>
+                      </TouchableOpacity>
+                    )}
                   </TouchableOpacity>
-                  {idx === 0 && (
-                    <View style={styles.primaryCoverBadge}>
-                      <Text style={styles.primaryCoverBadgeText}>Cover</Text>
-                    </View>
-                  )}
-                </View>
-              ))}
-            </ScrollView>
+                );
+              })}
 
-            {photos.length < 5 && (
-              <View style={styles.uploadActionsRow}>
+              {/* Inline Add Photo (+) button always visible beside thumbnails */}
+              {photos.length < 5 && (
                 <TouchableOpacity
                   onPress={handlePickFromDevice}
-                  activeOpacity={0.85}
-                  style={[styles.uploadActionButton, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}
+                  activeOpacity={0.8}
+                  style={[
+                    styles.addPhotoInlineTile,
+                    {
+                      backgroundColor: isDark ? colors.cardElevated : "#F1F5F9",
+                      borderColor: colors.primary,
+                    },
+                  ]}
                 >
-                  <Upload size={14} color={colors.primary} />
-                  <Text style={[styles.uploadActionText, { color: colors.primary }]}>
-                    {language === "am" ? "መሳሪያ" : "Device"}
+                  <Plus size={24} color={colors.primary} />
+                  <Text style={[styles.addPhotoInlineText, { color: colors.primary }]}>
+                    {language === "am" ? "+ አክል" : "+ Add"}
                   </Text>
                 </TouchableOpacity>
+              )}
+            </ScrollView>
 
-                <TouchableOpacity
-                  onPress={handleCameraSnap}
-                  activeOpacity={0.85}
-                  style={[styles.uploadActionButton, { backgroundColor: isDark ? colors.cardElevated : "#F1F5F9", borderColor: colors.border }]}
-                >
-                  <Camera size={14} color={colors.textPrimary} />
-                  <Text style={[styles.uploadActionText, { color: colors.textPrimary }]}>
-                    {language === "am" ? "ካሜራ" : "Camera"}
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
+              <Text style={{ fontSize: 11, color: colors.textSecondary }}>
+                {language === "am"
+                  ? "★ ዋና ሽፋን (Cover) ለማድረግ ፎቶውን ይጫኑ"
+                  : "Tap any photo to select it as the main Cover"}
+              </Text>
+              {photos.length < 5 && (
+                <TouchableOpacity onPress={handleCameraSnap} style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                  <Camera size={13} color={colors.primary} />
+                  <Text style={{ fontSize: 11, fontWeight: "700", color: colors.primary }}>
+                    {language === "am" ? "ካሜራ አንሳ" : "Take Photo"}
                   </Text>
                 </TouchableOpacity>
-              </View>
-            )}
+              )}
+            </View>
           </>
         )}
       </Animatable.View>
@@ -684,7 +727,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 4,
     left: 4,
-    backgroundColor: "rgba(16, 185, 129, 0.9)",
+    backgroundColor: "#1D6BF3",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
@@ -693,6 +736,35 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 9,
     fontWeight: "900",
+  },
+  makeCoverBadge: {
+    position: "absolute",
+    bottom: 4,
+    left: 4,
+    backgroundColor: "rgba(15, 23, 42, 0.75)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  makeCoverBadgeText: {
+    color: "#E2E8F0",
+    fontSize: 8,
+    fontWeight: "700",
+  },
+  addPhotoInlineTile: {
+    width: 78,
+    height: 78,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderStyle: "dashed",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 10,
+    gap: 4,
+  },
+  addPhotoInlineText: {
+    fontSize: 10,
+    fontWeight: "800",
   },
   photoEmptyDropZone: {
     borderWidth: 1.5,

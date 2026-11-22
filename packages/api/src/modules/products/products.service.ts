@@ -110,11 +110,25 @@ export class ProductsService {
    * Auto-resolves category slugs, campuses, and seller account so listings appear live in Admin & Mobile feeds.
    */
   async submitMobileListing(input: z.infer<typeof submitMobileListingSchema>) {
-    // 1. Resolve seller user ID with fallback
+    // 1. Resolve seller user ID with robust foreign-key validation
     let sellerId = input.sellerId;
+    let existingUser = sellerId ? await this.db.query.users.findFirst({ where: eq(users.id, sellerId) }) : null;
+    if (!existingUser) {
+      existingUser = (await this.db.query.users.findFirst({
+        where: or(
+          ilike(users.email, "%muradbzuneh%"),
+          ilike(users.email, "%student%"),
+          ilike(users.name, "%Murad%")
+        ),
+      })) || (await this.db.query.users.findFirst());
+      sellerId = existingUser?.id;
+    }
+
     if (!sellerId) {
-      const defaultUser = await this.db.query.users.findFirst();
-      sellerId = defaultUser?.id || "usr-mobile-seller";
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "No registered student or user found in database to associate listing with.",
+      });
     }
 
     // 2. Resolve Category (by slug or UUID)

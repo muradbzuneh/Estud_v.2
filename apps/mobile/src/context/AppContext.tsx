@@ -44,8 +44,18 @@ export interface EscrowOrder {
   isExpired?: boolean;
   transactionReference?: string;
   screenshotUrl?: string;
-  status: "secured" | "at_hub" | "ready_inspection" | "completed" | "disputed";
+  status: "payment_pending" | "secured" | "at_hub" | "ready_inspection" | "completed" | "disputed";
   createdAt: string;
+}
+
+export interface AppNotification {
+  id: string;
+  title: string;
+  message: string;
+  time: string;
+  type: "escrow" | "admin" | "broadcast";
+  read: boolean;
+  orderNumber?: string;
 }
 
 export type MobileTab = "home" | "explore" | "sell" | "activity" | "profile";
@@ -233,7 +243,15 @@ interface AppContextType {
   orders: EscrowOrder[];
   createOrder: (order: Omit<EscrowOrder, "id" | "orderNumber" | "secretPin" | "expiresAt" | "expiresFormatted" | "status" | "createdAt">) => EscrowOrder;
   completeOrder: (orderId: string) => void;
+  approveOrderPayment: (orderId: string) => void;
   regenerateOrderPin: (orderId: string) => string;
+
+  // Notifications
+  notifications: AppNotification[];
+  isNotificationsModalVisible: boolean;
+  setNotificationsModalVisible: (visible: boolean) => void;
+  markAllNotificationsAsRead: () => void;
+  unreadNotificationsCount: number;
 
   // Lost & Found Desk Modal
   isLostFoundModalVisible: boolean;
@@ -272,6 +290,42 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = useState<Record<string, boolean>>({ "prod-1": true, "prod-2": true });
   const [selectedProduct, setSelectedProduct] = useState<MobileProductItem | null>(null);
   const [orders, setOrders] = useState<EscrowOrder[]>(INITIAL_ORDERS);
+
+  // Real-time notifications system
+  const [isNotificationsModalVisible, setNotificationsModalVisible] = useState(false);
+  const [notifications, setNotifications] = useState<AppNotification[]>([
+    {
+      id: "notif-1",
+      title: "Escrow Payment Under Review",
+      message: "Admin desk is verifying transfer proof for order EST-84920.",
+      time: "10 mins ago",
+      type: "escrow",
+      read: false,
+      orderNumber: "EST-84920",
+    },
+    {
+      id: "notif-2",
+      title: "Campus SafeTrade Desk Active",
+      message: "AAU 4 Kilo Intermediary Hub is open for physical inspections today until 6:00 PM.",
+      time: "1 hour ago",
+      type: "broadcast",
+      read: false,
+    },
+    {
+      id: "notif-3",
+      title: "Listing Valuation Approved",
+      message: "Your Dell Laptop listing was approved by Admin and is now live across AAU campuses.",
+      time: "Yesterday",
+      type: "admin",
+      read: true,
+    },
+  ]);
+
+  const markAllNotificationsAsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
+
+  const unreadNotificationsCount = notifications.filter((n) => !n.read).length;
 
   const colors = getThemeColors(theme);
   const t = translations[language];
@@ -516,14 +570,34 @@ export function AppProvider({ children }: { children: ReactNode }) {
       expiresAt,
       expiresFormatted: `Valid for 48h until ${expiresFormatted}`,
       isExpired: false,
-      status: "ready_inspection",
+      status: "payment_pending",
       createdAt: "Just now",
     };
 
     setOrders((prev) => [newOrder, ...prev]);
+
+    // Push real-time notification
+    setNotifications((prev) => [
+      {
+        id: "notif-" + Date.now(),
+        title: language === "am" ? "የክፍያ ማረጋገጫ ተልኳል" : "Escrow Payment Under Review",
+        message:
+          language === "am"
+            ? `ለ${orderData.productTitle} የከፈሉት ማስረጃ በአድሚን እየተገመገመ ነው። ሲፈቀድ መፈተሻ ኮዱ ይከፈታል!`
+            : `Payment proof for ${orderData.productTitle} submitted to Admin. Inspection PIN will unlock upon verification!`,
+        time: "Just now",
+        type: "escrow",
+        read: false,
+        orderNumber: randomOrderNumber,
+      },
+      ...prev,
+    ]);
+
     showSuccessToast(
-      language === "am" ? "የተጠበቀ ክፍያ ተይዟል!" : "Funds Locked in Safe Protection!",
-      `Inspection PIN: ${randomPin} (Valid for 48h)`
+      language === "am" ? "የክፍያ ማረጋገጫ ቀርቧል!" : "Payment Proof Submitted!",
+      language === "am"
+        ? "የአድሚን ማረጋገጫ በመጠባበቅ ላይ። ከተረጋገጠ በኋላ መፈተሻ ኮዱ ይከፈታል።"
+        : "Awaiting Admin payment approval. Your inspection PIN will unlock once approved."
     );
 
     // Live sync order & payment to PostgreSQL and Admin Verification Queue
@@ -611,6 +685,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  const approveOrderPayment = (orderId: string) => {
+    setOrders((prev) =>
+      prev.map((ord) => {
+        if (ord.id === orderId) {
+          return { ...ord, status: "ready_inspection" };
+        }
+        return ord;
+      })
+    );
+    showSuccessToast(
+      language === "am" ? "ክፍያው በአድሚን ጸድቋል!" : "Payment Approved by Admin!",
+      language === "am"
+        ? "መፈተሻ ፒኑ አሁን ተከፍቷል! ዕቃውን በካምፓስ ዴስክ መፈተሽ ይችላሉ።"
+        : "Inspection PIN unlocked! You can now physically inspect at the campus desk."
+    );
+  };
+
 
 
   return (
@@ -650,7 +741,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         orders,
         createOrder,
         completeOrder,
+        approveOrderPayment,
         regenerateOrderPin,
+        notifications,
+        isNotificationsModalVisible,
+        setNotificationsModalVisible,
+        markAllNotificationsAsRead,
+        unreadNotificationsCount,
         isLostFoundModalVisible,
         setLostFoundModalVisible,
         appVersion,

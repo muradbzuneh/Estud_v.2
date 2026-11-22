@@ -44,7 +44,16 @@ export function MobileAuthModal() {
 
   if (!isAuthModalVisible) return null;
 
+  const clearInputs = () => {
+    setName("");
+    setEmail("");
+    setPassword("");
+    setPhone("");
+    setStudentId("");
+  };
+
   const handleClose = () => {
+    clearInputs();
     setAuthModalVisible(false);
   };
 
@@ -52,6 +61,7 @@ export function MobileAuthModal() {
     setIsGoogleLoading(true);
     try {
       await loginWithGoogle();
+      clearInputs();
     } catch {
       showErrorToast(
         language === "am" ? "የGoogle መግቢያ ስህተት" : "Google Sign-In Failed",
@@ -89,6 +99,7 @@ export function MobileAuthModal() {
     setTimeout(() => {
       setIsLoading(false);
       login(name || "Student Trader", email, campus);
+      clearInputs();
     }, 700);
   };
 
