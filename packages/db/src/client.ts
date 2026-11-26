@@ -62,7 +62,11 @@ export function createHttpClient(connectionString?: string): EstudDatabase {
   }
   const url = connectionString || process.env.DATABASE_URL;
   if (!url) {
-    throw new Error("DATABASE_URL is not defined.");
+    console.warn(
+      "[Estud DB] Warning: DATABASE_URL is not defined. Using fallback client for build-time compilation."
+    );
+    const fallbackSql = neon("postgresql://build_dummy:build_dummy@ep-dummy.neon.tech/dummy");
+    return drizzleHttp(fallbackSql, { schema });
   }
   const sql = neon(url);
   const db = drizzleHttp(sql, { schema });
@@ -81,7 +85,11 @@ export function createPoolClient(connectionString?: string): EstudPoolDatabase {
   }
   const url = connectionString || process.env.DATABASE_URL;
   if (!url) {
-    throw new Error("DATABASE_URL is not defined.");
+    console.warn(
+      "[Estud DB] Warning: DATABASE_URL is not defined. Using fallback client for build-time compilation."
+    );
+    const pool = new Pool({ connectionString: "postgresql://build_dummy:build_dummy@ep-dummy.neon.tech/dummy" });
+    return drizzleServerless(pool, { schema });
   }
   const pool = new Pool({ connectionString: url });
   const db = drizzleServerless(pool, { schema });

@@ -14,6 +14,8 @@ const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy_key_for_dev");
 const db = createHttpClient();
 
 export const auth = betterAuth({
+  secret: process.env.BETTER_AUTH_SECRET || "build_dummy_secret_for_static_compilation_1234567890",
+  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
